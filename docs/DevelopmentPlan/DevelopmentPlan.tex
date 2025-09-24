@@ -82,27 +82,27 @@ leader, meeting chair, reviewer.  Assigning specific people to those roles is
 not necessary at this stage.  In a student team the role of the individuals will
 likely change throughout the year.}
 
+\section{Workflow Plan}
 \subsection*{Version Control}
-We will use Git with a protected \texttt{main} branch. Work will happen on \texttt{feature/*} and \texttt{bug/*} branches. All pull requests must receive one approval before they can be merged. An issue will be resolved once the PR is approved, CI passes, the branch is up to date, and the linked issue is closed. Branch naming will follow the format:
+We will use Git with a protected \texttt{main} branch. Our work will happen on \texttt{feature/*} and \texttt{bug/*} branches. All pull requests must receive one approval before they can be merged. An issue will be resolved once the PR is approved, the CI passes, the branch is up to date, and the linked issue is closed. Branch naming will follow the format:
 \texttt{feature/<scope>-<short-title>} and \texttt{bug/<scope>-<short-title>}.
 
 \subsection*{Issue Tracking and Project Management}
-We will use GitHub Issues and a Kanban board with the columns Backlog, In progress, In review, and Done. Each issue will follow a template with fields: summary, context, acceptance criteria. Labels will be standardized: \texttt{type:feature}, \texttt{type:bug}, \texttt{type:docs}, \texttt{prio:high}, \texttt{prio:med}, \texttt{prio:low}, \texttt{status:blocker}. Commit messages will reference the issue number: \texttt{[\#ISSUE] short imperative description}. Example: [\#45-fixing-login-button]. Tags will be created for each stable milestone and release to mark progress and aid reproducibility.
+We will use GitHub Issues and a Kanban board with the columns Backlog, In progress, In review, and Done. Each issue will follow a template with fields: summary, context, acceptance criteria. Labels will be standardized: type:feature, type:bug, type:docs, prio:high, prio:med, prio:low, status:blocker. Commit messages will reference the issue number: \texttt{[\#ISSUE] short imperative description}. Example: [\#45-fixing-login-button]. Tags will be created for each stable milestone and release to mark progress and aid reproducibility.
 
 \subsection*{Reviews and Quality Bar}
-Every PR will link its issue, pass CI, and receive one approval. Reviewers will check acceptance criteria and code style. Linting and formatting will be enforced with ESLint and Prettier. Small fixes will be pushed to the PR branch, while larger changes will open a follow-up issue.
+Every PR will link to it's relating issue, pass CI, and receive one approval. Reviewers will check acceptance criteria and code style. Linting and formatting will be enforced with ESLint and Prettier. Small fixes will be pushed to the PR branch, while larger changes will open a follow-up issue.
 
 \subsection*{Continuous Integration}
-GitHub Actions will run on every PR. Jobs will include \texttt{lint}, \texttt{test}, and \texttt{build}. A PR will not merge unless all jobs succeed. Coverage gates may be added later if time allows. Secrets and environment variables will be stored in GitHub Actions Secrets. Environments will require approval for deploy jobs if added later.
+We will run GitHub Actions on every PR. The jobs will include \texttt{lint}, \texttt{test}, and \texttt{build}. A PR will not merge unless all jobs succeed. Coverage gates may be added later if time allows. Secrets and environment variables will be stored in GitHub Actions Secrets to keep them secure. Environments will require approval for deploy jobs if added later.
 
 \subsection*{Releases}
-We will follow continuous delivery without fixed sprints. When a milestone lands we will tag a release (\texttt{v0.1.0}, \texttt{v0.2.0}, etc.). Release notes will be generated from merged PRs. Hotfixes will use \texttt{bug/*} branches and patch tags.
+We will follow continuous delivery without fixed sprints and when a milestone finishes we will tag a release (\texttt{v0.1.0}, \texttt{v0.2.0}, etc.). Release notes will be generated from merged PRs and any hotfixes will use \texttt{bug/*} branches and patch tags.
 
 \section{Project Decomposition and Scheduling}
 
 \subsection*{Project Decomposition}
-We will decompose the project into major functional features so work can be
-distributed and tracked clearly:
+We will decompose the project into major functional features so work can be distributed and tracked clearly:
 \begin{itemize}
   \item \textbf{User Interface:} building the frontend views, navigation, and forms.
   \item \textbf{Data Processing:} implementing the logic to handle and analyze input data.
@@ -135,8 +135,8 @@ For context, our POC will consist of roughly the following steps:
 \noindent
 The following are the primary risks and how potential results from the POC could mitigate them:
 \begin{enumerate}
-  \item Real-time analytics may be too computationally heavy. We will reduce data frequency or adopt lighter algorithms if needed.
-  \item Eye-tracking hardware may fail during the demo. We will prepare recorded data as a fallback to still demonstrate functionality.
+  \item Real-time analytics may be too computationally complex. We will reduce data frequency or adopt lighter algorithms if needed.
+  \item Eye-tracking hardware may malfunction during the demo. We will prepare recorded data as a fallback to still demonstrate functionality.
   \item Privacy concerns may arise with identifiable gaze data. We will anonymize all data in the POC to avoid exposing individual identities.
 \end{enumerate}
 
@@ -148,8 +148,7 @@ Other smaller risks include:
 
 \section{Expected Technology}
 
-We will use a mix of programming languages, frameworks, and tools to implement
-our system:
+We will use a mix of programming languages, frameworks, and tools to implement our system:
 
 \begin{itemize}
   \item \textbf{Frontend:} The instructor dashboard will be built with React and
@@ -177,15 +176,10 @@ our system:
   reproducibility and deployment flexibility.
 \end{itemize}
 
-Additional technologies may be added as the project evolves, especially if new
-requirements emerge from handling larger datasets, multiple devices, or more
-complex classroom setups.
+Additional technologies may be added as the project evolves, especially if new requirements emerge from handling larger datasets, multiple devices, or more complex classroom setups.
 \section{Coding Standard}
 
-We will follow consistent coding practices to keep the project maintainable.
-Style guides, linting, and comments will be used to ensure clarity. Commit
-messages will follow a standard format, and pull requests will be reviewed
-before merging.
+We will follow consistent coding practices to keep the project maintainable and consistent. Style guides, linting, and comments will be used to ensure clarity throughout the codebase. Commit messages will follow a standard format, and pull requests will be reviewed before merging.
 
 \newpage{}
 
