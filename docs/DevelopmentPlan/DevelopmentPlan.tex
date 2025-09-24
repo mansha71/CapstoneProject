@@ -82,69 +82,110 @@ leader, meeting chair, reviewer.  Assigning specific people to those roles is
 not necessary at this stage.  In a student team the role of the individuals will
 likely change throughout the year.}
 
-\section{Workflow Plan}
+\subsection*{Version Control}
+We will use Git with a protected \texttt{main} branch. Work will happen on \texttt{feature/*} and \texttt{bug/*} branches. All pull requests must receive one approval before they can be merged. An issue will be resolved once the PR is approved, CI passes, the branch is up to date, and the linked issue is closed. Branch naming will follow the format:
+\texttt{feature/<scope>-<short-title>} and \texttt{bug/<scope>-<short-title>}.
 
-\begin{itemize}
-	\item How will you be using git, including branches, pull request, etc.?
-	\item How will you be managing issues, including template issues, issue
-	classification, etc.?
-  \item Use of CI/CD
-\end{itemize}
+\subsection*{Issue Tracking and Project Management}
+We will use GitHub Issues and a Kanban board with the columns Backlog, In progress, In review, and Done. Each issue will follow a template with fields: summary, context, acceptance criteria. Labels will be standardized: \texttt{type:feature}, \texttt{type:bug}, \texttt{type:docs}, \texttt{prio:high}, \texttt{prio:med}, \texttt{prio:low}, \texttt{status:blocker}. Commit messages will reference the issue number: \texttt{[\#ISSUE] short imperative description}. Example: [\#45-fixing-login-button]. Tags will be created for each stable milestone and release to mark progress and aid reproducibility.
+
+\subsection*{Reviews and Quality Bar}
+Every PR will link its issue, pass CI, and receive one approval. Reviewers will check acceptance criteria and code style. Linting and formatting will be enforced with ESLint and Prettier. Small fixes will be pushed to the PR branch, while larger changes will open a follow-up issue.
+
+\subsection*{Continuous Integration}
+GitHub Actions will run on every PR. Jobs will include \texttt{lint}, \texttt{test}, and \texttt{build}. A PR will not merge unless all jobs succeed. Coverage gates may be added later if time allows. Secrets and environment variables will be stored in GitHub Actions Secrets. Environments will require approval for deploy jobs if added later.
+
+\subsection*{Releases}
+We will follow continuous delivery without fixed sprints. When a milestone lands we will tag a release (\texttt{v0.1.0}, \texttt{v0.2.0}, etc.). Release notes will be generated from merged PRs. Hotfixes will use \texttt{bug/*} branches and patch tags.
 
 \section{Project Decomposition and Scheduling}
 
+\subsection*{Project Decomposition}
+We will decompose the project into major functional features so work can be
+distributed and tracked clearly:
 \begin{itemize}
-  \item How will you be using GitHub projects?
-  \item Include a link to your GitHub project
+  \item \textbf{User Interface:} building the frontend views, navigation, and forms.
+  \item \textbf{Data Processing:} implementing the logic to handle and analyze input data.
+  \item \textbf{Backend Services:} creating APIs, database models, and integration logic.
+  \item \textbf{Testing:} writing unit, integration, and end-to-end tests to ensure quality.
+  \item \textbf{Documentation:} maintaining project documentation and developer guides.
 \end{itemize}
 
-\wss{How will the project be scheduled?  This is the big picture schedule, not
-details. You will need to reproduce information that is in the course outline
-for deadlines.}
+\subsection*{Scheduling}
+We will use GitHub Projects to manage our schedule and track progress through a
+Kanban board: \url{https://github.com/users/mansha71/projects/5/views/1}.  
+The schedule will align with both course deadlines and internal milestones:
+\begin{itemize}
+  \item \textbf{Early Phase:} Project setup and initial development environment configuration.
+  \item \textbf{Middle Phase:} Core feature implementation across backend, frontend, and data processing.
+  \item \textbf{Late Phase:} Integration, testing, and refinement of features.
+  \item \textbf{Final Phase:} Documentation, polishing, and preparation for the proof of concept demo.
+\end{itemize}
 
 \section{Proof of Concept Demonstration Plan}
 
-What is the main risk, or risks, for the success of your project?  What will you
-demonstrate during your proof of concept demonstration to convince yourself that
-you will be able to overcome this risk?
+For context, our POC will consist of roughly the following steps:
+\begin{enumerate}
+  \item Connect a single eye-tracking device and stream data into the system.
+  \item Display gaze data on an instructor dashboard with basic visualizations.
+  \item Log session data for later post-session analysis.
+  \item Provide a live demo where data from one user updates the dashboard view in real time.
+\end{enumerate}
+
+\noindent
+The following are the primary risks and how potential results from the POC could mitigate them:
+\begin{enumerate}
+  \item Real-time analytics may be too computationally heavy. We will reduce data frequency or adopt lighter algorithms if needed.
+  \item Eye-tracking hardware may fail during the demo. We will prepare recorded data as a fallback to still demonstrate functionality.
+  \item Privacy concerns may arise with identifiable gaze data. We will anonymize all data in the POC to avoid exposing individual identities.
+\end{enumerate}
+
+Other smaller risks include:
+\begin{itemize}
+  \item Integration challenges with multiple devices later. Mitigation: start with one device, then scale after verifying the pipeline.
+  \item Generalizability to different lecture hall setups. Mitigation: design flexible dashboard components adaptable to various layouts.
+\end{itemize}
 
 \section{Expected Technology}
 
-\wss{What programming language or languages do you expect to use?  What external
-libraries?  What frameworks?  What technologies.  Are there major components of
-the implementation that you expect you will implement, despite the existence of
-libraries that provide the required functionality.  For projects with machine
-learning, will you use pre-trained models, or be training your own model?  }
-
-\wss{The implementation decisions can, and likely will, change over the course
-of the project.  The initial documentation should be written in an abstract way;
-it should be agnostic of the implementation choices, unless the implementation
-choices are project constraints.  However, recording our initial thoughts on
-implementation helps understand the challenge level and feasibility of a
-project.  It may also help with early identification of areas where project
-members will need to augment their training.}
-
-Topics to discuss include the following:
+We will use a mix of programming languages, frameworks, and tools to implement
+our system:
 
 \begin{itemize}
-\item Specific programming language
-\item Specific libraries
-\item Pre-trained models
-\item Specific linter tool (if appropriate)
-\item Specific unit testing framework
-\item Investigation of code coverage measuring tools
-\item Specific plans for Continuous Integration (CI), or an explanation that CI
-  is not being done
-\item Specific performance measuring tools (like Valgrind), if
-  appropriate
-\item Tools you will likely be using?
+  \item \textbf{Frontend:} The instructor dashboard will be built with React and
+  TypeScript, providing a responsive interface and real-time visualizations.
+  \item \textbf{Backend:} A Python backend (using FastAPI or Flask) will handle
+  data ingestion from the eye-tracker, manage sessions, and serve analytics to
+  the dashboard.
+  \item \textbf{Data Processing:} We will adapt existing open-source
+  computer vision and eye-tracking libraries such as OpenCV and PyGaze to
+  capture and analyze gaze data. Lightweight algorithms will be explored to
+  support real-time analytics.
+  \item \textbf{Data Storage and Streaming:} A lightweight relational database
+  (SQLite or PostgreSQL) will be used to log session data for post-session
+  analytics. For scalability and handling real-time streams, we will explore
+  Apache Kafka if it fits the course infrastructure.
+  \item \textbf{Visualization:} Simple data visualizations will be implemented
+  first using React charting libraries such as Chart.js or Recharts. More
+  advanced options (e.g., D3.js) may be added if required.
+  \item \textbf{Collaboration and CI/CD:} GitHub will be used for version
+  control, issue tracking, and project management. GitHub Actions will provide
+  continuous integration with automated linting and testing to maintain code
+  quality.
+  \item \textbf{Deployment:} The system will initially run locally for
+  development and POC purposes. Docker may be introduced later to improve
+  reproducibility and deployment flexibility.
 \end{itemize}
 
-\wss{git, GitHub and GitHub projects should be part of your technology.}
-
+Additional technologies may be added as the project evolves, especially if new
+requirements emerge from handling larger datasets, multiple devices, or more
+complex classroom setups.
 \section{Coding Standard}
 
-\wss{What coding standard will you adopt?}
+We will follow consistent coding practices to keep the project maintainable.
+Style guides, linting, and comments will be used to ensure clarity. Commit
+messages will follow a standard format, and pull requests will be reviewed
+before merging.
 
 \newpage{}
 
