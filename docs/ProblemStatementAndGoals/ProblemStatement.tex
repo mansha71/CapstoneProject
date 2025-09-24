@@ -34,10 +34,39 @@ Date2 & Name(s) & Description of changes\\
 \subsection{Problem}
 Instructors lack access to real-time insights about where students direct their attention during learning activities, particularly in large-group settings. Without this data, it's hard to assess engagement, monitor collaboration, and adapt teaching strategies to improve the effectiveness of learning. Currently, there is an existing software framework (SocialEyes) used to scale single eye-tracking to multi-person social settings. However, there is a need for a system that can capture and analyze this group gaze data real-time during classroom activities, so that instructors better understand and respond to student attention and engagement in both synchronous and asynchronous learning contexts. 
 
-\subsection{Inputs and Outputs}
 
-\wss{Characterize the problem in terms of ``high level'' inputs and outputs.  
-Use abstraction so that you can avoid details.}
+Instructors lack access to real-time insights about where students direct their 
+attention during learning activities, particularly in large-group settings. Without 
+this data, it is difficult to assess engagement, monitor collaboration, and adapt 
+teaching strategies to improve the effectiveness of learning. 
+
+There is a need for a system that can capture and analyze group gaze data during 
+classroom activities, so that instructors can better understand and respond to 
+student attention and engagement in both synchronous and asynchronous 
+learning contexts.
+
+\subsection{Inputs and Outputs}
+Inputs 
+\begin{enumerate}
+    \item Aggregated eye-tracking gaze data from a group of people via the wearable Pupil Labs Neon device. This data includes: 
+    \begin{itemize}
+        \item Eye images with a resolution of 192 x 192 pixels and a frequency of 200 Hz 
+        \item Egoview captured by a front facing camera, with a resolution of 1600 × 1200 pixels at 30 Hz
+    \end{itemize}
+    \item Other measurements of students’ learning outcomes (e.g: qualitative data obtained through surveys) 
+    \begin{itemize}
+        \item This is an additional consideration in terms of the inputs to the project and might or might not be used in the final project.  
+    \end{itemize}
+\end{enumerate}  
+Outputs
+\begin{enumerate}
+    \item Instructor dashboard cleanly displaying group eye-tracking analytics for analysis
+        \begin{itemize}
+            \item Post-learning session analytics 
+            \item Real-time analytics
+            \item Additional learning measurements (qualitative/quantitative data collected by students on their experience during the session)
+        \end{itemize}
+\end{enumerate}  
 
 \subsection{Stakeholders}
 
