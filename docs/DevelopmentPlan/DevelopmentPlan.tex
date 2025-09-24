@@ -156,24 +156,11 @@ We will use a mix of programming languages, frameworks, and tools to implement o
   \item \textbf{Backend:} A Python backend (using FastAPI or Flask) will handle
   data ingestion from the eye-tracker, manage sessions, and serve analytics to
   the dashboard.
-  \item \textbf{Data Processing:} We will adapt existing open-source
-  computer vision and eye-tracking libraries such as OpenCV and PyGaze to
-  capture and analyze gaze data. Lightweight algorithms will be explored to
-  support real-time analytics.
-  \item \textbf{Data Storage and Streaming:} A lightweight relational database
-  (SQLite or PostgreSQL) will be used to log session data for post-session
-  analytics. For scalability and handling real-time streams, we will explore
-  Apache Kafka if it fits the course infrastructure.
-  \item \textbf{Visualization:} Simple data visualizations will be implemented
-  first using React charting libraries such as Chart.js or Recharts. More
-  advanced options (e.g., D3.js) may be added if required.
-  \item \textbf{Collaboration and CI/CD:} GitHub will be used for version
-  control, issue tracking, and project management. GitHub Actions will provide
-  continuous integration with automated linting and testing to maintain code
-  quality.
-  \item \textbf{Deployment:} The system will initially run locally for
-  development and POC purposes. Docker may be introduced later to improve
-  reproducibility and deployment flexibility.
+  \item \textbf{Data Processing:} We will acquire the data from the eye-tracking glassess, and create a processing pipeline using Python libraries such as NumPy and Pandas for data manipulation and analysis.
+  \item \textbf{Data Storage and Streaming:} A lightweight relational database (SQLite or PostgreSQL) will be used to log session data for post-session analytics. For scalability and handling real-time streams, we will explore Apache Kafka if it fits the course infrastructure.
+  \item \textbf{Visualization:} Simple data visualizations will be implemented first using React charting libraries such as Chart.js or Recharts. More advanced options (e.g., D3.js) may be added if required.
+  \item \textbf{Collaboration and CI/CD:} GitHub will be used for version control, issue tracking, and project management. GitHub Actions will provide continuous integration with automated linting and testing to maintain code quality.
+  \item \textbf{Deployment:} The system will initially run locally for development and POC purposes. Docker may be introduced later to improve reproducibility and deployment flexibility.
 \end{itemize}
 
 Additional technologies may be added as the project evolves, especially if new requirements emerge from handling larger datasets, multiple devices, or more complex classroom setups.
