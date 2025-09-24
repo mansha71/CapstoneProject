@@ -94,7 +94,7 @@ We will use GitHub Issues and a Kanban board with the columns Backlog, In progre
 Every PR will link to it's relating issue, pass CI, and receive one approval. Reviewers will check acceptance criteria and code style. Linting and formatting will be enforced with ESLint and Prettier. Small fixes will be pushed to the PR branch, while larger changes will open a follow-up issue.
 
 \subsection*{Continuous Integration}
-We will run GitHub Actions on every PR. The jobs will include \texttt{lint}, \texttt{test}, and \texttt{build}. A PR will not merge unless all jobs succeed. Coverage gates may be added later if time allows. Secrets and environment variables will be stored in GitHub Actions Secrets to keep them secure. Environments will require approval for deploy jobs if added later.
+We will run GitHub Actions on every PR. The jobs will include \texttt{lint}, \texttt{test}, and \texttt{build}. A PR will not merge unless all jobs succeed. Secrets and environment variables will be stored in GitHub Actions Secrets to keep them secure. Environments will require approval for deploy jobs if added later.
 
 \subsection*{Releases}
 We will follow continuous delivery without fixed sprints and when a milestone finishes we will tag a release (\texttt{v0.1.0}, \texttt{v0.2.0}, etc.). Release notes will be generated from merged PRs and any hotfixes will use \texttt{bug/*} branches and patch tags.
@@ -135,7 +135,7 @@ For context, our POC will consist of roughly the following steps:
 \noindent
 The following are the primary risks and how potential results from the POC could mitigate them:
 \begin{enumerate}
-  \item Real-time analytics may be too computationally complex. We will reduce data frequency or adopt lighter algorithms if needed.
+  \item Real-time analytics may be too computationally complex. We will reduce data frequency or adopt data sorting algorithms if needed.
   \item Eye-tracking hardware may malfunction during the demo. We will prepare recorded data as a fallback to still demonstrate functionality.
   \item Privacy concerns may arise with identifiable gaze data. We will anonymize all data in the POC to avoid exposing individual identities.
 \end{enumerate}
@@ -143,7 +143,7 @@ The following are the primary risks and how potential results from the POC could
 Other smaller risks include:
 \begin{itemize}
   \item Integration challenges with multiple devices later. Mitigation: start with one device, then scale after verifying the pipeline.
-  \item Generalizability to different lecture hall setups. Mitigation: design flexible dashboard components adaptable to various layouts.
+  \item Generalizability to different lecture hall setups. Mitigation: design flexible dashboard components that are able to adapt to various locations.
 \end{itemize}
 
 \section{Expected Technology}
@@ -156,14 +156,14 @@ We will use a mix of programming languages, frameworks, and tools to implement o
   \item \textbf{Backend:} A Python backend (using FastAPI or Flask) will handle
   data ingestion from the eye-tracker, manage sessions, and serve analytics to
   the dashboard.
-  \item \textbf{Data Processing:} We will acquire the data from the eye-tracking glassess, and create a processing pipeline using Python libraries such as NumPy and Pandas for data manipulation and analysis.
+  \item \textbf{Data Processing:} We will acquire the data from the eye-tracking glasses, and create a processing pipeline using Python libraries such as NumPy and Pandas for data manipulation and analysis.
   \item \textbf{Data Storage and Streaming:} A lightweight relational database (SQLite or PostgreSQL) will be used to log session data for post-session analytics. For scalability and handling real-time streams, we will explore Apache Kafka if it fits the course infrastructure.
   \item \textbf{Visualization:} Simple data visualizations will be implemented first using React charting libraries such as Chart.js or Recharts. More advanced options (e.g., D3.js) may be added if required.
   \item \textbf{Collaboration and CI/CD:} GitHub will be used for version control, issue tracking, and project management. GitHub Actions will provide continuous integration with automated linting and testing to maintain code quality.
   \item \textbf{Deployment:} The system will initially run locally for development and POC purposes. Docker may be introduced later to improve reproducibility and deployment flexibility.
 \end{itemize}
 
-Additional technologies may be added as the project evolves, especially if new requirements emerge from handling larger datasets, multiple devices, or more complex classroom setups.
+Note: Additional technologies may be added as the project evolves.
 \section{Coding Standard}
 
 We will follow consistent coding practices to keep the project maintainable and consistent. Style guides, linting, and comments will be used to ensure clarity throughout the codebase. Commit messages will follow a standard format, and pull requests will be reviewed before merging.
