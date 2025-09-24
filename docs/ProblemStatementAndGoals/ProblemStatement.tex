@@ -23,7 +23,7 @@
 \textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
 \midrule
 09/23/2025 & Angela Zeng & Add first draft of problem statement and goals\\
-09/23/2025 & Ann & Updates to problem statement \\
+09/23/2025 & Ann & Updates to problem statement, input, outputs, goals, extras\\
 Date2 & Name(s) & Description of changes\\
 ... & ... & ...\\
 \bottomrule
@@ -129,38 +129,23 @@ Outputs
 
 \section{Goals}
 
-\begin{enumerate}
-    \item Develop a Learning Platform
+  \begin{enumerate}
+  \item Adapting prior framework (SocialEyes) setup for data collection in the learning context and generate post-session analytics
+  \item Support real-time analytics 
     \begin{itemize}
-        \item Integrate large-group eye tracking into both synchronous (live classes) 
-        and asynchronous (recorded or online activities) learning contexts.
+        \item Finding a light-weight model/algorithm used to generate real-time analytics
+        \item Determine the most important analytics to generate real-time
     \end{itemize}
-
-    \item Enable Contextual Data Capture
-    \begin{itemize}
-        \item Log gaze data alongside classroom learning activities such as passive 
-        content viewing (e.g., watching videos) and active group work 
-        (e.g., exercises, discussions).
-    \end{itemize}
-
-    \item Conduct In-Person Research
-    \begin{itemize}
-        \item Run a study with instructors and students at McMaster University 
-        to evaluate how gaze-based insights affect teaching and learning.
-    \end{itemize}
-
-    \item Inform Future System Designs
-    \begin{itemize}
-        \item Use study findings to guide the development of features like 
-        instructor dashboards and real-time gaze analytics.
-    \end{itemize}
-
-    \item Tackle Key Technical Challenges
-    \begin{itemize}
-        \item Address issues in system design, reliable capture of group gaze data, 
-        and effective real-time visualization of attention patterns.
-    \end{itemize}
-\end{enumerate}
+    \item Building a instructor dashboard
+        \begin{itemize}
+            \item Displaying real-time and post-session analytics for instructors to gain insight of learning activities in the classroom
+               \item Account and roles within dashboard
+                    \begin{itemize}
+                        \item Role-based access and account system for instructors (other roles may be added later)
+                        \item Eye-tracker data can be identified with each individual student (each device has a unique IP address)
+                    \end{itemize}
+        \end{itemize}
+  \end{enumerate}
 
 \section{Stretch Goals}
 
