@@ -23,15 +23,16 @@
 \textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
 \midrule
 09/23/2025 & All & Add first draft of problem statement and goals\\
-Date2 & Name(s) & Description of changes\\
+09/23/2025 & Ann & Updates to problem statement, input, outputs, goals, extras\\
 ... & ... & ...\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Problem Statement}
-
 \subsection{Problem}
+Instructors lack access to real-time insights about where students direct their attention during learning activities, particularly in large-group settings. Without this data, it's hard to assess engagement, monitor collaboration, and adapt teaching strategies to improve the effectiveness of learning. Currently, there is an existing software framework (SocialEyes) used to scale single eye-tracking to multi-person social settings. However, there is a need for a system that can capture and analyze this group gaze data real-time during classroom activities, so that instructors better understand and respond to student attention and engagement in both synchronous and asynchronous learning contexts. 
+
 
 Instructors lack access to real-time insights about where students direct their 
 attention during learning activities, particularly in large-group settings. Without 
@@ -44,9 +45,27 @@ student attention and engagement in both synchronous and asynchronous
 learning contexts.
 
 \subsection{Inputs and Outputs}
-
-\wss{Characterize the problem in terms of ``high level'' inputs and outputs.  
-Use abstraction so that you can avoid details.}
+Inputs 
+\begin{enumerate}
+    \item Aggregated eye-tracking gaze data from a group of people via the wearable Pupil Labs Neon device. This data includes: 
+    \begin{itemize}
+        \item Eye images with a resolution of 192 x 192 pixels and a frequency of 200 Hz 
+        \item Egoview captured by a front facing camera, with a resolution of 1600 × 1200 pixels at 30 Hz
+    \end{itemize}
+    \item Other measurements of students’ learning outcomes (e.g: qualitative data obtained through surveys) 
+    \begin{itemize}
+        \item This is an additional consideration in terms of the inputs to the project and might or might not be used in the final project.  
+    \end{itemize}
+\end{enumerate}  
+Outputs
+\begin{enumerate}
+    \item Instructor dashboard cleanly displaying group eye-tracking analytics for analysis
+        \begin{itemize}
+            \item Post-learning session analytics 
+            \item Real-time analytics
+            \item Additional learning measurements (qualitative/quantitative data collected by students on their experience during the session)
+        \end{itemize}
+\end{enumerate}  
 
 \subsection{Stakeholders}
 
@@ -109,38 +128,23 @@ Use abstraction so that you can avoid details.}
 
 \section{Goals}
 
-\begin{enumerate}
-    \item Develop a Learning Platform
+  \begin{enumerate}
+  \item Adapting prior framework (SocialEyes) setup for data collection in the learning context and generate post-session analytics
+  \item Support real-time analytics 
     \begin{itemize}
-        \item Integrate large-group eye tracking into both synchronous (live classes) 
-        and asynchronous (recorded or online activities) learning contexts.
+        \item Finding a light-weight model/algorithm used to generate real-time analytics
+        \item Determine the most important analytics to generate real-time
     \end{itemize}
-
-    \item Enable Contextual Data Capture
-    \begin{itemize}
-        \item Log gaze data alongside classroom learning activities such as passive 
-        content viewing (e.g., watching videos) and active group work 
-        (e.g., exercises, discussions).
-    \end{itemize}
-
-    \item Conduct In-Person Research
-    \begin{itemize}
-        \item Run a study with instructors and students at McMaster University 
-        to evaluate how gaze-based insights affect teaching and learning.
-    \end{itemize}
-
-    \item Inform Future System Designs
-    \begin{itemize}
-        \item Use study findings to guide the development of features like 
-        instructor dashboards and real-time gaze analytics.
-    \end{itemize}
-
-    \item Tackle Key Technical Challenges
-    \begin{itemize}
-        \item Address issues in system design, reliable capture of group gaze data, 
-        and effective real-time visualization of attention patterns.
-    \end{itemize}
-\end{enumerate}
+    \item Building a instructor dashboard
+        \begin{itemize}
+            \item Displaying real-time and post-session analytics for instructors to gain insight of learning activities in the classroom
+               \item Account and roles within dashboard
+                    \begin{itemize}
+                        \item Role-based access and account system for instructors (other roles may be added later)
+                        \item Eye-tracker data can be identified with each individual student (each device has a unique IP address)
+                    \end{itemize}
+        \end{itemize}
+  \end{enumerate}
 
 \section{Stretch Goals}
 
@@ -162,19 +166,16 @@ Use abstraction so that you can avoid details.}
 \end{enumerate}
 
 \section{Extras}
+These are the extra deliverables were confirmed with the initial meeting with the supervisors of the projects. 
+The purpose of these extra deliverables is for the sustainability of the project, making it easy for future developers to build upon. 
 
-\wss{For CAS 741: State whether the project is a research project. This
-designation, with the approval (or request) of the instructor, can be modified
-over the course of the term.}
+\begin{enumerate}
+    \item Code Walkthrough Report \\
+    This will be a thorough documentation of the files and folders in the GitHub repository associated with the project. 
 
-\wss{For SE Capstone: List your extras.  Potential extras include usability
-testing, code walkthroughs, user documentation, formal proof, GenderMag
-personas, Design Thinking, etc.  (The full list is on the course outline and in
-Lecture 02.) Normally the number of extras will be two.  Approval of the extras
-will be part of the discussion with the instructor for approving the project.
-The extras, with the approval (or request) of the instructor, can be modified
-over the course of the term.}
-
+    \item User Instruction Video \\
+    This will be an instructional video to demonstrate how to interact with the dashboard deliverable of the project for each of the user roles (e.g., instructor). 
+\end{enumerate}
 
 
 \newpage{}
