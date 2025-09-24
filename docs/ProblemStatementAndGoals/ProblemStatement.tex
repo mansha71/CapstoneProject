@@ -22,7 +22,8 @@
 \toprule
 \textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
 \midrule
-September 23 & Ann & Updates to problem statement\\
+09/23/2025 & Angela Zeng & Add first draft of problem statement and goals\\
+09/23/2025 & Ann & Updates to problem statement \\
 Date2 & Name(s) & Description of changes\\
 ... & ... & ...\\
 \bottomrule
@@ -34,6 +35,16 @@ Date2 & Name(s) & Description of changes\\
 Instructors lack access to real-time insights about where students direct their attention during learning activities, particularly in large-group settings. Without this data, it's hard to assess engagement, monitor collaboration, and adapt teaching strategies to improve the effectiveness of learning. Currently, there is an existing software framework (SocialEyes) used to scale single eye-tracking to multi-person social settings. However, there is a need for a system that can capture and analyze this group gaze data real-time during classroom activities, so that instructors better understand and respond to student attention and engagement in both synchronous and asynchronous learning contexts. 
 
 
+Instructors lack access to real-time insights about where students direct their 
+attention during learning activities, particularly in large-group settings. Without 
+this data, it is difficult to assess engagement, monitor collaboration, and adapt 
+teaching strategies to improve the effectiveness of learning. 
+
+There is a need for a system that can capture and analyze group gaze data during 
+classroom activities, so that instructors can better understand and respond to 
+student attention and engagement in both synchronous and asynchronous 
+learning contexts.
+
 \subsection{Inputs and Outputs}
 
 \wss{Characterize the problem in terms of ``high level'' inputs and outputs.  
@@ -41,13 +52,116 @@ Use abstraction so that you can avoid details.}
 
 \subsection{Stakeholders}
 
+\subsubsection*{Direct Stakeholders}
+
+\begin{enumerate}
+    \item Students
+    \begin{itemize}
+        \item Their gaze data is collected during learning activities.
+        \item They benefit from potentially improved engagement and teaching methods.
+    \end{itemize}
+
+    \item Instructors / Professors
+    \begin{itemize}
+        \item Use gaze-based analytics and dashboards to adapt teaching.
+        \item Participate in the research study and provide feedback.
+    \end{itemize}
+
+    \item Capstone Development Team
+    \begin{itemize}
+        \item Designs, builds, and tests the integrated learning platform.
+        \item Works on solving technical challenges (e.g., real-time visualization, group data capture).
+    \end{itemize}
+
+    \item Researchers / Educational Technologists
+    \begin{itemize}
+        \item Analyze gaze data to study engagement and collaboration.
+        \item Derive insights that inform system improvements and pedagogy.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection*{Indirect Stakeholders}
+
+\begin{enumerate}
+    \item Future Students and Instructors
+    \begin{itemize}
+        \item Benefit from refined teaching methods and improved learning environments informed by this research.
+    \end{itemize}
+
+    \item Industry Partners / EdTech Companies
+    \begin{itemize}
+        \item Could leverage findings for commercial tools (e.g., learning analytics platforms).
+    \end{itemize}
+
+    \item University Administration (McMaster)
+    \begin{itemize}
+        \item Gains insights into teaching effectiveness and innovations in classroom technology.
+        \item May decide on scaling or adopting such systems institution-wide.
+    \end{itemize}
+\end{enumerate}
+
 \subsection{Environment}
 
-\wss{Hardware and Software Environment}
+\subsubsection*{Software Environment}
+
+\begin{itemize}
+    \item \textbf{Version Control and Collaboration:} GitHub will be used for source code management, issue tracking, project boards, and continuous integration/continuous delivery (CI/CD).
+    \item \textbf{Integrated Development Environment (IDE):} Visual Studio Code (VS Code) will serve as the primary IDE.
+\end{itemize}
 
 \section{Goals}
 
+\begin{enumerate}
+    \item Develop a Learning Platform
+    \begin{itemize}
+        \item Integrate large-group eye tracking into both synchronous (live classes) 
+        and asynchronous (recorded or online activities) learning contexts.
+    \end{itemize}
+
+    \item Enable Contextual Data Capture
+    \begin{itemize}
+        \item Log gaze data alongside classroom learning activities such as passive 
+        content viewing (e.g., watching videos) and active group work 
+        (e.g., exercises, discussions).
+    \end{itemize}
+
+    \item Conduct In-Person Research
+    \begin{itemize}
+        \item Run a study with instructors and students at McMaster University 
+        to evaluate how gaze-based insights affect teaching and learning.
+    \end{itemize}
+
+    \item Inform Future System Designs
+    \begin{itemize}
+        \item Use study findings to guide the development of features like 
+        instructor dashboards and real-time gaze analytics.
+    \end{itemize}
+
+    \item Tackle Key Technical Challenges
+    \begin{itemize}
+        \item Address issues in system design, reliable capture of group gaze data, 
+        and effective real-time visualization of attention patterns.
+    \end{itemize}
+\end{enumerate}
+
 \section{Stretch Goals}
+
+\begin{enumerate}
+    \item Support more complex classroom activities
+    \begin{itemize}
+        \item Extend the system beyond single-board, lecture-style classes to settings with multiple focal points (for example, group discussions or multiple boards), so it can handle a wider variety of learning environments.
+    \end{itemize}
+
+    \item Enhance real-time analytics
+    \begin{itemize}
+        \item Improve the live feedback available to instructors by going beyond simple engagement markers, while keeping the analytics lightweight enough to scale across many devices.
+    \end{itemize}
+
+    \item Strengthen privacy protections
+    \begin{itemize}
+        \item Ensure the system does not expose sensitive or personally identifiable information. This includes hiding personal details captured by eye cameras and preventing raw video feeds from being directly viewed by researchers or instructors.
+    \end{itemize}
+\end{enumerate}
 
 \section{Extras}
 
@@ -63,6 +177,8 @@ will be part of the discussion with the instructor for approving the project.
 The extras, with the approval (or request) of the instructor, can be modified
 over the course of the term.}
 
+
+
 \newpage{}
 
 \section*{Appendix --- Reflection}
@@ -76,17 +192,21 @@ over the course of the term.}
     
 Stanley: Writing this deliverable went smoothly for me. The reason for this is that I was responsible for creating the team charter (which is on the development plan document), which was a simple process where I came up with some reasonable responses and checked in to see if my team agreed. 
 
+Manan: Writing this deliverable went well because our team was able to communicate effectively and divide the work equally. We were able to discuss our ideas and come to a consensus on how to approach the problem statement and goals. This made the writing process smoother and more efficient.
+
     \item What pain points did you experience during this deliverable, and how
     did you resolve them?
 
 Stanley: The only pain point that I experienced was making sure that everyone agreed with the expectations that I wrote (on the development plan document). One member said that if we should let our group know in advance that we will not be able to attend a meeting, that should be reasonable enough for him/her to not show up, which I updated in the expectations later.  
 
+Manan: One pain point was understanding what exactly the proffersors were looking for in this project. We resolved this by discussing as a team and clarifying any doubts we had with the proffersors incharge. 
     \item How did you and your team adjust the scope of your goals to ensure
     they are suitable for a Capstone project (not overly ambitious but also of
     appropriate complexity for a senior design project)?
 
 Stanley: For the most part, we met up with our instructors and team members to discuss how much time and effort we could afford to invest. Through this, we were able to gauge exactly the scope of our project.  
 
+Manan: We adjusted the scope of our goals by discussing as a team and considering the time and resources we had available. We made sure to set realistic and achievable goals that would still challenge us and allow us to learn new skills. We also consulted with our instructors to ensure that our goals were appropriate for a senior design project.
 \end{enumerate}  
 
 \end{document}
