@@ -22,7 +22,7 @@
 \toprule
 \textbf{Date} & \textbf{Developer(s)} & \textbf{Change}\\
 \midrule
-Date1 & Name(s) & Description of changes\\
+09/23/2025 & Angela Zeng & Add first draft of problem statement and goals\\
 Date2 & Name(s) & Description of changes\\
 ... & ... & ...\\
 \bottomrule
@@ -31,14 +31,17 @@ Date2 & Name(s) & Description of changes\\
 
 \section{Problem Statement}
 
-\wss{You should check your problem statement with the
-\href{https://github.com/smiths/capTemplate/blob/main/docs/Checklists/ProbState-Checklist.pdf}
-{problem statement checklist}.} 
-
-\wss{You can change the section headings, as long as you include the required
-information.}
-
 \subsection{Problem}
+
+Instructors lack access to real-time insights about where students direct their 
+attention during learning activities, particularly in large-group settings. Without 
+this data, it is difficult to assess engagement, monitor collaboration, and adapt 
+teaching strategies to improve the effectiveness of learning. 
+
+There is a need for a system that can capture and analyze group gaze data during 
+classroom activities, so that instructors can better understand and respond to 
+student attention and engagement in both synchronous and asynchronous 
+learning contexts.
 
 \subsection{Inputs and Outputs}
 
@@ -47,13 +50,116 @@ Use abstraction so that you can avoid details.}
 
 \subsection{Stakeholders}
 
+\subsubsection*{Direct Stakeholders}
+
+\begin{enumerate}
+    \item Students
+    \begin{itemize}
+        \item Their gaze data is collected during learning activities.
+        \item They benefit from potentially improved engagement and teaching methods.
+    \end{itemize}
+
+    \item Instructors / Professors
+    \begin{itemize}
+        \item Use gaze-based analytics and dashboards to adapt teaching.
+        \item Participate in the research study and provide feedback.
+    \end{itemize}
+
+    \item Capstone Development Team
+    \begin{itemize}
+        \item Designs, builds, and tests the integrated learning platform.
+        \item Works on solving technical challenges (e.g., real-time visualization, group data capture).
+    \end{itemize}
+
+    \item Researchers / Educational Technologists
+    \begin{itemize}
+        \item Analyze gaze data to study engagement and collaboration.
+        \item Derive insights that inform system improvements and pedagogy.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection*{Indirect Stakeholders}
+
+\begin{enumerate}
+    \item Future Students and Instructors
+    \begin{itemize}
+        \item Benefit from refined teaching methods and improved learning environments informed by this research.
+    \end{itemize}
+
+    \item Industry Partners / EdTech Companies
+    \begin{itemize}
+        \item Could leverage findings for commercial tools (e.g., learning analytics platforms).
+    \end{itemize}
+
+    \item University Administration (McMaster)
+    \begin{itemize}
+        \item Gains insights into teaching effectiveness and innovations in classroom technology.
+        \item May decide on scaling or adopting such systems institution-wide.
+    \end{itemize}
+\end{enumerate}
+
 \subsection{Environment}
 
-\wss{Hardware and Software Environment}
+\subsubsection*{Software Environment}
+
+\begin{itemize}
+    \item \textbf{Version Control and Collaboration:} GitHub will be used for source code management, issue tracking, project boards, and continuous integration/continuous delivery (CI/CD).
+    \item \textbf{Integrated Development Environment (IDE):} Visual Studio Code (VS Code) will serve as the primary IDE.
+\end{itemize}
 
 \section{Goals}
 
+\begin{enumerate}
+    \item Develop a Learning Platform
+    \begin{itemize}
+        \item Integrate large-group eye tracking into both synchronous (live classes) 
+        and asynchronous (recorded or online activities) learning contexts.
+    \end{itemize}
+
+    \item Enable Contextual Data Capture
+    \begin{itemize}
+        \item Log gaze data alongside classroom learning activities such as passive 
+        content viewing (e.g., watching videos) and active group work 
+        (e.g., exercises, discussions).
+    \end{itemize}
+
+    \item Conduct In-Person Research
+    \begin{itemize}
+        \item Run a study with instructors and students at McMaster University 
+        to evaluate how gaze-based insights affect teaching and learning.
+    \end{itemize}
+
+    \item Inform Future System Designs
+    \begin{itemize}
+        \item Use study findings to guide the development of features like 
+        instructor dashboards and real-time gaze analytics.
+    \end{itemize}
+
+    \item Tackle Key Technical Challenges
+    \begin{itemize}
+        \item Address issues in system design, reliable capture of group gaze data, 
+        and effective real-time visualization of attention patterns.
+    \end{itemize}
+\end{enumerate}
+
 \section{Stretch Goals}
+
+\begin{enumerate}
+    \item Support more complex classroom activities
+    \begin{itemize}
+        \item Extend the system beyond single-board, lecture-style classes to settings with multiple focal points (for example, group discussions or multiple boards), so it can handle a wider variety of learning environments.
+    \end{itemize}
+
+    \item Enhance real-time analytics
+    \begin{itemize}
+        \item Improve the live feedback available to instructors by going beyond simple engagement markers, while keeping the analytics lightweight enough to scale across many devices.
+    \end{itemize}
+
+    \item Strengthen privacy protections
+    \begin{itemize}
+        \item Ensure the system does not expose sensitive or personally identifiable information. This includes hiding personal details captured by eye cameras and preventing raw video feeds from being directly viewed by researchers or instructors.
+    \end{itemize}
+\end{enumerate}
 
 \section{Extras}
 
@@ -68,6 +174,8 @@ Lecture 02.) Normally the number of extras will be two.  Approval of the extras
 will be part of the discussion with the instructor for approving the project.
 The extras, with the approval (or request) of the instructor, can be modified
 over the course of the term.}
+
+
 
 \newpage{}
 
