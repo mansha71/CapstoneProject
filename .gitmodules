@@ -1,3 +1,6 @@
 [submodule "docs/SRS-Meyer"]
 	path = docs/SRS-Meyer
 	url = https://github.com/ace-lectures/cas-handbook-req-template.git
+[submodule "docs/cas-handbook-req-template"]
+	path = docs/cas-handbook-req-template
+	url = https://github.com/ace-lectures/cas-handbook-req-template.git
