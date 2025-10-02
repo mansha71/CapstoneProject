@@ -6,5 +6,25 @@ TIP: _Properties of the environment that may be assumed, with the goal of facili
 endif::[]
 
 
-{emptysec}
+*Classroom and Connectivity*::
+- A stable wireless network will be available in the classroom to connect eye-tracking devices to the backend.
+- Network latency and bandwidth will be within acceptable limits for real-time analytics (*TBD thresholds*).
 
+*Hardware Availability*::
+- Each student participant will be equipped with a functional pair of Pupil Labs Neon glasses paired with a smartphone running the Neon Companion App.
+- The instructor will have access to a laptop or desktop capable of running the dashboard and backend software.
+
+*Data and Usage*::
+- Students will consent to the collection of gaze data for the purposes of this research project.
+- Gaze data will be sufficient in quality for analysis, assuming minimal calibration drift and device malfunction.
+- The volume of gaze data generated will not exceed storage capacity or post-processing capabilities within the project’s timeline.
+
+*Software and Frameworks*::
+- The SocialEyes framework will remain available and maintainable during the course of the project.
+- Dependencies (e.g., Pupil Labs API, Docker, Python libraries) will continue to be supported and compatible with the project environment.
+- Supervisors and project stakeholders accept the use of open-source components under non-commercial research licenses.
+
+*Operational Context*::
+- Classroom activities will be structured in ways that make gaze analysis meaningful (e.g., students facing a shared board, screen, or instructor).
+- The system will be used primarily in controlled classroom/lab settings, not large-scale public venues.
+- Users (instructors) will have basic technical literacy and be able to operate the dashboard without extensive training.

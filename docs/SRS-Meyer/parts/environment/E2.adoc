@@ -5,4 +5,59 @@ ifdef::env-draft[]
 TIP: _List of elements of the environment that may affect or be affected by the system and project. It includes other systems to which the system must be interfaced. These components may include existing systems, particularly software systems, with which the system will interact — by using their APIs (program interfaces), or by providing APIs to them, or both. These are interfaces provided to the system from the outside world. They are distinct from both: interfaces provided by the system to the outside world (<<s3>>); and technology elements that the system's development will require (<<p5>>)._  <<BM22>>
 endif::[]
 
-{emptysec}
+*Hardware Components*::
+- **Pupil Labs Neon Glasses** — wearable eye-tracking devices capturing gaze data (eye images, gaze coordinates, egoview video).
+- **Neon Companion Smartphone App** — vendor application running on Android devices paired with Neon glasses, enabling recording and streaming via HTTP APIs.
+- **Central Camera (Centralview)** — a stationary camera capturing the shared scene, used as reference for projecting multiple egoviews into a common coordinate space.
+- **Instructor Laptop/Desktop** — used to run the dashboard and visualize real-time/post-session analytics.
+- **Networking Infrastructure** — classroom/local Wi-Fi or Ethernet enabling communication between multiple Neon devices, the backend server, and the dashboard.
+
+*Software/Framework Components*::
+- **SocialEyes Framework** — open-source reference implementation providing modules for data recording, streaming, homography projection, analysis, and visualization.
+- **Pupil Labs Real-time API** — API provided by Pupil Labs for remote data collection and device control.
+- **Pupil Cloud** — vendor’s online platform where recorded Neon data can be uploaded and downloaded for post-processing.
+- **Learning Management Systems (optional)** — possible external systems (e.g., Avenue) that may consume or integrate gaze analytics in future extensions.
+- **Survey/Feedback Tools (optional)** — tools for collecting qualitative learning outcome data (e.g., Google Forms) that can complement gaze data.
+
+*Collaboration and Development Tools*::
+- **GitHub** — used for version control, CI/CD pipelines, issue tracking, and project management.
+- **IDE (VS Code)** — primary integrated development environment for implementation.
+- **Docker/Containers** — containerization for running the SocialEyes stack across platforms.
+
+// [plantuml, env-context, png]
+// ----
+// @startuml
+// title Environment Context Diagram
+
+// actor Instructor
+// actor Student
+
+// rectangle "System (Analytics + Dashboard)" {
+//   rectangle "Instructor Dashboard (Frontend)" as dashboard
+//   rectangle "Backend + Processing Pipeline" as backend
+// }
+
+// rectangle "Pupil Labs Neon Glasses" as neon
+// rectangle "Neon Companion App (Android)" as neonapp
+// rectangle "Central Camera (Centralview)" as centralcam
+// rectangle "Pupil Labs Real-time API" as pupilapi
+// rectangle "Pupil Cloud (Optional)" as pupilcloud
+// rectangle "Survey Tools (Optional)" as surveys
+// rectangle "LMS / University Systems (Optional)" as lms
+
+// ' Connections
+// Student -down-> neon
+// neon -right-> neonapp
+// neonapp -right-> backend : Stream gaze/egoview data
+// centralcam -right-> backend : Centralview stream
+// pupilapi -down-> backend : Control / metadata
+// backend -right-> dashboard : Processed analytics
+// dashboard -right-> Instructor : Real-time insights
+// backend -down-> pupilcloud : Post-session upload
+// backend -down-> surveys : Import feedback data
+// backend -down-> lms : Possible future integration
+
+// @enduml
+// ----
+
+// The context diagram above illustrates the key components of the environment interacting with the system. The primary users are instructors and students, with the system comprising the analytics backend and the instructor dashboard. The Pupil Labs Neon glasses and companion app facilitate data collection, while the central camera provides a shared reference frame. Optional components include Pupil Cloud for post-session data management, survey tools for qualitative feedback, and potential integration with learning management systems.
