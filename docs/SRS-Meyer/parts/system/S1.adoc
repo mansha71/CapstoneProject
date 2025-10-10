@@ -5,4 +5,28 @@ ifdef::env-draft[]
 TIP: _Overall structure expressed by the list of major software and, if applicable, hardware parts._  <<BM22>>
 endif::[]
 
-{emptysec}
+The SocialEyes-based classroom analytics system has a modular, hardware-agnostic architecture that consists of data ingestion, processing, storage, and visualization components. It's supported by a containerized runtime and monitoring infrastructure. Together, these components enable synchronized collection, analysis, and visualization of multi-person gaze data in classroom settings.
+
+.SocialEyes System Architecture
+image::socialeyes-architecture.svg[width=100%]
+
+*Hardware Components*::
+- **Instructor Laptop/Desktop** - Serves as the host environment for backend services, database, and instructor dashboard. In the proof-of-concept stage, all software components may run locally; future deployments may use a dedicated local server or Docker container host for scalability.
+// - **[Optional: Local Server / Container Host]** - TBD with supervisors: confirm if deployment will require a separate machine for scalability or reproducibility.
+// - **[Optional: Central Camera]** - TBD with supervisors: confirm whether a shared classroom scene (centralview) feed will be incorporated for multi-person gaze alignment.
+
+*Software Components*::
+- **Data Ingestion Module** - Receives gaze data, eye images, and egoview streams from Pupil Labs Neon devices via the Neon Companion App API. Synchronizes inputs across devices using network time protocols (NTP) and optionally incorporates a central camera feed for shared-scene context.
+- **Data Processing & Analytics Module** - Filters noise, performs calibration corrections, and applies homography-based gaze mapping to project multiple viewers’ gaze into a shared coordinate space. Computes real-time attention metrics and post-session analytics such as heatmaps, entropy, and group engagement indicators.
+- **Backend Services** - Provides REST/GraphQL endpoints (e.g., Flask API) for data access and dashboard queries. Manages session lifecycle (start, stop, resume), enforces authentication and authorization policies, and interfaces with both storage and analytics modules.
+- **Database / Storage Layer** - Maintains raw gaze data, processed analytics, and session metadata. Supports both short-term storage for live visualization and long-term archival for post-session analysis. Initial prototypes will use SQLite or PostgreSQL, with optional integration to Pupil Cloud for offline processing.
+- **Instructor Dashboard (Frontend)** - Built with React and TypeScript, the dashboard displays real-time analytics (e.g., collective attention heatmaps) and post-session reports. Supports role-based access control for instructors and researchers, and allows data export for study documentation.
+// - **[Optional: Privacy/Anonymization Layer]** - TBD with supervisors: clarify if this will operate as a standalone subsystem (e.g., face masking, identifier stripping).
+// - **[Optional: External Integrations Module]** - TBD with supervisors: confirm future scope of integration with LMS platforms (e.g., Avenue) or external survey tools.
+
+*Supporting Infrastructure*::
+- **Authentication & Access Control** - Implements role-based user management for instructors and researchers, ensuring data access is limited and traceable.
+- **Error Logging & Monitoring** - Uses runtime monitoring (e.g., Grafana/Prometheus) to capture system health, API uptime, and data integrity metrics.
+- **Time Synchronization Service (NTP)** - Ensures consistent timestamps across all recording devices and servers for accurate multi-stream correlation.
+- **Deployment / Runtime Environment** - Employs Docker-based containerization for reproducibility and cross-platform deployment across Ubuntu, macOS, and Windows.
+// - **[Optional: Simulation/Test Harness]** - TBD with supervisors: replay recorded sessions to support validation, testing, and future development automation.

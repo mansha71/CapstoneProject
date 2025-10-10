@@ -1,4 +1,4 @@
-# Large Group Eye-Tracking
+# Large Group Eye-Tracking: Visionaries
 
 Developer Names: Ann Shi, Manan Sharma, Angela Zeng, Stanley Chen, Ibrahim Sahi
 

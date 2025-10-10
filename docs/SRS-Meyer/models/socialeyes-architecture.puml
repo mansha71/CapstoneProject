@@ -1,0 +1,49 @@
+@startuml
+title SocialEyes System Architecture
+
+' ======= LAYERS =======
+package "Hardware Layer" {
+  [Pupil Labs Neon Devices] as Neon
+  [Central Camera] as CentralCam
+}
+
+package "Software Layer" {
+  [GlassesRecord / GlassesStream] as Record
+  [CentralCam Module] as CamMod
+  [Homography Module] as Homography
+  [Analysis Module] as Analysis
+  [Visualization Module] as Visualization
+  [Flask Monitor / Dashboard] as Dashboard
+}
+
+package "Infrastructure Layer" {
+  [NTP Synchronization Service] as NTP
+  [Kafka Message Broker] as Kafka
+  [Local / Cloud Storage] as Storage
+  [Authentication & Access Control] as Auth
+  [Monitoring & Logging] as Monitor
+  [Docker Runtime Environment] as Docker
+}
+
+' ======= DATA FLOWS =======
+Neon --> Record : Gaze + Egoview Streams
+CentralCam --> CamMod : Centralview Video
+Record --> Homography : Synced Eye + Egoview Data
+CamMod --> Homography : Central Scene Frames
+Homography --> Analysis : Mapped Gaze Coordinates
+Analysis --> Visualization : Metrics + Processed Results
+Visualization --> Dashboard : Heatmaps + Engagement Reports
+Dashboard --> Storage : Save Processed Sessions
+Analysis --> Storage : Post-Session Data
+Record --> Storage : Raw Recordings
+CamMod --> Storage : Centralview Video
+
+' ======= INFRASTRUCTURE LINKS =======
+NTP --> Record : Time Alignment
+NTP --> CamMod
+Kafka --> Record : Real-time Stream Handling
+Kafka --> Dashboard : Live Data Relay
+Auth --> Dashboard : User Roles
+Monitor --> Dashboard : System Health
+Docker -[hidden]-> Dashboard
+@enduml

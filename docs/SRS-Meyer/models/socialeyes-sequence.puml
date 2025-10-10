@@ -1,0 +1,41 @@
+@startuml
+title SocialEyes Data Flow During Classroom Session (Recording / Streaming Mode)
+
+' === PARTICIPANTS ===
+actor "Instructor" as Instructor
+participant "Pupil Labs Neon Device" as Neon
+participant "Central Camera" as Cam
+participant "GlassesRecord / GlassesStream" as Record
+participant "CentralCam Module" as CamMod
+participant "Homography Module" as Homography
+participant "Analysis Module" as Analysis
+participant "Visualization Module" as Visualization
+participant "Flask Backend / Dashboard" as Dashboard
+database "Local / Cloud Storage" as Storage
+
+' === DATA CAPTURE ===
+Instructor -> Neon : Start session via TUI / command
+Neon -> Record : Stream gaze + egoview data (HTTP)
+Cam -> CamMod : Stream centralview (RTSP)
+Record -> Record : Time-sync via NTP\n(Session IDs assigned)
+
+' === DATA INGESTION ===
+Record -> Homography : Forward synchronized gaze + egoview frames
+CamMod -> Homography : Send corresponding centralview frames
+Homography -> Homography : Perform spatial alignment (Homography mapping)
+
+' === DATA PROCESSING & ANALYTICS ===
+Homography -> Analysis : Mapped gaze data
+Analysis -> Analysis : Compute metrics (entropy, velocity, attention zones)
+Analysis -> Visualization : Pass processed results for rendering
+
+' === VISUALIZATION & DASHBOARD ===
+Visualization -> Dashboard : Generate heatmaps + engagement overlays
+Dashboard -> Instructor : Display real-time attention analytics
+Dashboard -> Storage : Save session data (raw + processed)
+
+' === POST-SESSION ===
+Instructor -> Dashboard : Request post-session report
+Dashboard -> Storage : Retrieve archived analytics
+Dashboard -> Instructor : Present summary + insights
+@enduml
