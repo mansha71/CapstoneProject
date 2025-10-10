@@ -55,27 +55,35 @@ Date2 & Name(s) & Description of changes\\
 
 \section{Introduction}
 
-\wss{You can include your definition of what a hazard is here.}
+The following document contains an overview of the hazards highlighted in the Large-Group Eye-Tracking Capstone Project. For the purposes of this document, a hazard is (based on the work of Nancy Leveson) defined as any aspect or property of this project which causes harm, damage or loss in the environment the system inhabits. This document identifies key hazards involved, and uses the Failure Modes and Effects Analysis (FMEA) method to analyze them and their respective impacts on the system. 
 
 \section{Scope and Purpose of Hazard Analysis}
 
-\wss{You should say what \textbf{loss} could be incurred because of the
-hazards.}
+The purpose of this Hazard Analysis is identifying system properties which may cause harm to stakeholders. In order to narrow the scope of this assessment, the following potential losses have been highlighted:
+\begin{itemize}
+    \item Privacy: unauthorized access, re-identification, misuse of gaze data
+    \item Participant discomfort
+    \item Data inaccuracy: invalid findings and conclusions
+    \item Loss of stakeholder value: instructors receiving inaccurate or unusable real-time data
+    \item Disrupting live classroom activities
+    \end{itemize}
 
 \section{System Boundaries and Components}
 
-\wss{Dividing the system into components will help you brainstorm the hazards.
-You shouldn't do a full design of the components, just get a feel for the major
-ones.  For projects that involve hardware, the components will typically include
-each individual piece of hardware.  If your software will have a database, or an
-important library, these are also potential components.}
+The proposed system is a learning platform that integrates large-group eye tracking with classroom activities, allowing instructors to view aggregated gaze information in real time and after class. To perform a meaningful hazard analysis, the system is divided into the following components:\\
+\textbf{Data Collection (Eye Tracking)}\\
+The core of this project is the data retrieved using the Eye Tracking hardware, specifically in a classroom setting. This first component includes both the tracking devices, as well as associated software used to record and store the data. A combination of the visual stimuli in the classroom (i.e. slideshows on a projected screen) and the eye movements of multiple students are used to return raw gaze data.\\
+\textbf{Supplementary Data (Student Survey)}\\
+A self-report style survey will be used to gather supplementary data from participants, such as demographics, learning-related disabilities and behavioural traits. Student-entered responses to pre- and post-lecture questionnaires will be converted to a structured supplementary dataset, linked to the central eye-tracking data.\\
+\textbf{Data Analysis (Mapping Gaze Data)}\\
+In this component, the raw gaze data is processed and mapped to the visual stimulus to determine attention patterns, creating quantitative results which can be visualized in real-time. When assessing this alongside the supplementary data, more specific correlations can be determined.\\
+\textbf{Dashboards (Instructor Visualization Interfaces)}\\
+This component can be broken up into two further components: visual outputs to instructors in real time (during class), and afterward (for review). The processed and analysed outputs are translated to interactive and easily interpretable visualizations.
+
 
 \section{Critical Assumptions}
 
-\wss{These assumptions that are made about the software or system.  You should
-minimize the number of assumptions that remove potential hazards.  For instance,
-you could assume a part will never fail, but it is generally better to include
-this potential failure mode.}
+This analysis assumes that the eye-tracking hardware functions reliably and that hardware-level failures are out of scope. It also assumes that the network and server infrastructure are stable and secure, with standard IT reliability already in place.
 
 \section{Failure Mode and Effect Analysis}
 
