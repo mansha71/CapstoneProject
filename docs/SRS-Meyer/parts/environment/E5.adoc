@@ -6,4 +6,28 @@ TIP: _Elements and properties of the environment that the system will affect. It
 endif::[]
 
 
-{emptysec}
+The following subsections describe the anticipated effects of the SocialEyes system on its surrounding environment.
+
+*On Instructors*::
+- Instructors will gain access to real-time visualizations of student attention, enabling adaptive instructional strategies during live sessions.
+- Post-session analytics will provide instructors with new data sources for evaluating engagement and participation trends.
+
+*On Students*::
+- Students’ gaze data will be collected during classroom sessions, raising considerations regarding privacy and observation.
+- Students may experience indirect changes in teaching methods as instructors respond to engagement data (e.g., adjusting pacing, focus, or activities).
+- Participation in gaze tracking may slightly alter student behavior (Hawthorne effect).
+
+*On Classroom Dynamics*::
+- The system may shift classroom norms by making engagement more observable and measurable.
+- The presence of wearable eye-tracking devices may influence how students interact with one another and with the instructor.
+
+*On Institutional Processes*::
+- Universities may need to establish or update data governance policies for the secure handling of gaze data and analytics.
+- Research ethics compliance processes may expand to include gaze-based analytics as part of study review and approval.
+
+*On Technical Environment*::
+- Network and local storage usage in classrooms will increase due to simultaneous streaming and recording of gaze and egoview data.
+- Classroom audiovisual setups may require integration of additional components such as a central camera and backend server equipment.
+
+*On Future Research and Innovation*::
+- The collected datasets may enable new research directions in learning analytics, social gaze dynamics, and multimodal attention analysis.

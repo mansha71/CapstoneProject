@@ -1,7 +1,7 @@
-Author 1 <a1@mcmaster.ca>; Author 2 <a2@mcmaster.ca>
-:project-title: Our Awesome Project
-:course-number: SE/CS 3RA3
+Angela Zeng <zenga8@mcmaster.ca>; Ann Shi <shia15@mcmaster.ca>; Ibrahim Sahi <sahia8@mcmaster.ca>; Manan Sharma <sharmm88@mcmaster.ca>; Stanley Chen <chens313@mcmaster.ca>
+:project-title: Visionaries
+:course-number: 4G06
 :course-term: Fall
 :revnumber: 1
-:milestone: 4
+:milestone: 2
 :env-draft:

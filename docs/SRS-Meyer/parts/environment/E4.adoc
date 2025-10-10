@@ -6,5 +6,27 @@ TIP: _Properties of the environment that may be assumed, with the goal of facili
 endif::[]
 
 
-{emptysec}
+*Classroom and Connectivity*::
+- A stable wireless network will be available in the classroom to connect eye-tracking devices to the backend.
+- Network latency and bandwidth are expected to remain within acceptable thresholds for real-time analytics (*exact thresholds to be determined during testing*).
 
+*Hardware Availability*::
+- Each student participant will be equipped with a functional pair of Pupil Labs Neon glasses paired with a smartphone running the Neon Companion App.
+- The instructor will have access to a laptop or desktop capable of running the dashboard and backend software.
+
+*Data and Usage*::
+- All participants will provide informed consent for gaze data collection as part of the research protocol.
+- Gaze data quality will be sufficient for analysis, assuming minimal calibration drift and device malfunction.
+- The volume of gaze data generated per session will remain within local storage limits (< *TBD* GB) and post-processing time (< *TBD* minutes per hour of recording*).
+
+*Software and Frameworks*::
+- The SocialEyes framework will remain available and maintainable during the course of the project.
+- Dependencies such as the Pupil Labs API, Docker, and Python libraries will continue to be supported and compatible with the project environment.
+- Supervisors and stakeholders accept the use of open-source components under non-commercial research licenses.
+
+*Operational Context*::
+- Classroom activities will be structured in ways that make gaze analysis meaningful (e.g., students facing a shared display or instructor).
+- The system will be used primarily in controlled classroom or lab settings, not in large-scale public venues.
+- Users (instructors) will possess sufficient technical literacy to operate the dashboard without specialized training.
+
+If any of these assumptions fail to hold (ex. unstable network connectivity or deprecated dependencies), appropriate mitigation or contingency actions will be defined during validation and integration testing.

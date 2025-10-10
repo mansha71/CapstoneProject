@@ -1,0 +1,32 @@
+@startuml
+title Environment Context Diagram - SocialEyes System
+
+actor Instructor
+actor Student
+
+rectangle "SocialEyes System" as system {
+  rectangle "Instructor Dashboard (Frontend)" as dashboard
+  rectangle "Analytics + Backend Services" as backend
+}
+
+rectangle "Pupil Labs Neon Glasses" as neon
+rectangle "Neon Companion App (Android)" as neonapp
+rectangle "Central Camera (Centralview)" as centralcam
+rectangle "Pupil Labs Real-time API" as pupilapi
+rectangle "Pupil Cloud (Optional)" as pupilcloud
+rectangle "Survey Tools (Optional)" as surveys
+rectangle "Learning Management System (Optional)" as lms
+
+' Relationships
+Student -down-> neon : Wear / Record Gaze Data
+neon -right-> neonapp : Pairing / Data Streaming
+neonapp -right-> backend : Gaze + Egoview Streams (HTTP API)
+centralcam -right-> backend : Centralview Video (Optional)
+pupilapi -down-> backend : Control + Metadata API
+backend -right-> dashboard : Processed Analytics
+dashboard -right-> Instructor : Visualization + Reports
+backend -down-> pupilcloud : Post-Session Upload (Optional)
+backend -down-> surveys : Import Feedback Data (Optional)
+backend -down-> lms : Analytics Integration (Optional)
+
+@enduml

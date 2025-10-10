@@ -5,4 +5,183 @@ ifdef::env-draft[]
 TIP: _**This is the bulk of the System book, describing elements of functionality (behaviors)**. This chapter corresponds to the traditional view of requirements as defining "**what the system does**”. It is organized as one section, S.2.n, for each of the components identified in <<s1>>, describing the corresponding behaviors (functional and non-functional properties)._  <<BM22>>
 endif::[]
 
-{emptysec}
+The SocialEyes-based system operates in two primary modes: a recording mode for offline data collection and post-hoc analysis, and a streaming mode for real-time data processing and visualization. Each component contributes to these modes to enable synchronized multi-person gaze analytics, storage, and visualization for classroom environments.
+
+The system’s functionality is organized according to its major components, as described in <<s1>>. Each subsection defines the principal behaviors (functional and non-functional) of that component.
+
+==== Functional Requirements
+
+The following tables enumerate the functional requirements (FRs) of the SocialEyes system.  
+Requirements are categorized according to implementation phase:
+
+* **Rev 0 Functional Requirements** – essential capabilities forming the proof-of-concept deliverable (single-device ingestion, basic analytics, and dashboard visualization).  
+* **Stretch / Future Functional Requirements** – enhancements planned for Rev 1 or later (multi-device scaling, additional roles, and extended analytics).
+
+Each requirement corresponds to one or more components described in <<s1>> and detailed in sections S.2.1–S.2.6.  
+Each entry includes a short *Rationale* describing its purpose or necessity.
+
+===== Data Acquisition and Ingestion
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| FR-1 | The system shall support two operational modes: (a) Recording mode for offline data capture and post-hoc analysis, and (b) Streaming mode for real-time data processing and visualization. | Enables both real-time classroom monitoring and offline analysis, providing flexibility for research and proof-of-concept testing.  
+| FR-2 | The system shall allow an instructor to initiate, pause, resume, and terminate classroom recording sessions via the dashboard or command-line interface. | Gives instructors operational control during lectures, ensuring ethical compliance and preventing unintended data collection.  
+| FR-3 | The system shall connect to a Pupil Labs Neon device through the Neon Companion App API and collect synchronized gaze, eye, and egocentric view (egoview) video data. | Provides the core input pipeline for all downstream analytics, using the officially supported vendor API for stability.  
+| FR-5 | The system shall synchronize incoming data streams using the Time Synchronization Service (NTP) to maintain consistent timestamps across devices. | Ensures temporal alignment of gaze and video data, which is essential for accurate gaze projection and group analysis.  
+| FR-6 | The system shall resume data collection within 5 seconds after a transient connection loss is detected. | Ensures continuity of recordings when short-term connectivity issues occur, allowing uninterrupted data capture during sessions. 
+|===
+
+===== Data Processing and Analytics
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| FR-7 | The system shall perform data filtering and calibration correction to remove noise, blinks, and miscalibrations in gaze and video streams. | Improves data quality to ensure that computed attention metrics are reliable and representative of true gaze behavior.  
+| FR-8 | The system shall apply homography-based gaze mapping to project gaze points from the egoview to the shared central camera coordinate space. | Enables multi-person gaze alignment in a shared scene, which is foundational for classroom-wide engagement visualization.  
+| FR-9 | The system shall compute real-time engagement and attention metrics, including gaze velocity, entropy, and normalized contour area. | Transforms raw gaze data into interpretable analytics, supporting real-time instructional feedback and research insights.  
+| FR-10 | The system shall generate post-session summary analytics, including heatmaps, time-series graphs, and participant-level statistics. | Provides instructors and researchers with aggregated results for reflection, evaluation, and long-term study of learning patterns.  
+| FR-24 | The system shall allow replay of recorded sessions to verify synchronization accuracy and re-run analytics for validation purposes. | Supports verification and debugging of synchronization and algorithmic accuracy, facilitating iterative system improvement.  
+|===
+
+===== Data Management and Backend Services
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| FR-11 | The system shall store raw and processed data in a local database (SQLite or PostgreSQL) and support optional upload to Pupil Cloud. | Ensures secure, persistent data storage with flexibility for both local development and cloud-based post-processing.  
+| FR-12 | The system shall ensure that each session includes metadata such as timestamp, participant ID, and session ID. | Enables traceability between raw data, analytics, and reports, and supports ethical recordkeeping of anonymized participants.  
+| FR-13 | The system shall expose REST or GraphQL APIs (via Flask) for analytics retrieval and session management. | Allows the dashboard and external tools to query analytics programmatically, ensuring modularity and extensibility.  
+| FR-22 | The system shall maintain traceability of session data, linking raw data, analytics, and reports via unique session identifiers. | Guarantees data provenance and reproducibility, which are critical for academic research validation.  
+| FR-23 | The system shall allow users to modify operational parameters (e.g., device ID, data directory, export format) through configuration files or dashboard settings. | Provides flexible setup for various classroom and research environments without requiring code changes. 
+|===
+
+===== Visualization and Dashboard Interface
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| FR-14 | The system shall enforce role-based authentication and authorization, permitting access only to approved users (e.g., instructor). | Protects sensitive classroom data and enforces ethical data access control consistent with research policies.  
+| FR-15 | The dashboard shall display real-time visual analytics, including heatmaps, attention indicators, and engagement metrics. | Provides instructors with immediate, actionable feedback on student engagement during lectures.  
+| FR-16 | The dashboard shall allow users to export post-session analytics and visualizations in common formats (CSV, JSON, PNG). | Facilitates sharing of results for research analysis, record-keeping, and reporting.  
+|===
+
+===== Supporting Infrastructure and Deployment
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| FR-18 | The system shall log runtime events and performance metrics in a persistent monitoring interface (e.g., Prometheus/Grafana). | Enables diagnostics, error detection, and long-term performance monitoring across classroom sessions.  
+| FR-19 | The system shall employ Dockerized containers for packaging and deployment. | Provides a consistent, isolated environment for building, testing, and running the SocialEyes system.  
+| FR-20 | The system shall include continuous integration (CI/CD) pipelines to automatically execute build, lint, and test workflows prior to deployment. | Promotes maintainability and code quality, reducing risk of regressions across updates.  
+|===
+
+---
+
+==== Stretch Functional Requirements
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| FR-4 | The system shall optionally support integration with an external Central Camera video feed (e.g., USB or RTSP stream) to capture a shared classroom scene for multi-person gaze alignment. [Software stretch goal – hardware camera setup assumed external to system.] | Enables scaling from single-device to multi-person analysis, supporting richer collaborative gaze insights.  
+| FR-17 | The system shall provide separate role-based views for instructors and researchers, limiting access according to role permissions. | Enhances usability and compliance by tailoring interface access to user responsibilities.  
+| FR-21 | The system shall implement privacy and anonymization features, including masking of identifiable faces or eye images in exported visualizations. | Ensures ethical compliance and participant anonymity when sharing or presenting visual data.  
+| FR-25 | The system shall support scaling to multiple Pupil Labs Neon devices (target ≥ 10) during live streaming, maintaining inter-device synchronization accuracy within ± 20 ms, consistent with benchmarks established in the SocialEyes reference framework [subject to validation during Rev 1 testing]. | Expands classroom-scale functionality, validating the SocialEyes framework’s scalability in real-world educational settings.  
+|===
+
+==== Non-Functional Requirements
+
+The following non-functional requirements define qualitative properties that our work on the SocialEyes system must meet.
+They specify the performance, reliability, usability, security, and maintainability targets associated with the functional behaviour described above.
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| NFR-1 | Real-time gaze data shall be processed and visualized with an end-to-end latency of *TBD* seconds (expected ≤ 1 s, as per SocialEyes benchmark). | Ensures instructors receive timely engagement feedback during classroom activities.  
+| NFR-2 | The system shall maintain an update frequency of *TBD* Hz for live gaze visualization (SocialEyes implementation demonstrated ~20 Hz rendering). | Provides smooth real-time rendering suitable for classroom demonstrations.  
+| NFR-3 | During multi-device operation, synchronization accuracy shall remain within ± 20 ms across all devices. | Preserves precise temporal alignment for multi-person gaze analysis, consistent with SocialEyes reference results.  
+| NFR-4 | The data-streaming pipeline shall tolerate network jitter of up to *TBD* ms without dropping more than *TBD %* of packets. | Supports robustness under variable Wi-Fi conditions expected in classroom environments.  
+| NFR-5 | System reliability shall ensure automatic recovery from transient device disconnections without data corruption (target reconnection time *TBD s*). | Maintains continuous recording sessions in live environments.  
+| NFR-6 | The system shall achieve *TBD %* uptime during scheduled classroom sessions. | Guarantees dependable operation throughout lectures.  
+| NFR-7 | Dashboard interface shall be operable by a first-time instructor with ≤ *TBD minutes* of onboarding. | Ensures intuitive usability for non-technical users.  
+| NFR-8 | Interface elements shall maintain legible contrast ratios meeting *TBD* accessibility standard (e.g., WCAG AA). | Promotes accessibility in varied classroom lighting.  
+| NFR-9 | All network communication shall use encrypted protocols (HTTPS or equivalent). | Protects participant data during streaming and storage.  
+| NFR-10 | All analytics and dashboard endpoints shall require authenticated access using role-based access control (RBAC). | Prevents unauthorized access to classroom data.  
+| NFR-11 | Gaze and video data shall be stored only in anonymized form; identifiers replaced by pseudonyms or session IDs. | Complies with institutional research-ethics requirements.  
+| NFR-12 | Deployment must operate correctly on Windows, macOS, and Ubuntu platforms via Docker containers. | Ensures portability and reproducibility across environments, as described in the Development Plan.  
+| NFR-13 | Source code shall conform to ESLint/Prettier (JavaScript) and PEP 8 (Python) standards. | Maintains consistent style and readability across modules.  
+| NFR-14 | CI/CD pipelines shall automatically run linting, build, and unit tests on every pull request. | Detects regressions early and enforces code quality.  
+| NFR-15 | Configuration shall be externalized in environment files and never hard-coded. | Increases security and deployment flexibility.  
+| NFR-16 | The architecture shall support scaling to at least 10 simultaneous devices without exceeding ± 20 ms synchronization error. | Enables future classroom-scale studies using multiple Neons, matching SocialEyes benchmarks.  
+| NFR-17 | Storage systems shall retain timestamp accuracy within ± 1 frame (≈ 33 ms) and ensure ACID transactional integrity. | Guarantees valid time-series analysis and prevents partial data corruption.  
+| NFR-18 | The system shall accommodate up to *TBD GB* of data per session without performance degradation. | Supports multi-hour recordings for research analysis.  
+| NFR-19 | All software components shall remain compliant with their respective open-source licenses, including NCRL-1.0 for the SocialEyes framework. | Ensures legal and ethical use in academic research.  
+| NFR-20 | The system shall restrict use to non-commercial research contexts. | Aligns with licensing and institutional ethics policies.  
+|===
+
+.Data Flow Sequence During Classroom Session
+image::socialeyes-sequence.svg[width=100%, alt="Data Flow Sequence During Classroom Session"]
+This sequence diagram illustrates the flow of data during both recording (offline) and streaming (real-time) modes, showing how gaze, video, and analytics information move between the system’s major components.
+
+
+[#s2.1]
+==== (S.2.1) Data Ingestion Module
+- Collects gaze coordinates, eye images, and egoview video streams from Pupil Labs Neon devices via the Neon Companion App API.
+- Operates in both recording (offline storage) and streaming (real-time transmission) modes.
+- Uses Network Time Protocol (NTP) to synchronize timestamps across multiple devices for accurate multi-stream alignment.
+- Supports ingestion of a central camera feed (centralview) to provide a shared classroom scene for homography-based mapping.
+- Employs Kafka producers for low-latency data streaming and fault-tolerant buffering in real-time mode.
+- Detects and recovers from connection issues such as device dropouts or packet loss.
+// - [TBD with supervisors: Confirm need for integration with Central Camera feed and multi-device scaling for initial proof-of-concept.]
+
+[#s2.2]
+==== (S.2.2) Data Processing & Analytics
+- Performs data filtering (noise reduction, blink removal) and calibration corrections on incoming gaze and video streams.
+- Executes homography-based gaze projection, mapping each viewer’s egoview gaze data onto the shared central camera view.
+- Computes both real-time and post-session metrics, including gaze velocity, entropy, heatmap similarity, and normalized contour area to quantify attention and engagement.
+- Generates heatmaps, visual overlays, and summary statistics for collective gaze behavior analysis.
+- Balances computational efficiency and accuracy through lightweight algorithms suitable for classroom-scale use.
+// - [TBD with supervisors: Define privacy/anonymization requirements (e.g., masking faces or anonymizing device identifiers).]
+
+[#s2.3]
+==== (S.2.3) Backend Services
+- Hosts REST/GraphQL APIs (via Flask) for dashboard communication, session management, and data retrieval.
+- Manages session lifecycle operations such as start, stop, and resume.
+- Integrates with Kafka consumers to process real-time streams and forward processed results to the dashboard and analytics modules.
+- Enforces authentication and authorization for all API requests and role-based access.
+- Provides a Flask-based monitoring interface for real-time verification of data integrity, device status, and stream quality.
+- Supports automated build, linting, and test pipelines through GitHub Actions CI/CD for continuous delivery.
+// - [TBD with supervisors: Confirm scope of external integrations (e.g., Pupil Cloud synchronization, LMS links) in Rev 0 vs later milestones.]
+
+[#s2.4]
+==== (S.2.4) Database / Storage
+- Stores synchronized gaze data, egoview and centralview recordings, and derived analytics outputs.
+- Supports both local databases (SQLite or PostgreSQL) for development and remote storage (Pupil Cloud) for post-processing.
+- Enables real-time data access for visualization while maintaining persistence for post-session replay and analysis.
+- Implements configurable retention and anonymization policies to protect participant data and comply with ethical guidelines.
+// - [TBD with supervisors: Determine whether long-term archival or only short-term proof-of-concept storage is required.]
+
+[#s2.5]
+==== (S.2.5) Instructor Dashboard (Frontend)
+- Provides an intuitive React + TypeScript interface for instructors and researchers to visualize gaze analytics.
+- Displays real-time heatmaps, focus indicators, and group engagement metrics generated by the Analytics module.
+- Presents post-session summaries and trend reports for comparative study of classroom attention patterns.
+- Supports role-based access control and secure login consistent with backend authentication.
+- Allows data and report export (e.g., CSV, JSON, or graphical formats) for documentation and further research.
+// - [TBD with supervisors: Confirm whether LMS integration (e.g., Avenue to Learn) or external data export is required at this stage.]
+
+[#s2.6]
+==== (S.2.6) Supporting Infrastructure
+- Authentication & Access Control: Implements secure login, session tokens, and role-based user management for instructors and researchers.
+- Error Logging & Monitoring: Collects system health metrics, stream latency, and runtime errors using integrated Grafana/Prometheus dashboards.
+- Time Synchronization Service (NTP): Ensures uniform timestamps across all devices, enabling consistent temporal alignment in analytics.
+- Deployment / Runtime Environment: Utilizes Docker containers for reproducibility, isolated builds, and cross-platform deployment.
+- Continuous Integration (CI/CD): Automates testing, linting, and deployment workflows using GitHub Actions to maintain code quality.
+// - [Optional Simulation/Test Harness] - TBD with supervisors: develop replay utilities to simulate recorded sessions for verification and future testing.
