@@ -30,7 +30,7 @@ Each entry includes a short *Rationale* describing its purpose or necessity.
 | FR-2 | The system shall allow an instructor to initiate, pause, resume, and terminate classroom recording sessions via the dashboard or command-line interface. | Gives instructors operational control during lectures, ensuring ethical compliance and preventing unintended data collection.  
 | FR-3 | The system shall connect to a Pupil Labs Neon device through the Neon Companion App API and collect synchronized gaze, eye, and egocentric view (egoview) video data. | Provides the core input pipeline for all downstream analytics, using the officially supported vendor API for stability.  
 | FR-5 | The system shall synchronize incoming data streams using the Time Synchronization Service (NTP) to maintain consistent timestamps across devices. | Ensures temporal alignment of gaze and video data, which is essential for accurate gaze projection and group analysis.  
-| FR-6 | The system shall recover from transient connection losses by automatically resuming data collection within 5 seconds of detection. | Maintains continuity of recordings in environments with unstable Wi-Fi, minimizing data loss and session interruptions.  
+| FR-6 | The system shall resume data collection within 5 seconds after a transient connection loss is detected. | Ensures continuity of recordings when short-term connectivity issues occur, allowing uninterrupted data capture during sessions. 
 |===
 
 ===== Data Processing and Analytics
@@ -56,7 +56,7 @@ Each entry includes a short *Rationale* describing its purpose or necessity.
 | FR-12 | The system shall ensure that each session includes metadata such as timestamp, participant ID, and session ID. | Enables traceability between raw data, analytics, and reports, and supports ethical recordkeeping of anonymized participants.  
 | FR-13 | The system shall expose REST or GraphQL APIs (via Flask) for analytics retrieval and session management. | Allows the dashboard and external tools to query analytics programmatically, ensuring modularity and extensibility.  
 | FR-22 | The system shall maintain traceability of session data, linking raw data, analytics, and reports via unique session identifiers. | Guarantees data provenance and reproducibility, which are critical for academic research validation.  
-| FR-23 | The system shall support basic configuration options (e.g., device ID, data directory, export format) accessible via configuration files or dashboard settings. | Provides flexibility for deployment in diverse classroom setups without altering source code.  
+| FR-23 | The system shall allow users to modify operational parameters (e.g., device ID, data directory, export format) through configuration files or dashboard settings. | Provides flexible setup for various classroom and research environments without requiring code changes. 
 |===
 
 ===== Visualization and Dashboard Interface
@@ -77,7 +77,7 @@ Each entry includes a short *Rationale* describing its purpose or necessity.
 | ID | Requirement | Rationale
 
 | FR-18 | The system shall log runtime events and performance metrics in a persistent monitoring interface (e.g., Prometheus/Grafana). | Enables diagnostics, error detection, and long-term performance monitoring across classroom sessions.  
-| FR-19 | The system shall employ Dockerized containers for consistent and reproducible deployment across platforms. | Simplifies deployment for multiple developers and ensures reproducibility of test environments.  
+| FR-19 | The system shall employ Dockerized containers for packaging and deployment. | Provides a consistent, isolated environment for building, testing, and running the SocialEyes system.  
 | FR-20 | The system shall include continuous integration (CI/CD) pipelines to automatically execute build, lint, and test workflows prior to deployment. | Promotes maintainability and code quality, reducing risk of regressions across updates.  
 |===
 
@@ -93,6 +93,37 @@ Each entry includes a short *Rationale* describing its purpose or necessity.
 | FR-17 | The system shall provide separate role-based views for instructors and researchers, limiting access according to role permissions. | Enhances usability and compliance by tailoring interface access to user responsibilities.  
 | FR-21 | The system shall implement privacy and anonymization features, including masking of identifiable faces or eye images in exported visualizations. | Ensures ethical compliance and participant anonymity when sharing or presenting visual data.  
 | FR-25 | The system shall support scaling to multiple Pupil Labs Neon devices (target ≥ 10) during live streaming, maintaining inter-device synchronization accuracy within ± 20 ms, consistent with benchmarks established in the SocialEyes reference framework [subject to validation during Rev 1 testing]. | Expands classroom-scale functionality, validating the SocialEyes framework’s scalability in real-world educational settings.  
+|===
+
+==== Non-Functional Requirements
+
+The following non-functional requirements define qualitative properties that our work on the SocialEyes system must meet.
+They specify the performance, reliability, usability, security, and maintainability targets associated with the functional behaviour described above.
+
+[cols="1,3,3",options="header"]
+|===
+| ID | Requirement | Rationale
+
+| NFR-1 | Real-time gaze data shall be processed and visualized with an end-to-end latency of *TBD* seconds (expected ≤ 1 s, as per SocialEyes benchmark). | Ensures instructors receive timely engagement feedback during classroom activities.  
+| NFR-2 | The system shall maintain an update frequency of *TBD* Hz for live gaze visualization (SocialEyes implementation demonstrated ~20 Hz rendering). | Provides smooth real-time rendering suitable for classroom demonstrations.  
+| NFR-3 | During multi-device operation, synchronization accuracy shall remain within ± 20 ms across all devices. | Preserves precise temporal alignment for multi-person gaze analysis, consistent with SocialEyes reference results.  
+| NFR-4 | The data-streaming pipeline shall tolerate network jitter of up to *TBD* ms without dropping more than *TBD %* of packets. | Supports robustness under variable Wi-Fi conditions expected in classroom environments.  
+| NFR-5 | System reliability shall ensure automatic recovery from transient device disconnections without data corruption (target reconnection time *TBD s*). | Maintains continuous recording sessions in live environments.  
+| NFR-6 | The system shall achieve *TBD %* uptime during scheduled classroom sessions. | Guarantees dependable operation throughout lectures.  
+| NFR-7 | Dashboard interface shall be operable by a first-time instructor with ≤ *TBD minutes* of onboarding. | Ensures intuitive usability for non-technical users.  
+| NFR-8 | Interface elements shall maintain legible contrast ratios meeting *TBD* accessibility standard (e.g., WCAG AA). | Promotes accessibility in varied classroom lighting.  
+| NFR-9 | All network communication shall use encrypted protocols (HTTPS or equivalent). | Protects participant data during streaming and storage.  
+| NFR-10 | All analytics and dashboard endpoints shall require authenticated access using role-based access control (RBAC). | Prevents unauthorized access to classroom data.  
+| NFR-11 | Gaze and video data shall be stored only in anonymized form; identifiers replaced by pseudonyms or session IDs. | Complies with institutional research-ethics requirements.  
+| NFR-12 | Deployment must operate correctly on Windows, macOS, and Ubuntu platforms via Docker containers. | Ensures portability and reproducibility across environments, as described in the Development Plan.  
+| NFR-13 | Source code shall conform to ESLint/Prettier (JavaScript) and PEP 8 (Python) standards. | Maintains consistent style and readability across modules.  
+| NFR-14 | CI/CD pipelines shall automatically run linting, build, and unit tests on every pull request. | Detects regressions early and enforces code quality.  
+| NFR-15 | Configuration shall be externalized in environment files and never hard-coded. | Increases security and deployment flexibility.  
+| NFR-16 | The architecture shall support scaling to at least 10 simultaneous devices without exceeding ± 20 ms synchronization error. | Enables future classroom-scale studies using multiple Neons, matching SocialEyes benchmarks.  
+| NFR-17 | Storage systems shall retain timestamp accuracy within ± 1 frame (≈ 33 ms) and ensure ACID transactional integrity. | Guarantees valid time-series analysis and prevents partial data corruption.  
+| NFR-18 | The system shall accommodate up to *TBD GB* of data per session without performance degradation. | Supports multi-hour recordings for research analysis.  
+| NFR-19 | All software components shall remain compliant with their respective open-source licenses, including NCRL-1.0 for the SocialEyes framework. | Ensures legal and ethical use in academic research.  
+| NFR-20 | The system shall restrict use to non-commercial research contexts. | Aligns with licensing and institutional ethics policies.  
 |===
 
 .Data Flow Sequence During Classroom Session
