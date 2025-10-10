@@ -2,6 +2,8 @@
 
 NOTE: _The Environment book describes the application domain and external context, physical or virtual (or a mix), in which the system will operate._ <<BM22>>
 
+NOTE: Quantitative values marked *TBD* will be confirmed through supervisor guidance and testing during Rev-0 validation.
+
 include::control.adoc[]
 
 include::E1.adoc[]
