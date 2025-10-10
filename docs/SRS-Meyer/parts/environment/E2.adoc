@@ -5,6 +5,8 @@ ifdef::env-draft[]
 TIP: _List of elements of the environment that may affect or be affected by the system and project. It includes other systems to which the system must be interfaced. These components may include existing systems, particularly software systems, with which the system will interact — by using their APIs (program interfaces), or by providing APIs to them, or both. These are interfaces provided to the system from the outside world. They are distinct from both: interfaces provided by the system to the outside world (<<s3>>); and technology elements that the system's development will require (<<p5>>)._  <<BM22>>
 endif::[]
 
+The environment surrounding the SocialEyes system consists of physical devices, external software services, and supporting development tools that interact with or influence the system during operation.
+
 *Hardware Components*::
 - **Pupil Labs Neon Glasses** — wearable eye-tracking devices capturing gaze data (eye images, gaze coordinates, egoview video).
 - **Neon Companion Smartphone App** — vendor application running on Android devices paired with Neon glasses, enabling recording and streaming via HTTP APIs.
@@ -24,40 +26,9 @@ endif::[]
 - **IDE (VS Code)** — primary integrated development environment for implementation.
 - **Docker/Containers** — containerization for running the SocialEyes stack across platforms.
 
-// [plantuml, env-context, png]
-// ----
-// @startuml
-// title Environment Context Diagram
-
-// actor Instructor
-// actor Student
-
-// rectangle "System (Analytics + Dashboard)" {
-//   rectangle "Instructor Dashboard (Frontend)" as dashboard
-//   rectangle "Backend + Processing Pipeline" as backend
-// }
-
-// rectangle "Pupil Labs Neon Glasses" as neon
-// rectangle "Neon Companion App (Android)" as neonapp
-// rectangle "Central Camera (Centralview)" as centralcam
-// rectangle "Pupil Labs Real-time API" as pupilapi
-// rectangle "Pupil Cloud (Optional)" as pupilcloud
-// rectangle "Survey Tools (Optional)" as surveys
-// rectangle "LMS / University Systems (Optional)" as lms
-
-// ' Connections
-// Student -down-> neon
-// neon -right-> neonapp
-// neonapp -right-> backend : Stream gaze/egoview data
-// centralcam -right-> backend : Centralview stream
-// pupilapi -down-> backend : Control / metadata
-// backend -right-> dashboard : Processed analytics
-// dashboard -right-> Instructor : Real-time insights
-// backend -down-> pupilcloud : Post-session upload
-// backend -down-> surveys : Import feedback data
-// backend -down-> lms : Possible future integration
-
-// @enduml
-// ----
-
-// The context diagram above illustrates the key components of the environment interacting with the system. The primary users are instructors and students, with the system comprising the analytics backend and the instructor dashboard. The Pupil Labs Neon glasses and companion app facilitate data collection, while the central camera provides a shared reference frame. Optional components include Pupil Cloud for post-session data management, survey tools for qualitative feedback, and potential integration with learning management systems.
+.Environment Context Diagram
+image::socialeyes-environment-context.svg[width=100%, alt="Environment Context Diagram - SocialEyes System"]
+The environment context diagram shows the main entities interacting with the SocialEyes system.  
+The primary users are instructors and students, with the system consisting of the analytics backend and instructor dashboard.  
+Pupil Labs Neon glasses and the companion app provide gaze data, while the central camera (if present) provides a shared view for multi-person analysis.  
+Optional services such as Pupil Cloud, LMS integrations, and survey tools represent potential future extensions beyond the proof-of-concept scope.

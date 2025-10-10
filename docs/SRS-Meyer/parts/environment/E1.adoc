@@ -17,6 +17,12 @@ endif::[]
 *SocialEyes Framework*::
   An open-source system architecture for multi-person, mobile eye-tracking in real-world settings. Provides modules for recording, streaming, homography, analysis, and visualization.
 
+*Instructor*::
+  The primary system user responsible for initiating sessions, monitoring real-time analytics, and reviewing post-session reports.
+
+*Student Participant*::
+  An individual wearing Pupil Labs Neon glasses during classroom activities, whose gaze data contribute to collective engagement analytics.
+
 *Instructor Dashboard*::
   A web-based user interface (React/TypeScript) for instructors to visualize and interpret gaze analytics, both in real-time and after learning sessions.
 
@@ -62,29 +68,26 @@ endif::[]
 *Flask Monitor*::
   A real-time web application for visualizing incoming data streams (egoview, gaze, centralview) and monitoring system status.
 
-*Visualisation Module*::
+*Visualization Module*::
   Produces overlays and heatmaps combining egoview, gaze data, and centralview for interpreting group attention.
 
 *Analysis Module*::
   Provides collective gaze metrics, including gaze entropy, velocity, heatmap similarity, correlation, and normalized contour area.
 
 *Stationary Gaze Entropy*::
-  A measure of unpredictability or dispersion in gaze distribution, calculated from gaze coordinates over a given time frame.
+  A quantitative measure of gaze dispersion, representing unpredictability in gaze distribution across a scene over time.
 
 *Normalized Contour Area*::
-  A metric representing the area of the convex hull around all gaze points at a given time, used to quantify collective gaze dispersion.
+  A collective attention metric representing the area enclosed by the convex hull of all active gaze points in a frame.
 
-*Time Synchronisation (NTP)*::
+*Time Synchronization (NTP)*::
   The use of a Network Time Protocol server to align timestamps across multiple devices, ensuring synchronised data streams.
 
 *SuperGlue*::
-  A graph neural network-based feature matching algorithm used to align egoview and centralview in the SocialEyes homography module.
-
-*Recording Mode*::
-  A SocialEyes operation mode where data are collected and stored for offline, post-hoc analysis.
+  A graph neural network-based feature matching algorithm used within the SocialEyes Homography module to align frames between egoview and centralview for accurate gaze projection.
 
 *Streaming Mode*::
-  A SocialEyes operation mode where data are collected and processed concurrently for immediate visualization.
+  A SocialEyes operation mode where data are collected and processed concurrently for immediate visualization. In hybrid deployments, raw data may also be recorded simultaneously for later offline analysis.
 
 *Recording + Streaming Mode*::
   A hybrid operation where raw data is recorded while simultaneously processing gaze streams in real time.
@@ -109,3 +112,6 @@ endif::[]
 
 *Data Anonymization*::
   The removal or obfuscation of personally identifiable information from gaze data to protect participant privacy.
+
+*Proof-of-Concept (POC)*::
+  The initial implementation phase (Rev 0) focusing on single-device operation, local data processing, and dashboard visualization.

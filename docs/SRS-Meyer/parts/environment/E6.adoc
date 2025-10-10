@@ -6,25 +6,23 @@ TIP: _Properties of the environment that the system's operation must preserve, i
 endif::[]
 
 *Privacy and Ethics*::
-- The system must preserve the anonymity of student participants; no operation should introduce identifiable personal data without explicit consent.
+- The system must preserve the anonymity of student participants; no operation shall introduce identifiable personal data without explicit consent.
 - Ethical approval requirements must remain satisfied throughout all system use.
 
 *Data Integrity*::
 - Raw gaze data must remain unaltered during collection and storage; preprocessing or anonymization must not compromise its validity.
-- Timestamps across multiple devices must remain synchronized to a common reference clock (within acceptable *TBD tolerance*).
+- Timestamps across multiple devices must remain synchronized to a common reference clock within an acceptable tolerance (*TBD ms, to be validated during integration testing*).
 
-*System Reliability*::
-- The system must preserve consistent availability of core functionality (real-time analytics and post-session analysis) even if some devices disconnect or fail.
+*System Reliability and Security*::
+- Core analytics and storage functions must remain available even if individual devices disconnect or fail.
 - Device disconnections or frame drops must not corrupt existing stored data.
+- Networked operations (streaming and storage) must comply with institutional IT security policies.
+- Access to dashboards and analytics must remain restricted to authorized users (e.g., instructors, researchers).
 
 *Classroom Environment*::
-- Normal classroom operations (teaching, student interactions) must not be disrupted beyond wearing the devices and central camera presence.
-- The system must not interfere with existing classroom AV or IT infrastructure.
+- Normal classroom operations (teaching and interaction) must not be disrupted beyond the presence of wearable devices and the optional central camera.
+- The system must not interfere with existing classroom audiovisual or IT infrastructure.
 
 *Licensing and Usage*::
-- The system must remain compliant with the Non-Commercial Research License (NCRL-1.0) of the SocialEyes framework and related components.
-- Open-source dependencies must be used within their licensing terms.
-
-*Security*::
-- The system must ensure that any networked operations (streaming, storage) do not compromise institutional IT security policies.
-- Access to dashboards and analytics must always remain restricted to authorized roles (e.g., instructors, researchers).
+- The system must remain compliant with the Non-Commercial Research License (NCRL-1.0) governing the SocialEyes framework and related components.
+- All open-source dependencies must be used in accordance with their licensing terms.
