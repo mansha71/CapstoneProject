@@ -1,8 +1,24 @@
 [#p3,reftext=P.3]
-=== (P.3) Schedule and milestones
+=== (P.3) Schedule, Tasks, and Deliverables
 
-ifdef::env-draft[]
-TIP: _List of tasks to be carried out and their scheduling. It defines the project's key dates._  <<BM22>>
-endif::[]
+|===
+|Deliverable # | Deliverable / Milestone | Due Date | Description
 
-{emptysec}
+|D0 | Team Formation and Project Selection | Sept 15, 2025 | This includes formation of team members and repo setup.
+|D1 | Problem Statement, PoC Plan, and Development Plan | Sept 22, 2025 | Initial document setup, defining the project scope, goals and POC
+|D1R | Peer Review: Problem Statement | Sept 24 | Review another team's Problem Statement, Goals, and Dev Plan.
+|D2 | SRS and Hazard Analysis (Rev 0) | Oct 10, 2025 | Includes SRS and hazard analysis. Outlining the project.
+|D2R | Peer Review: SRS and Hazard Analysis | Oct 8 | Peer feedback through the Github issues.
+|D3 | Verification and Validation (V&V) Plan | Oct 27, 2025 | Verificatoin and Validatoin plan to define testing and evaluation.
+|D3R | Peer Review: V&V Plan | Oct 29 | Review assigned team's V&V Plan.
+|D4 | Proof of Concept Demonstration | Nov 17–28, 2025 | A live demo showing a working prototype per PoC plan.
+|D5 | Design Document (Rev –1) | Dec 2025 | High-level system architecture design with interafec decisoins and mappings of component.
+|D6 | Design Document (Rev 0) | Jan 2026 | Detailed design with a UML and working features.
+|D7 | Revision 0 Demonstration | Late Jan 2026 | First full demo of the functionting system with working features and integration.
+|D8 | V&V Report (Rev 0) | Feb 2026 | Results from test and validations, including the self reflection.
+|D9 | Final Demonstration (Rev 1) | Mar 2026 | The final version of the working system.
+|D10 | Capstone EXPO Presentation | Apr 2026 | Public showcase at the capstone event.
+|D11 | Final Documentation (Rev 1) | Apr 2026 | Full submission of project with all revised docs, code and two extra features.
+|===
+
+
