@@ -5,5 +5,113 @@ ifdef::env-draft[]
 TIP: _Clear and precise definitions of all the vocabulary specific to the application domain, including technical terms, words from ordinary language used in a special meaning, and acronyms. It introduces the terminology of the project; not just of the environment in the strict sense, but of all its parts._  <<BM22>>
 endif::[]
 
+*Eye-tracking (ET)*::
+  The process of measuring where a person is looking (the gaze point) using specialized hardware, such as wearable glasses.
 
-{emptysec}
+*Pupil Labs Neon*::
+  A wearable eye-tracking device that records gaze data through eye cameras (192x192 px at 200 Hz) and a front-facing egoview camera (1600x1200 px at 30 Hz).
+
+*Gaze Data*::
+  Data collected from eye-tracking devices, including eye images, gaze coordinates, and egoview video streams.
+
+*SocialEyes Framework*::
+  An open-source system architecture for multi-person, mobile eye-tracking in real-world settings. Provides modules for recording, streaming, homography, analysis, and visualization.
+
+*Instructor*::
+  The primary system user responsible for initiating sessions, monitoring real-time analytics, and reviewing post-session reports.
+
+*Student Participant*::
+  An individual wearing Pupil Labs Neon glasses during classroom activities, whose gaze data contribute to collective engagement analytics.
+
+*Instructor Dashboard*::
+  A web-based user interface (React/TypeScript) for instructors to visualize and interpret gaze analytics, both in real-time and after learning sessions.
+
+*Real-time Analytics*::
+  Processing and visualization of gaze data as it is captured, providing immediate insights into attention and engagement.
+
+*Post-session Analytics*::
+  Analysis of gaze data collected during a session, processed afterward to provide detailed engagement metrics.
+
+*Engagement Metrics*::
+  Quantitative or qualitative measures derived from gaze data to indicate student attention, focus, and participation during learning activities.
+
+*Synchronous Learning*::
+  Learning activities that occur live (e.g., lectures, discussions), where gaze analytics can provide real-time feedback.
+
+*Asynchronous Learning*::
+  Learning activities where students engage at different times, with analytics reviewed after the fact.
+
+*Egoview*::
+  The first-person video stream captured by the eye-tracking glasses’ front-facing camera, representing the wearer’s perspective.
+
+*Centralview*::
+  A shared video stream of the scene, captured by a stationary camera. Used as the reference frame for projecting multiple egoviews into a common space.
+
+*Homography*::
+  A projective transformation technique used to map gaze coordinates from egoview (individual perspective) into centralview (shared perspective).
+
+*Semantic Gaze Mapping*::
+  The alignment of multiple users’ gaze data into a shared coordinate system, enabling collective gaze analysis.
+
+*Heatmap (Gaze Heatmap)*::
+  A visualization of gaze density across a scene, highlighting areas of shared attention.
+
+*GlassesRecord Module*::
+  A SocialEyes module used to trigger, record, and monitor data collection from multiple eye-tracking glasses simultaneously.
+
+*CentralCam Module*::
+  A SocialEyes module that manages the central camera feed, synchronizes, and records the shared scene.
+
+*GlassesStream Module*::
+  A SocialEyes module for streaming gaze and egoview data in real time.
+
+*Flask Monitor*::
+  A real-time web application for visualizing incoming data streams (egoview, gaze, centralview) and monitoring system status.
+
+*Visualization Module*::
+  Produces overlays and heatmaps combining egoview, gaze data, and centralview for interpreting group attention.
+
+*Analysis Module*::
+  Provides collective gaze metrics, including gaze entropy, velocity, heatmap similarity, correlation, and normalized contour area.
+
+*Stationary Gaze Entropy*::
+  A quantitative measure of gaze dispersion, representing unpredictability in gaze distribution across a scene over time.
+
+*Normalized Contour Area*::
+  A collective attention metric representing the area enclosed by the convex hull of all active gaze points in a frame.
+
+*Time Synchronization (NTP)*::
+  The use of a Network Time Protocol server to align timestamps across multiple devices, ensuring synchronised data streams.
+
+*SuperGlue*::
+  A graph neural network-based feature matching algorithm used within the SocialEyes Homography module to align frames between egoview and centralview for accurate gaze projection.
+
+*Streaming Mode*::
+  A SocialEyes operation mode where data are collected and processed concurrently for immediate visualization. In hybrid deployments, raw data may also be recorded simultaneously for later offline analysis.
+
+*Recording + Streaming Mode*::
+  A hybrid operation where raw data is recorded while simultaneously processing gaze streams in real time.
+
+*Pupil Labs Neon Companion App*::
+  The Android application that interfaces with Neon glasses, enabling remote control, recording, and streaming of gaze and egoview data.
+
+*Egocentric Gaze*::
+  Raw gaze data recorded relative to the wearer’s own perspective (egoview), not yet projected into centralview space.
+
+*Collective Gaze Dynamics*::
+  Patterns of group attention and coordination revealed by analyzing synchronised gaze data from multiple users.
+
+*CI/CD (Continuous Integration / Continuous Delivery)*::
+  A software engineering practice involving automated building, testing, and deployment pipelines.
+
+*API (Application Programming Interface)*::
+  Defined methods and data formats that allow system components or external applications to communicate.
+
+*Role-based Access Control (RBAC)*::
+  A security model that restricts or allows access to system features based on assigned user roles (e.g., instructor, researcher).
+
+*Data Anonymization*::
+  The removal or obfuscation of personally identifiable information from gaze data to protect participant privacy.
+
+*Proof-of-Concept (POC)*::
+  The initial implementation phase (Rev 0) focusing on single-device operation, local data processing, and dashboard visualization.

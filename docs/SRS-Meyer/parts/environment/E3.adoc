@@ -5,4 +5,32 @@ ifdef::env-draft[]
 TIP: _Obligations and limits imposed on the project and system by the environment. This chapter defines non-negotiable restrictions coming from the environment (business rules, physical laws, engineering decisions), which the development will have to take into account._  <<BM22>>
 endif::[]
 
-{emptysec}
+*Privacy and Ethics*::
+- All gaze data must be anonymized to protect participant identity and comply with research ethics requirements.
+- No identifiable video or audio may be stored or displayed without explicit consent.
+
+*Hardware Limitations*::
+- Pupil Labs Neon glasses operate at fixed specifications (gaze at 200 Hz; egoview video at 30 Hz).
+- Each Neon device must pair with a smartphone running the Neon Companion App, which constrains connectivity and data routing.
+- Each device requires network bandwidth of approximately *TBD MB/s* (to be confirmed based on supervisor guidance and test environment).
+
+*Infrastructure and Environment*::
+- The system must operate in classrooms with variable Wi-Fi reliability; Ethernet availability cannot be assumed.
+- Processing must be feasible on commodity instructor laptops/desktops with *TBD minimum specifications* (to be confirmed).
+
+*Integration and Dependencies*::
+- The system depends on the Pupil Labs real-time API and Neon Companion App. Any vendor limitations or failures directly constrain system functionality.
+- The system incorporates the SocialEyes framework and related open-source libraries; compatibility and updates are subject to those external projects.
+
+*Performance and Responsiveness*::
+- Real-time analytics must display with a maximum latency of *TBD seconds* between gaze capture and dashboard visualization.
+- The system must support at least *TBD concurrent users* for classroom-scale deployment (to be confirmed).
+- Data loss from dropped frames, network jitter, or device disconnects must be handled gracefully.
+
+*Legal and Licensing*::
+- The SocialEyes framework is licensed under a Non-Commercial Research License (NCRL-1.0), restricting usage to academic/non-commercial contexts.
+- Third-party submodules (e.g., SuperGlue) are subject to academic/non-commercial research licenses.
+
+*Engineering Decisions*::
+- The system will prioritize classroom-scale scalability (typical class size *TBD users*).
+- Advanced analyses (e.g., deep learning–based homography) will run offline/post-session due to hardware constraints on instructor devices.
