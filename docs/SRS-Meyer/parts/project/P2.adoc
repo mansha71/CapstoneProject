@@ -1,8 +1,8 @@
 [#p2,reftext=P.2]
 === (P.2) Imposed technical choices
 
-ifdef::env-draft[]
-TIP: _Any a priori choices binding the project to specific tools, hardware, languages or other technical parameters. Not all technical choices in projects derive from a pure technical analysis; some result from company policies. While some project members may dislike non-strictly-technical decisions, they are a fact of project life and must be documented, in particular for the benefit of one of the quality factors for requirements: "requirements must be justified"._  <<BM22>>
-endif::[]
+- **Frontend**: The frontend portion of the application will utilize React alongside Typescript. In order to create data visuals, the frontend will use Chart.js.
 
-{emptysec}
+- **Backend**: The backend will utilize Python with FastAPI or Flask. The backend will be responsible for taking in eye-tracking data from multiple devices, managing sessions, and also serving the analytics. NumPy and Pandas will be used to process the incoming data, and the session data will be stored in SQLite or PostgreSQL. 
+
+- **Hardware**: Pupil Labs Neon is the capture device that will be used to get the eye tracking data. The input includes a 192x192 eye image at 200 Hz and also a 1600x1200 egocentric camera at 30Hz. They also provide raw coordination data.
