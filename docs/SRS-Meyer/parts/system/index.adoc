@@ -2,6 +2,8 @@
 
 NOTE: _the System book refines the Goal one by focusing on more detailed requirements._
 
+NOTE: Quantitative values marked *TBD* will be confirmed through supervisor guidance and testing during Rev-0 validation.
+
 include::control.adoc[]
 
 include::S1.adoc[]
