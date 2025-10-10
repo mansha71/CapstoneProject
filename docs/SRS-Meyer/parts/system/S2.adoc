@@ -14,46 +14,84 @@ The system’s functionality is organized according to its major components, as 
 The following tables enumerate the functional requirements (FRs) of the SocialEyes system.  
 Requirements are categorized according to implementation phase:
 
-* **Rev 0 Functional Requirements** – essential capabilities forming the proof-of-concept deliverable (single-device ingestion, basic analytics, and dashboard visualization).  
-* **Stretch / Future Functional Requirements** – enhancements planned for Rev 1 or later (multi-device scaling, additional roles, and extended analytics).
+* **Rev 0 Functional Requirements** - essential capabilities forming the proof-of-concept deliverable (single-device ingestion, basic analytics, and dashboard visualization).  
+* **Stretch / Future Functional Requirements** - enhancements planned for Rev 1 or later (multi-device scaling, additional roles, and extended analytics).
 
-Each requirement corresponds to one or more components described in <<s1>> and detailed in sections S.2.1–S.2.6.
+Each requirement corresponds to one or more components described in <<s1>> and detailed in sections S.2.1-S.2.6.
+
+===== Data Acquisition and Ingestion
 
 [cols="1,4",options="header"]
 |===
-| ID | Rev 0 Functional Requirements
+| ID | Requirement
 
 | FR-1 | The system shall support two operational modes: (a) Recording mode for offline data capture and post-hoc analysis, and (b) Streaming mode for real-time data processing and visualization.
 | FR-2 | The system shall allow an instructor to initiate, pause, resume, and terminate classroom recording sessions via the dashboard or command-line interface.
-| FR-3 | The system shall connect to a Pupil Labs Neon device through the Neon Companion App API and collect synchronized gaze, eye, and egoview video data.
-| FR-5 | The system shall synchronize incoming data streams using Network Time Protocol (NTP) to maintain consistent timestamps.
+| FR-3 | The system shall connect to a Pupil Labs Neon device through the Neon Companion App API and collect synchronized gaze, eye, and egocentric view (egoview) video data.
+| FR-5 | The system shall synchronize incoming data streams using the Time Synchronization Service (NTP) to maintain consistent timestamps across devices.
 | FR-6 | The system shall recover from transient connection losses by automatically resuming data collection within 5 seconds of detection.
-| FR-7 | The system shall perform data filtering and calibration correction to remove noise, blinks, and miscalibrations in gaze and video streams.
-| FR-8 | The system shall apply homography-based gaze mapping to project gaze points from the egoview to the shared central coordinate space.
-| FR-9 | The system shall compute real-time engagement and attention metrics, including gaze velocity, entropy, and normalized contour area.
-| FR-10 | The system shall generate post-session summary analytics, including heatmaps, time-series graphs, and participant-level statistics.
-| FR-11 | The system shall store raw and processed data in a local database (SQLite or PostgreSQL) and support optional upload to Pupil Cloud.
-| FR-12 | The system shall ensure that each session includes metadata such as timestamp, participant ID, and session ID.
-| FR-13 | The system shall expose REST or GraphQL APIs (via Flask) for analytics retrieval and session management.
-| FR-14 | The system shall enforce role-based authentication and authorization, permitting access only to approved users (e.g., instructor).
-| FR-15 | The dashboard shall display real-time visual analytics, including heatmaps, attention indicators, and engagement metrics.
-| FR-16 | The dashboard shall allow users to export post-session analytics and visualizations in common formats (CSV, JSON, PNG).
-| FR-18 | The system shall log runtime events and performance metrics in a persistent monitoring interface (e.g., Prometheus/Grafana).
-| FR-19 | The system shall employ Dockerized containers for consistent and reproducible deployment across platforms.
-| FR-20 | The system shall include continuous integration (CI/CD) pipelines to automatically execute build, lint, and test workflows prior to deployment.
-| FR-22 | The system shall maintain traceability of session data, linking raw data, analytics, and reports via unique session identifiers.
-| FR-23 | The system shall support basic configuration options (e.g., device ID, data directory, export format) accessible via configuration files or dashboard settings.
-| FR-24 | The system shall allow replay of recorded sessions to verify synchronization accuracy and re-run analytics for validation purposes.
 |===
+
+===== Data Processing and Analytics
 
 [cols="1,4",options="header"]
 |===
-| ID | Stretch / Future Functional Requirements
+| ID | Requirement
 
-| FR-4 | The system shall optionally integrate a Central Camera feed to capture a shared classroom view (centralview) for multi-person gaze alignment.
+| FR-7 | The system shall perform data filtering and calibration correction to remove noise, blinks, and miscalibrations in gaze and video streams.
+| FR-8 | The system shall apply homography-based gaze mapping to project gaze points from the egoview to the shared central camera coordinate space.
+| FR-9 | The system shall compute real-time engagement and attention metrics, including gaze velocity, entropy, and normalized contour area.
+| FR-10 | The system shall generate post-session summary analytics, including heatmaps, time-series graphs, and participant-level statistics.
+| FR-24 | The system shall allow replay of recorded sessions to verify synchronization accuracy and re-run analytics for validation purposes.
+|===
+
+===== Data Management and Backend Services
+
+[cols="1,4",options="header"]
+|===
+| ID | Requirement
+
+| FR-11 | The system shall store raw and processed data in a local database (SQLite or PostgreSQL) and support optional upload to Pupil Cloud.
+| FR-12 | The system shall ensure that each session includes metadata such as timestamp, participant ID, and session ID.
+| FR-13 | The system shall expose REST or GraphQL APIs (via Flask) for analytics retrieval and session management.
+| FR-22 | The system shall maintain traceability of session data, linking raw data, analytics, and reports via unique session identifiers.
+| FR-23 | The system shall support basic configuration options (e.g., device ID, data directory, export format) accessible via configuration files or dashboard settings.
+|===
+
+===== Visualization and Dashboard Interface
+
+[cols="1,4",options="header"]
+|===
+| ID | Requirement
+
+| FR-14 | The system shall enforce role-based authentication and authorization, permitting access only to approved users (e.g., instructor).
+| FR-15 | The dashboard shall display real-time visual analytics, including heatmaps, attention indicators, and engagement metrics.
+| FR-16 | The dashboard shall allow users to export post-session analytics and visualizations in common formats (CSV, JSON, PNG).
+|===
+
+===== Supporting Infrastructure and Deployment
+
+[cols="1,4",options="header"]
+|===
+| ID | Requirement
+
+| FR-18 | The system shall log runtime events and performance metrics in a persistent monitoring interface (e.g., Prometheus/Grafana).
+| FR-19 | The system shall employ Dockerized containers for consistent and reproducible deployment across platforms.
+| FR-20 | The system shall include continuous integration (CI/CD) pipelines to automatically execute build, lint, and test workflows prior to deployment.
+|===
+
+---
+
+==== Stretch Functional Requirements
+
+[cols="1,4",options="header"]
+|===
+| ID | Requirement
+
+| FR-4 | The system shall optionally support integration with an external Central Camera video feed (e.g., USB or RTSP stream) to capture a shared classroom scene for multi-person gaze alignment. [Software stretch goal - hardware camera setup assumed external to system.]
 | FR-17 | The system shall provide separate role-based views for instructors and researchers, limiting access according to role permissions.
 | FR-21 | The system shall implement privacy and anonymization features, including masking of identifiable faces or eye images in exported visualizations.
-| FR-25 | The system shall support scaling to multiple Pupil Labs Neon devices (target ≥ 10) during live streaming, maintaining inter-device synchronization accuracy within ± 20 ms, consistent with benchmarks established in the SocialEyes reference framework [subject to validation during Rev 1 testing.]
+| FR-25 | The system shall support scaling to multiple Pupil Labs Neon devices (target ≥ 10) during live streaming, maintaining inter-device synchronization accuracy within ± 20 ms, consistent with benchmarks established in the SocialEyes reference framework [subject to validation during Rev 1 testing].
 |===
 
 .Data Flow Sequence During Classroom Session
@@ -114,4 +152,4 @@ This sequence diagram illustrates the flow of data during both recording (offlin
 - Time Synchronization Service (NTP): Ensures uniform timestamps across all devices, enabling consistent temporal alignment in analytics.
 - Deployment / Runtime Environment: Utilizes Docker containers for reproducibility, isolated builds, and cross-platform deployment.
 - Continuous Integration (CI/CD): Automates testing, linting, and deployment workflows using GitHub Actions to maintain code quality.
-// - [Optional Simulation/Test Harness] – TBD with supervisors: develop replay utilities to simulate recorded sessions for verification and future testing.
+// - [Optional Simulation/Test Harness] - TBD with supervisors: develop replay utilities to simulate recorded sessions for verification and future testing.
