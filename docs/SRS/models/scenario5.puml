@@ -1,0 +1,25 @@
+@startuml
+!include ../_style/puml.style
+left to right direction
+
+actor Instructor
+
+package "Real-Time Monitoring <<System>>" {
+  rectangle "Gaze Monitoring Module" as Monitor
+  rectangle "Alert Engine" as Alert
+  rectangle "Instructor Dashboard" as Dashboard
+  rectangle "Event Logger" as Logger
+}
+
+Monitor --> Alert : Attention Drop Detected
+Alert --> Dashboard : Display Real-Time Alert
+Instructor --> Dashboard : Respond to Alert
+Dashboard --> Logger : Log Intervention
+Alert --> Logger : Log Alert Event
+
+note right of Alert
+Generates alerts when
+student/group attention
+drops below threshold
+end note
+@enduml

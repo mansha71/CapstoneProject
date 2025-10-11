@@ -1,0 +1,34 @@
+@startuml
+!include ../_style/puml.style
+left to right direction
+
+actor Instructor
+actor Student
+actor Researcher
+
+package "Learning Platform <<System>>" {
+  rectangle "Authentication Module" as Auth
+  rectangle "Lecture Session Manager" as Lecture
+  rectangle "Eye-Tracking Module" as EyeTrack
+  rectangle "Analytics Engine" as Analytics
+  rectangle "Reporting Module" as Reporting
+}
+
+Instructor --> Auth : Login
+Auth --> Instructor : Auth Success/Fail
+Instructor --> Lecture : Start Lecture
+Lecture --> EyeTrack : Activate Eye-Tracking
+EyeTrack --> Student : Capture Gaze Data
+EyeTrack --> Analytics : Send Real-Time Data
+Analytics --> Instructor : Display Live Heatmap
+Instructor --> Lecture : Deliver Content
+Lecture --> Analytics : Log Engagement Metrics
+Analytics --> Reporting : Generate Summary Report
+Reporting --> Instructor : Provide Session Summary
+
+note right of Analytics
+Real-time mapping of gaze
+to student identities;
+attention convergence metrics
+end note
+@enduml

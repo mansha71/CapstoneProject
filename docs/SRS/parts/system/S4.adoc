@@ -2,7 +2,126 @@
 === (S.4) Detailed usage scenarios
 
 ifdef::env-draft[]
-TIP: _Examples of interaction between the environment (or human users) and the system, expressed as user stories. Such scenarios are not by themselves a substitute for precise descriptions of functionality (<<s3>>), but provide an important complement by specifying cases that these behavior descriptions must support; they also serve as a basis for developing test cases. The scenarios most relevant for stakeholders are given in chapter <<g5>> in the Goals book, at a general level, as use cases; in contrast, <<s4>> can refer to system components and functionality (from other chapters of the System book) as well as special and erroneous cases, and introduce more specific scenarios._  <<BM22>>
 endif::[]
 
-{emptysec}
+[#s.4.1,reftext=S.4.1]
+==== (S.4.1) Scenario 1 – Conducting a Lecture with Eye-Tracking (UC1)
+*Primary Actor:* Instructor
+
+*Precondition:* Instructor has a valid account; classroom cameras/headsets are set up.
+
+*Trigger:* Instructor wants to start a lecture session with real-time monitoring.
+
+.Main Success Scenario
+. Instructor logs into the platform.
+. Instructor starts a lecture session with eye-tracking enabled.
+. System activates group eye-tracking (cameras/headsets).
+. Real-time gaze data is collected and mapped to student identities.
+. Instructor monitors live attention heatmaps and engagement indicators.
+. Instructor delivers content while adjusting teaching strategies based on real-time feedback.
+. At session end, system generates summary analytics (attention distribution, gaze convergence, engagement patterns).
+
+.Secondary Scenarios
+. Eye-tracking devices fail to initialize; system alerts instructor with troubleshooting steps.
+. Instructor disables real-time monitoring temporarily.
+. Summary analytics generation fails; instructor can manually export raw gaze data.
+
+*Success Postcondition:* Lecture is completed; gaze data and analytics are available.
+
+
+image::scenario1.svg[width=100%, alt=""]
+
+[#s.4.2,reftext=S.4.2]
+==== (S.4.2) Scenario 2 – Reviewing Post-Session Analytics (UC2)
+*Primary Actor:* Instructor
+
+*Precondition:* Gaze data has been collected.
+
+*Trigger:* Instructor wants to analyze student attention and engagement.
+
+.Main Success Scenario
+. Instructor logs into the analytics dashboard.
+. System displays visual analytics (heatmaps, timelines, focus zones).
+. Instructor filters data by session, topic, or student group.
+. Instructor identifies segments with attention drops.
+. Instructor reviews suggested insights.
+. Instructor saves session summary or exports report for research analysis.
+
+.Secondary Scenarios
+. Filter selection returns no data; system prompts to adjust criteria.
+. Suggested insights unavailable; instructor manually annotates key moments.
+. Export fails due to network error; system retries or provides alternate download.
+
+*Success Postcondition:* Instructor has actionable post-session analytics for teaching or research.
+
+image::scenario2.svg[width=100%, alt=""]
+
+[#s.4.3,reftext=S.4.3]
+==== (S.4.3) Scenario 3 – Integrating Learning Outcome Data (UC3)
+*Primary Actor:* Instructor / Researcher
+
+*Precondition:* Gaze data collected; learning outcome data available.
+
+*Trigger:* Instructor/researcher wants to correlate engagement with performance.
+
+.Main Success Scenario
+. Instructor uploads or links external learning outcome data.
+. System synchronizes outcome data with gaze data timelines.
+. Instructor/researcher compares engagement patterns with performance metrics.
+. System highlights correlations between gaze focus and comprehension metrics.
+. Reports or visualizations are generated linking attention to outcomes.
+
+.Secondary Scenarios
+. Outcome data is incompatible; system prompts for format correction.
+. Synchronization fails; system logs error and notifies instructor.
+. No correlations detected; system suggests alternative visualizations or longer observation period.
+
+*Success Postcondition:* Learning outcome data is integrated with gaze analytics.
+
+image::scenario3.svg[width=100%, alt=""]
+
+[#s.4.4,reftext=S.4.4]
+==== (S.4.4) Scenario 4 – Real-Time Attention Alerts (UC1 + UC2)
+*Primary Actor:* Instructor
+
+*Precondition:* Lecture session running; gaze data being collected.
+
+*Trigger:* Instructor wants to detect attention drops in real time.
+
+.Main Success Scenario
+. System monitors gaze data continuously.
+. Attention metrics drop below threshold for a student/group.
+. System generates real-time alert on instructor dashboard.
+. Instructor takes action: pause lecture, repeat content, or engage students.
+. System logs event for post-session analytics.
+
+.Secondary Scenarios
+. Alert triggered incorrectly due to system noise; instructor can dismiss/adjust sensitivity.
+. Network latency delays alert; system flags potential inaccuracies.
+
+*Success Postcondition:* Instructor can intervene in real time; events logged.
+
+image::scenario4.svg[width=100%, alt=""]
+
+[#s.4.5,reftext=S.4.5]
+==== (S.4.5) Scenario 5 – Multi-Session and Comparative Analysis (UC2 + UC3)
+*Primary Actor:* Instructor / Researcher
+
+*Precondition:* Multiple sessions with gaze and outcome data collected.
+
+*Trigger:* Instructor/researcher wants to compare attention across sessions.
+
+.Main Success Scenario
+. Instructor selects multiple past sessions.
+. System generates comparative analytics (heatmaps, engagement timelines, gaze convergence).
+. Instructor filters/groups students to identify patterns.
+. Correlations with learning outcome data displayed.
+. Instructor identifies topics with consistently low attention/performance.
+
+.Secondary Scenarios
+. Some sessions lack complete data; system flags incomplete datasets.
+. Visualization fails with large datasets; system provides CSV summary export.
+
+*Success Postcondition:* Instructor/researcher identifies trends and adjusts teaching strategies or research focus.
+
+image::scenario5.svg[width=100%, alt=""]
