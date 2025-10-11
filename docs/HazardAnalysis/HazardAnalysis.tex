@@ -85,95 +85,109 @@ This analysis assumes that the eye-tracking hardware functions reliably and that
   \centering
   \caption{Failure Mode and Effect Analysis (FMEA)}
   \label{tab:fmea}
-  \small % <-- slightly smaller font just for this table
+  \small % slightly smaller font just for this table
   \resizebox{\textwidth}{!}{%
-    \begin{tabularx}{\textwidth}{|Y|Y|Y|Y|Y|Y|}
+    \begin{tabularx}{\textwidth}{|Y|Y|Y|Y|Y|Y|>{\centering\arraybackslash}p{1.2cm}|}
       \hline
       \textbf{Design Function} &
       \textbf{Failure Modes} &
       \textbf{Effects of Failure} &
       \textbf{Causes of Failure} &
       \textbf{Detection \& Recommended Action} &
-      \textbf{SR} \\
+      \textbf{SR} &
+      \textbf{Hazard ID} \\
       \hline
       Display UI & Poor UI design and Visualization Errors &
       Incorrect conclusions, misinterpreted data, distracting instructors in real-time dashboard &
       Unclear visualization, overcomplex layouts, poor labeling, Software bugs &
       Conduct usability testing; iterative UI design reviews; gather instructor feedback &
-      Dashboard must undergo user-centered design testing before deployment \\
+      Dashboard must undergo user-centered design testing before deployment &
+      H-08 \\
       \hline
       Display real-time dashboard feedback & Real-time dashboard lag &
       Delayed feedback, ineffective responses &
       Network latency, computation overload, inefficient refresh rate &
       Optimize data pipeline; limit visual update rate; provide timestamp indicators &
-      Dashboard must display latency indicator and ensure refresh rate ≤ 2s delay \\
+      Dashboard must display latency indicator and ensure refresh rate ≤ 2s delay &
+      H-05 \\
       \hline
       Manage participant data securely &
       Privacy and consent violations if linked to identifiable gaze records &
       Breach of confidentiality; ethical non-compliance &
       Improper anonymization; insecure linkage between datasets &
       De-identify all participant data; IRB/ethics protocol compliance &
-      No personal identifiers may be stored with gaze data in analysis tables \\
+      No personal identifiers may be stored with gaze data in analysis tables &
+      H-04 \\
       \hline
       Analyze gaze data & Algorithmic errors in data interpretation &
       Inaccurate engagement conclusions; invalid study results &
       Incorrect model logic, poor calibration, inadequate testing &
       Implement unit tests and verification datasets; peer review of algorithms &
-      All data analysis modules must be verified with ground-truth calibration data \\
+      All data analysis modules must be verified with ground-truth calibration data &
+      H-01 \\
       \hline
       Analyze correlation models & Bias in assumed correlations between gaze and supplementary data &
       Misleading findings about engagement; false causal interpretations &
       Overfitting, poor study design, unverified statistical assumptions &
       Include bias detection procedures; statistical validation before reporting &
-      Correlation models must be reviewed by study supervisor before use \\
+      Correlation models must be reviewed by study supervisor before use &
+      H-07 \\
       \hline
       Collect survey responses & Missing or incomplete responses &
       Reduced accuracy of analysis; gaps in participant context &
       Participant non-response, survey fatigue, technical form errors &
       Enforce mandatory fields; data completeness checks; participant reminders &
-      Survey platform must validate completeness before submission \\
+      Survey platform must validate completeness before submission &
+      H-11 \\
       \hline
       Collect self-assessment data & Misreporting in self-assessment &
       Inaccurate correlation between gaze and engagement &
       Participant subjectivity, misunderstanding questions &
       Include validation questions; statistical outlier checks &
-      Survey must include cross-check items to detect inconsistent answers \\
+      Survey must include cross-check items to detect inconsistent answers &
+      H-12 \\
       \hline
       Store and manage study data & Data corruption or loss &
       Loss of study data; incomplete analysis &
       Disk failure, interrupted file writes, inadequate backup &
       Regular data backups; use redundant cloud storage &
-      System must maintain daily backups and integrity checksums \\
+      System must maintain daily backups and integrity checksums &
+      H-03 \\
       \hline
       Operate eye-tracking hardware & Hardware malfunction & 
       Incorrect gaze readings; unreliable data &
       Sensor misalignment, firmware issues, physical damage &
       Periodic calibration and maintenance logs &
-      Device must auto-check calibration before each session \\
+      Device must auto-check calibration before each session &
+      H-01 \\
       \hline
       Control experimental environment & Inconsistent environmental conditions (lighting, seating layout) &
       Reduced accuracy or participant exclusion &
       Poor classroom setup or uncontrolled environment &
       Standardize setup; log environmental parameters &
-      Experiment setup must follow documented calibration standards \\
+      Experiment setup must follow documented calibration standards &
+      H-01 \\
       \hline
       Manage participant comfort and consent & Student discomfort or awareness of monitoring &
       Altered natural behavior; reduced validity of gaze data &
       Obtrusive hardware placement; insufficient consent briefing &
       Conduct pre-study familiarization sessions; maintain unobtrusive setup &
-      Participants must receive clear consent and explanation before recording \\
+      Participants must receive clear consent and explanation before recording &
+      H-06/H-09 \\
       \hline
       Map gaze data to visual stimuli & Inaccurate handling of gaze data when not aligned to visual stimuli (e.g., off-screen gaze) &
       Misinterpretation of focus or attention zones &
       Incomplete mapping algorithms, field-of-view errors &
       Include “off-screen” classification; improve mapping calibration &
-      Gaze mapping algorithm must identify off-screen events separately \\
+      Gaze mapping algorithm must identify off-screen events separately &
+      H-02 \\
       \hline
       Capture gaze data & Catching private information through gaze data &
       Unintentional collection of sensitive personal data, breach of user privacy &
       Excessive gaze capture scope; lack of masking zones &
       Limit gaze tracking to relevant visual field; apply region masking &
-      Tracking software must enforce spatial limits for data capture \\
+      Tracking software must enforce spatial limits for data capture &
+      H-04 \\
       \hline
     \end{tabularx}%
   }
