@@ -2,8 +2,37 @@
 === (G.4) Functionality overview
 
 ifdef::env-draft[]
-TIP: _Overview of the functions (behavior) of the system. Principal properties only (details are in the System book). It is a short overview of the functions of the future system, a kind of capsule version of book S, skipping details but enabling readers to get a quick grasp of what the system will do._  <<BM22>>
 endif::[]
 
-{emptysec}
+Based on client input, the high-level functional requirements for the application are defined as follows:
+
+* **Real-Time and Post-Session Attention Tracking**
+  The client seeks to collect and visualize group-level gaze data to help instructors understand where students focus during lectures. This can be achieved by integrating lightweight computer vision algorithms capable of processing gaze coordinates and aggregating them into collective attention maps.
+
+* **Instructor Dashboard and Analytics Tools**
+  The client seeks to provide instructors with an interactive dashboard that displays attention metrics, engagement trends, and topic-specific focus patterns. This can be achieved through data visualizations (e.g., heatmaps and time-based graphs) that summarize real-time and post-session attention data in an accessible format.
+
+* **Insight Generation System**
+  The client seeks to offer actionable insights that guide instructors in improving teaching strategies and content delivery. This can be achieved by incorporating analytic models that identify attention lapses, high-engagement moments, and patterns of distraction.
+
+* **Privacy-Aware Eye-tracking**
+  The client seeks to associate gaze and attention data with student identities in a privacy-preserving manner. Potential ways to address this include implementing a feature where, when a participant is looking at sensitive content (e.g., a phone screen, private window, or name tag), the system blurs or masks that region in real time via object recognition.
+
+Based on these functional requirements, the two most essential are:
+
+1. **Real-Time and Post-Session Attention Tracking** – Enabling accurate and efficient data capture is fundamental to the system’s purpose; without reliable gaze and attention tracking, analysis and insights would lack validity.
+2. **Instructor Dashboard and Analytics Tools** – Providing a clear and actionable dashboard ensures that instructors can translate raw data into meaningful insights.
+
+Together, these functions represent the system’s core objective: empowering instructors to understand and improve student engagement through data-driven insights.
+
+Some high level non-functional requirements for the application can be defined as follows in no particular order:
+
+* **Data Privacy and Security Compliance**
+  The system must comply with institutional and legal data protection standards, ensuring all student-related data are anonymized and securely stored. Data privacy and security compliance are critical for maintaining ethical standards in handling sensitive student data, particularly in an academic research context.
+
+* **System Usability and Performance**
+  The application must offer an intuitive and responsive interface that enables instructors to access real-time analytics with minimal latency during active learning sessions. Ensuring system usability and performance guarantees that instructors can interpret engagement data effectively and make timely, informed decisions during or after class sessions.
+
+Both non-functional requirements ensure the system operates securely, ethically, and efficiently, which is key to its adoption and long-term success.
+
 
