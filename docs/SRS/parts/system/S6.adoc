@@ -1,8 +1,79 @@
 [#s6,reftext=S.6]
 === (S.6) Verification and acceptance criteria
 
-ifdef::env-draft[]
-TIP: _Specification of the conditions under which an implementation will be deemed satisfactory. Here, "verification" as shorthand for what is more explicitly called "Verification & Validation" (V&V), covering several levels of testing — module testing, integration testing, system testing, user acceptance testing — as well as other techniques such as static analysis and, when applicable, program proving._  <<BM22>>
-endif::[]
+We will perform unit, integration and acceptance tests in order to test the requirements. The unit tests will verify that each feature, like the eye tracking data capture and the analytics display, works correctly. Integration tests will make sure that there is smooth communication between the data collection, processing and also the dashboard components. Finally, acceptance testing will involve instructors using the dashboard to confirm that starting, monitoring, and reviewing sessions function as intended.
 
-{emptysec}
+For the non-functional requirements:
+
+Performance: Live eye tracking analytics should appear with less than 1 second delay and update around 20 times per second for smooth visualization.
+Covered requirements: <<NFR-1>>, <<NFR-2>>
+
+Reliability: If a network issue occurs, the system should recover within 5 seconds and continue recording without data loss.
+Covered requirements: <<NFR-4>>, <<NFR-5>>
+
+Security and Privacy: All user data should be encrypted, anonymized, and only be accessible only through role based permissions.
+Covered requirements: <<NFR-9>>, <<NFR-10>>, <<NFR-11>>
+
+Usability: A new instructor should be able to log in, start a session, and view results within 10 minutes.
+Covered requirements: <<NFR-7>>
+
+Data Integrity: Data timestamps should remain accurate within one video frame, and backups must restore correctly.
+Covered requirements: <<NFR-17>>, <<NFR-26>>
+
+==== Test Case Proposal
+
+To validate scenario (S.4.1) Conducting a Lecture with Eye-Tracking, five tests will confirm that instructors can record, view, and analyze classroom sessions effectively.
+
+===== Test Proposals for Scenario S.4.1
+
+Login and Start Session Test
+
+Objective: Verify that the instructor can log in and start recording.
+
+Expected Result: Session begins and shows “Recording” status.
+
+Reqs: <<FR-2>>, <<FR-14>>
+
+Live Analytics Test
+
+Objective: Confirm real-time heatmaps display correctly.
+
+Expected Result: Updates within 1 second at ~20 Hz.
+
+Reqs: <<FR-9>>, <<FR-15>>, <<NFR-1>>
+
+Sync Accuracy Test
+
+Objective: Ensure gaze data from multiple devices stays aligned.
+
+Expected Result: Synchronization within ±20 ms.
+
+Reqs: <<FR-5>>, <<FR-8>>, <<NFR-3>>
+
+Network Recovery Test
+
+Objective: Check that the system resumes recording after a short disconnect.
+
+Expected Result: Recovers within 5 seconds without data loss.
+
+Reqs: <<FR-6>>, <<FR-18>>, <<NFR-5>>
+
+Session Summary and Export Test
+
+Objective: Verify post-session analytics and export function.
+
+Expected Result: Summary displays correctly and exports anonymized data.
+
+Reqs: <<FR-10>>, <<FR-16>>, <<NFR-11>>
+
+===== Traceability Matrix for Scenario S.4.1
+
+|===
+|Test Number | Test Description | Requirement ID | Requirement Description
+
+|1 | Login and Start Session Test | <<FR-2>>, <<FR-14>> | Instructor logs in and starts recording
+|2 | Live Analytics Test | <<FR-9>>, <<FR-15>>, <<NFR-1>> | Real-time analytics update smoothly
+|3 | Sync Accuracy Test | <<FR-5>>, <<FR-8>>, <<NFR-3>> | Gaze data stays synchronized
+|4 | Network Recovery Test | <<FR-6>>, <<FR-18>>, <<NFR-5>> | System recovers after connection loss
+|5 | Session Summary and Export Test | <<FR-10>>, <<FR-16>>, <<NFR-11>> | Summary and export are accurate and private
+|===

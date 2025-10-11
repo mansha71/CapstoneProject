@@ -1,9 +1,22 @@
 [#p6,reftext=P.6]
 === (P.6) Requirements process and report
 
-ifdef::env-draft[]
-TIP: _Potential obstacles to meeting the schedule of <<p4>>, and measures for adapting the plan if they do arise. It is essential to be on the lookout for events that could derail the project, and devise mitigation strategies. It can include a SWOT analysis (Strengths, Weaknesses, Opportunities, Threats) for the project._  <<BM22>>
-endif::[]
+* Instructor (<<Professor Lee>>)
+** Type of Interview: *Closed*. This will make sure the discussion is focused on the needs of engagement and data visualization.
+** Question: _"What type of visuals would help you understand student engagement better during your lectures?"_. This question will help identify metrics and visuals that best support teaching adjustments.
 
+* Instructor (<<Professor Alvarez>>)
+** Type of Interview: *Open*. This interview will allow broader insight into program-level data and also improvement for the curriculum.
+** Question: _"How can engagement data from multiple classes help you improve overall quality for a course/program?"_. This question reveals how data can support academic planning.
 
-{emptysec}
+* Researcher (<<Dr. Nguyen>>)
+** Type of Interview: *Closed*. This interview will ensure all data accuracy, ethics and export needs are covered.
+** Question: _"What data metrics and export formats are most useful for your research?"_. This question will help us determine what metrics individuals will find useful when it comes to research.
+
+* Student (<<N/A>>)
+** Type of Interview: *Open*. An open interview will encourage honest feedback on the comfort and privacy concerns with eye tracking.
+** Question: _"How comfortable are you with eye tracking data being collected in your class?"_. This helps us assess ethical and transparency needs.
+
+* Developer (<<N/A>>)
+** Type of Interview: *Closed*. This interview keeps the discussion structured around the implementation and security of the application.
+** Question: _"What system components or APIs are most critical for secure and efficient data processing?"_. This question helps identify key technical priorities for the project.
