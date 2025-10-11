@@ -13,6 +13,3 @@ include::P4.adoc[]
 include::P5.adoc[]
 
 include::P6.adoc[]
-
-include::P7.adoc[]
-

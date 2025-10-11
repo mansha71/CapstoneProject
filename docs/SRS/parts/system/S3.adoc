@@ -17,7 +17,7 @@ This API handles the intake of the real-time data from the eye tracking devices 
 The AnalyticsAPI API provides computed analytics results for both real-time and post-session dashboards for the instructors. It allows them to see data related to the eye tracking data, attention heatmaps, and metrics for visual engagement. 
 
 .External API exposed by {project-title}
-image::models/S3.png[scale=70%,align="center"]
+image::S3.png[scale=70%,align="center"]
 
 
 ==== (S.3.2) Wireframe Mockups
@@ -27,12 +27,12 @@ image::models/S3.png[scale=70%,align="center"]
 The live dashboard interface is where the instructor can monitor the classroom activity from the eyetracking data. During active sessions, this dashboard can visualize the live gaze data, attention trends, and device connectivity. This dashboard should display the ongoing session information and include controls for starting, pausing, or ending an ongoing session. 
 
 .User: User Profile Page Layout
-image::models/S3a.png[scale=70%,align="center"]
+image::S3a.png[scale=70%,align="center"]
 
 ===== (S.3.2.2) Session Summary
 
 After each session, instructors will be able to review the analytics data through this interface. This page should provide a summary of the attention levels, the metrics of engagement and other time-based patterns from the session. This should show the eyesight heatmaps and engagement charts. 
 
 .User: Challenge Selection Page Layout
-image::models/S3b.png[scale=70%,align="center"]
+image::S3b.png[scale=70%,align="center"]
 

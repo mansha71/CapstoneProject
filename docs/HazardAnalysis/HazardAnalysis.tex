@@ -1,33 +1,42 @@
 \documentclass{article}
 
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}   % normal margins
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}               % for \resizebox
 \usepackage{hyperref}
 
+% Links styling
 \hypersetup{
-    colorlinks=true,       % false: boxed links; true: colored links
-    linkcolor=red,          % color of internal links (change box color with linkbordercolor)
-    citecolor=green,        % color of links to bibliography
-    filecolor=magenta,      % color of file links
-    urlcolor=cyan           % color of external links
+    colorlinks=true,
+    linkcolor=red,
+    citecolor=green,
+    filecolor=magenta,
+    urlcolor=cyan
 }
 
+% Column type: ragged-right X that wraps nicely
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Slightly tighter cells; nicer row spacing
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+
+% ---------- Title ----------
 \title{Hazard Analysis\\\progname}
-
 \author{\authname}
-
 \date{}
 
-\input{../Comments}
-\input{../Common}
+% \input{../Comments}
+% \input{../Common}
 
 \begin{document}
-
 \maketitle
 \thispagestyle{empty}
 
-~\newpage
-
+\newpage
 \pagenumbering{roman}
 
 \begin{table}[hp]
@@ -43,22 +52,16 @@ Date2 & Name(s) & Description of changes\\
 \end{tabularx}
 \end{table}
 
-~\newpage
-
+\newpage
 \tableofcontents
 
-~\newpage
-
+\newpage
 \pagenumbering{arabic}
 
-\wss{You are free to modify this template.}
-
 \section{Introduction}
-
-The following document contains an overview of the hazards highlighted in the Large-Group Eye-Tracking Capstone Project. For the purposes of this document, a hazard is (based on the work of Nancy Leveson) defined as any aspect or property of this project which causes harm, damage or loss in the environment the system inhabits. This document identifies key hazards involved, and uses the Failure Modes and Effects Analysis (FMEA) method to analyze them and their respective impacts on the system. 
+The following document contains an overview of the hazards highlighted in the Large-Group Eye-Tracking Capstone Project. For the purposes of this document, a hazard is (based on the work of Nancy Leveson) defined as any aspect or property of this project which causes harm, damage or loss in the environment the system inhabits. This document identifies key hazards involved, and uses the Failure Modes and Effects Analysis (FMEA) method to analyze them and their respective impacts on the system.
 
 \section{Scope and Purpose of Hazard Analysis}
-
 The purpose of this Hazard Analysis is identifying system properties which may cause harm to stakeholders. In order to narrow the scope of this assessment, the following potential losses have been highlighted:
 \begin{itemize}
     \item Privacy: unauthorized access, re-identification, misuse of gaze data
@@ -66,65 +69,201 @@ The purpose of this Hazard Analysis is identifying system properties which may c
     \item Data inaccuracy: invalid findings and conclusions
     \item Loss of stakeholder value: instructors receiving inaccurate or unusable real-time data
     \item Disrupting live classroom activities
-    \end{itemize}
+\end{itemize}
 
 \section{System Boundaries and Components}
-
-The proposed system is a learning platform that integrates large-group eye tracking with classroom activities, allowing instructors to view aggregated gaze information in real time and after class. To perform a meaningful hazard analysis, the system is divided into the following components:\\
-\textbf{Data Collection (Eye Tracking)}\\
-The core of this project is the data retrieved using the Eye Tracking hardware, specifically in a classroom setting. This first component includes both the tracking devices, as well as associated software used to record and store the data. A combination of the visual stimuli in the classroom (i.e. slideshows on a projected screen) and the eye movements of multiple students are used to return raw gaze data.\\
-\textbf{Supplementary Data (Student Survey)}\\
-A self-report style survey will be used to gather supplementary data from participants, such as demographics, learning-related disabilities and behavioural traits. Student-entered responses to pre- and post-lecture questionnaires will be converted to a structured supplementary dataset, linked to the central eye-tracking data.\\
-\textbf{Data Analysis (Mapping Gaze Data)}\\
-In this component, the raw gaze data is processed and mapped to the visual stimulus to determine attention patterns, creating quantitative results which can be visualized in real-time. When assessing this alongside the supplementary data, more specific correlations can be determined.\\
-\textbf{Dashboards (Instructor Visualization Interfaces)}\\
-This component can be broken up into two further components: visual outputs to instructors in real time (during class), and afterward (for review). The processed and analysed outputs are translated to interactive and easily interpretable visualizations.
-
+The proposed system is a learning platform that integrates large-group eye tracking with classroom activities, allowing instructors to view aggregated gaze information in real time and after class. To perform a meaningful hazard analysis, the system is divided into the following components: \textbf{Data Collection (Eye Tracking)}, \textbf{Supplementary Data (Student Survey)}, \textbf{Data Analysis (Mapping Gaze Data)}, and \textbf{Dashboards (Instructor Visualization Interfaces)}.
 
 \section{Critical Assumptions}
-
 This analysis assumes that the eye-tracking hardware functions reliably and that hardware-level failures are out of scope. It also assumes that the network and server infrastructure are stable and secure, with standard IT reliability already in place.
 
 \section{Failure Mode and Effect Analysis}
+% ---- Make this page nearly full-bleed for the table ----
+\newgeometry{left=0.5cm,right=0.5cm,top=1.5cm,bottom=2cm}  % very small side margins
 
-\wss{Include your FMEA table here. This is the most important part of this document.}
-\wss{The safety requirements in the table do not have to have the prefix SR.
-The most important thing is to show traceability to your SRS. You might trace to
-requirements you have already written, or you might need to add new
-requirements.}
-\wss{If no safety requirement can be devised, other mitigation strategies can be
-entered in the table, including strategies involving providing additional
-documentation, and/or test cases.}
+\begin{table}[htbp]
+  \centering
+  \caption{Failure Mode and Effect Analysis (FMEA)}
+  \label{tab:fmea}
+  \small % <-- slightly smaller font just for this table
+  \resizebox{\textwidth}{!}{%
+    \begin{tabularx}{\textwidth}{|Y|Y|Y|Y|Y|Y|}
+      \hline
+      \textbf{Design Function} &
+      \textbf{Failure Modes} &
+      \textbf{Effects of Failure} &
+      \textbf{Causes of Failure} &
+      \textbf{Detection \& Recommended Action} &
+      \textbf{SR} \\
+      \hline
+      Display UI & Poor UI design and Visualization Errors &
+      Incorrect conclusions, misinterpreted data, distracting instructors in real-time dashboard &
+      Unclear visualization, overcomplex layouts, poor labeling, Software bugs &
+      Conduct usability testing; iterative UI design reviews; gather instructor feedback &
+      Dashboard must undergo user-centered design testing before deployment \\
+      \hline
+      Display real-time dashboard feedback & Real-time dashboard lag &
+      Delayed feedback, ineffective responses &
+      Network latency, computation overload, inefficient refresh rate &
+      Optimize data pipeline; limit visual update rate; provide timestamp indicators &
+      Dashboard must display latency indicator and ensure refresh rate ≤ 2s delay \\
+      \hline
+      Manage participant data securely &
+      Privacy and consent violations if linked to identifiable gaze records &
+      Breach of confidentiality; ethical non-compliance &
+      Improper anonymization; insecure linkage between datasets &
+      De-identify all participant data; IRB/ethics protocol compliance &
+      No personal identifiers may be stored with gaze data in analysis tables \\
+      \hline
+      Analyze gaze data & Algorithmic errors in data interpretation &
+      Inaccurate engagement conclusions; invalid study results &
+      Incorrect model logic, poor calibration, inadequate testing &
+      Implement unit tests and verification datasets; peer review of algorithms &
+      All data analysis modules must be verified with ground-truth calibration data \\
+      \hline
+      Analyze correlation models & Bias in assumed correlations between gaze and supplementary data &
+      Misleading findings about engagement; false causal interpretations &
+      Overfitting, poor study design, unverified statistical assumptions &
+      Include bias detection procedures; statistical validation before reporting &
+      Correlation models must be reviewed by study supervisor before use \\
+      \hline
+      Collect survey responses & Missing or incomplete responses &
+      Reduced accuracy of analysis; gaps in participant context &
+      Participant non-response, survey fatigue, technical form errors &
+      Enforce mandatory fields; data completeness checks; participant reminders &
+      Survey platform must validate completeness before submission \\
+      \hline
+      Collect self-assessment data & Misreporting in self-assessment &
+      Inaccurate correlation between gaze and engagement &
+      Participant subjectivity, misunderstanding questions &
+      Include validation questions; statistical outlier checks &
+      Survey must include cross-check items to detect inconsistent answers \\
+      \hline
+      Store and manage study data & Data corruption or loss &
+      Loss of study data; incomplete analysis &
+      Disk failure, interrupted file writes, inadequate backup &
+      Regular data backups; use redundant cloud storage &
+      System must maintain daily backups and integrity checksums \\
+      \hline
+      Operate eye-tracking hardware & Hardware malfunction & 
+      Incorrect gaze readings; unreliable data &
+      Sensor misalignment, firmware issues, physical damage &
+      Periodic calibration and maintenance logs &
+      Device must auto-check calibration before each session \\
+      \hline
+      Control experimental environment & Inconsistent environmental conditions (lighting, seating layout) &
+      Reduced accuracy or participant exclusion &
+      Poor classroom setup or uncontrolled environment &
+      Standardize setup; log environmental parameters &
+      Experiment setup must follow documented calibration standards \\
+      \hline
+      Manage participant comfort and consent & Student discomfort or awareness of monitoring &
+      Altered natural behavior; reduced validity of gaze data &
+      Obtrusive hardware placement; insufficient consent briefing &
+      Conduct pre-study familiarization sessions; maintain unobtrusive setup &
+      Participants must receive clear consent and explanation before recording \\
+      \hline
+      Map gaze data to visual stimuli & Inaccurate handling of gaze data when not aligned to visual stimuli (e.g., off-screen gaze) &
+      Misinterpretation of focus or attention zones &
+      Incomplete mapping algorithms, field-of-view errors &
+      Include “off-screen” classification; improve mapping calibration &
+      Gaze mapping algorithm must identify off-screen events separately \\
+      \hline
+      Capture gaze data & Catching private information through gaze data &
+      Unintentional collection of sensitive personal data, breach of user privacy &
+      Excessive gaze capture scope; lack of masking zones &
+      Limit gaze tracking to relevant visual field; apply region masking &
+      Tracking software must enforce spatial limits for data capture \\
+      \hline
+    \end{tabularx}%
+  }
+\end{table}
+
+% Restore normal margins after the table page
+\restoregeometry
 
 \section{Safety and Security Requirements}
+\begin{itemize}
 
-\wss{Newly discovered requirements.  These should also be added to the SRS.  (A
-rationale design process how and why to fake it.)}
+    \item \textbf{SR: Dashboard must undergo user-centered design testing before deployment}  
+    \textit{Rationale:} Prevents confusing layouts or visual errors that could mislead instructors.  
+    \textit{How to fake it:} Create a Figma prototype or lightweight web mockup to gather early user feedback before full implementation.
+
+    \item \textbf{SR: Dashboard must display latency indicator and ensure refresh rate $\leq$ 2s delay}  
+    \textit{Rationale:} Helps instructors detect real-time lag, maintaining trust in displayed data.  
+    \textit{How to fake it:} Simulate delayed data flow in a web app and display a latency counter overlay to visualize timing performance.
+
+    \item \textbf{SR: No personal identifiers may be stored with gaze data in analysis tables}  
+    \textit{Rationale:} Prevents accidental re-identification of participants and ensures privacy compliance.  
+    \textit{How to fake it:} Use mock datasets with anonymized IDs; verify database schemas exclude personal fields like names or emails.
+
+    \item \textbf{SR: All data analysis modules must be verified with ground-truth calibration data}  
+    \textit{Rationale:} Ensures algorithmic correctness and prevents spurious interpretations.  
+    \textit{How to fake it:} Compare model outputs against a pre-labeled “gold-standard” dataset and adjust calibration coefficients manually.
+
+    \item \textbf{SR: Correlation models must be reviewed by study supervisor before use}  
+    \textit{Rationale:} Reduces the risk of biased or invalid interpretations from flawed correlation assumptions.  
+    \textit{How to fake it:} Prepare a simple statistical summary (e.g., scatter plots, R-values) for supervisor review before final reporting.
+
+    \item \textbf{SR: Survey platform must validate completeness before submission}  
+    \textit{Rationale:} Prevents missing participant responses that could distort analysis.  
+    \textit{How to fake it:} Implement basic “required field” validation in Google Forms or a test web form.
+
+    \item \textbf{SR: Survey must include cross-check items to detect inconsistent answers}  
+    \textit{Rationale:} Improves reliability of self-reported data by identifying careless or contradictory responses.  
+    \textit{How to fake it:} Add duplicated or rephrased items (e.g., “I often multitask in class” vs. “I rarely focus on one thing”) and verify internal consistency.
+
+    \item \textbf{SR: System must maintain daily backups and integrity checksums}  
+    \textit{Rationale:} Ensures data persistence and prevents silent corruption or accidental loss.  
+    \textit{How to fake it:} Automate daily file copies to a secondary directory; generate simple MD5 checksums to confirm integrity.
+
+    \item \textbf{SR: Device must auto-check calibration before each session}  
+    \textit{Rationale:} Guarantees consistent hardware accuracy and avoids drift-related errors.  
+    \textit{How to fake it:} Simulate calibration pop-ups in the user interface or log “calibration passed” events before recording.
+
+    \item \textbf{SR: Experiment setup must follow documented calibration standards}  
+    \textit{Rationale:} Reduces environmental variability and improves reproducibility between sessions.  
+    \textit{How to fake it:} Create a short setup checklist (lighting, distance, seating layout) and follow it during each test run.
+
+    \item \textbf{SR: Participants must receive clear consent and explanation before recording}  
+    \textit{Rationale:} Ensures ethical compliance and participant comfort.  
+    \textit{How to fake it:} Use a digital consent form that requires an explicit “I agree” before data collection begins.
+
+    \item \textbf{SR: Gaze mapping algorithm must identify off-screen events separately}  
+    \textit{Rationale:} Prevents incorrect attribution of gaze to visual elements, improving data validity.  
+    \textit{How to fake it:} Add an “off-screen” flag to simulated gaze data whenever coordinates fall outside display bounds.
+
+    \item \textbf{SR: Tracking software must enforce spatial limits for data capture}  
+    \textit{Rationale:} Prevents unintentional recording of private or irrelevant information.  
+    \textit{How to fake it:} Restrict capture areas in code or simulate bounding boxes in visualization tools (e.g., OpenCV or Figma overlays).
+
+\end{itemize}
 
 \section{Roadmap}
+The safety requirements that will be implemented during the capstone are the following: 
+\begin{itemize}
+    \item Dashboard must undergo user-centered design testing before deployment
+    \item Dashboard must display latency indicator and ensure refresh rate $\leq$ 2s delay
+    \item No personal identifiers may be stored with gaze data in analysis tables
+\end{itemize}
+The other safety requirements will be referred to once again to see which safety requirements have been met and which ones will still need to be worked on. 
 
-\wss{Which safety requirements will be implemented as part of the capstone timeline?
-Which requirements will be implemented in the future?}
-
-\newpage{}
-
+\newpage
 \section*{Appendix --- Reflection}
-
-\wss{Not required for CAS 741}
-
-\input{../Reflection.tex}
-
 \begin{enumerate}
-    \item What went well while writing this deliverable? 
-    \item What pain points did you experience during this deliverable, and how
-    did you resolve them?
-    \item Which of your listed risks had your team thought of before this
-    deliverable, and which did you think of while doing this deliverable? For
-    the latter ones (ones you thought of while doing the Hazard Analysis), how
-    did they come about?
-    \item Other than the risk of physical harm (some projects may not have any
-    appreciable risks of this form), list at least 2 other types of risk in
-    software products. Why are they important to consider?
+    \item \textbf{What went well while writing this deliverable?}  
+    Referring to the lecture slides and examples made it straightforward to define hazards and structure the FMEA table. The example provided in class gave us a clear reference for formatting and scope. Collaboration also went smoothly since each team member contributed based on their familiarity with different system components.
+
+    \item \textbf{What pain points did you experience and how did you resolve them?}  
+    The hardest part was brainstorming realistic failure modes and their corresponding causes, effects, and mitigations. There were many possible directions, and it took time to identify the most relevant ones. We resolved this by discussing ideas as a team, researching similar projects, and organizing potential risks in a shared spreadsheet until we reached consensus.
+
+    \item \textbf{Which risks were known before, and which emerged during the Hazard Analysis?}  
+    A key known risk was data privacy and consent management, which we had anticipated early on. During the analysis, new risks emerged — such as algorithmic bias, calibration errors, and inconsistent environmental conditions — which helped us better understand how technical and human factors interact.
+
+    \item \textbf{Beyond physical harm, list at least two other types of software risk and why they matter.}  
+    \textit{Privacy and Ethical Risks:} Mishandling user data or collecting more information than necessary can breach confidentiality and damage user trust.  
+    \textit{Data Integrity Risks:} Inaccurate or corrupted data can lead to false conclusions or invalid results, reducing confidence in the system’s output.
+    
 \end{enumerate}
 
 \end{document}
