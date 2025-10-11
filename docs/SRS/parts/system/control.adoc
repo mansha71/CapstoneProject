@@ -5,10 +5,10 @@
 |===
 |Section | Version | Lead | Delivered | Reviewer | Approved 
 
-| **<<s1>>** | 0.1 | Angela Zeng | 10-10-2025 | All | 
-| **<<s2>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
-| **<<s3>>** | 0.1 | Manan Sharma | 10-10-2025 | All |
-| **<<s4>>** | 0.1 | Ann Shi | 10-10-2025 | All |
-| **<<s5>>** | 0.1 | Manan Sharma | 10-10-2025 | All |
-| **<<s6>>** | 0.1 | Manan Sharma | 10-10-2025 | All |
+| **<<s1>>** | 0.1 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<s2>>** | 0.1 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<s3>>** | 0.1 | Manan Sharma | 10-10-2025 | All | 10-10-2025
+| **<<s4>>** | 0.1 | Ann Shi | 10-10-2025 | All | 10-10-2025
+| **<<s5>>** | 0.1 | Manan Sharma | 10-10-2025 | All | 10-10-2025
+| **<<s6>>** | 0.1 | Manan Sharma | 10-10-2025 | All | 10-10-2025
 |===
