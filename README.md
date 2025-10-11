@@ -8,7 +8,7 @@ This project explores group eye tracking in classroom settings to better
 understand student attention and engagement. Using data from eye-tracking
 goggles, the system processes gaze information in real time and displays
 analytics on an instructor dashboard. The platform will support both live
-visualizations and post-session analysis.
+visualizations and post session analysis.
 
 The folders and files for this project are as follows:
 
