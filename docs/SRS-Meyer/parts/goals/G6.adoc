@@ -2,7 +2,21 @@
 === (G.6) Limitations and Exclusions
 
 ifdef::env-draft[]
-TIP: _Aspects that the system need not address. It states what the system will not do. This chapter addresses a key quality attribute of good requirements: the requirements must be delimited (or “scoped”). <<g6>> is not, however, the place for an analysis of risks and obstacles, which pertain to the project rather than the goals and correspondingly appears in chapter <<p6>>._  <<BM22>>
 endif::[]
 
-{emptysec}
+The following aspects are explicitly outside the scope of the system and will not be handled by developers:
+
+* **Not a Student-Facing Learning Platform**  
+  The system will not provide direct interfaces or personalized tools for students (e.g., dashboards, feedback reports, or gaze summaries). Students’ involvement is limited to being participants in data collection for research and instructional analytics.
+
+* **No Replacement for Instructor Pedagogy or Expertise**  
+  The system will not replace the instructor’s teaching judgment. Analytics serve as a decision-support tool rather than an automated teaching system.
+
+* **No Real-Time Individual Assessment or Grading**  
+  The system will not generate or influence student grades, performance evaluations, or attendance records. Eye-tracking data will not be used to make individual performance judgments.
+
+* **Limited Facial or Emotional Recognition**  
+  The system will not conduct facial expression analysis, emotion detection, or detailed identity recognition beyond gaze and positional tracking necessary for attention mapping.
+
+* **Privacy Enforcement Beyond System Scope**  
+  The system cannot prevent or control third-party recording or data sharing outside the platform. Privacy protection applies only to data collected and processed within the approved system boundary.

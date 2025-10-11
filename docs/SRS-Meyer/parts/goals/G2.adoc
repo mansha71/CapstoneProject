@@ -2,7 +2,6 @@
 === (G.2) Current situation
 
 ifdef::env-draft[]
-TIP: _Current state of processes to be addressed by the project and the resulting system. It describes the current situation, upon which the system is expected to improve_  <<BM22>>
 endif::[]
 
-{emptysec}
+Understanding how people share attention in real-world environments such as classrooms has long been a challenge for eye-tracking research. As a result, instructors currently lack access to real-time insights into where students direct their attention during learning activities. Without this immediate feedback, it becomes difficult to assess engagement, monitor collaboration, and adapt teaching strategies to enhance learning effectiveness. While existing tools and frameworks for eye-tracking are primarily designed for individual users in controlled environments, they do not easily scale to multi-person or large-group educational settings. The SocialEyes framework, developed by researchers at McMaster University, breaks down this barrier by enabling visualization of group eye-tracking data in social contexts such as classrooms and collaborative work. However, the current framework remains limited in its ability to provide education-specific features such as post-session analytics, real-time feedback, and integration with learning activities. This project seeks to address these gaps by extending the SocialEyes framework to support large-group eye-tracking in classroom environments, providing instructors with meaningful analytics to inform and improve teaching and learning processes.
