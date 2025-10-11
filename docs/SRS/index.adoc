@@ -18,3 +18,5 @@ include::metadata.adoc[]
 include::parts/core.adoc[]
 
 include::appendix/index.adoc[]
+
+include::reflections.adoc[]

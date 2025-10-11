@@ -6,10 +6,10 @@
 |===
 |Section | Version | Lead | Delivered | Reviewer | Approved 
 
-| **<<e1>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
-| **<<e2>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
-| **<<e3>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
-| **<<e4>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
-| **<<e5>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
-| **<<e6>>** | 0.1 | Angela Zeng | 10-10-2025 | All |
+| **<<e1>>** | 1.0 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<e2>>** | 1.0 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<e3>>** | 1.0 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<e4>>** | 1.0 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<e5>>** | 1.0 | Angela Zeng | 10-10-2025 | All | 10-10-2025
+| **<<e6>>** | 1.0 | Angela Zeng | 10-10-2025 | All | 10-10-2025
 |===
