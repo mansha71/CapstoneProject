@@ -1,0 +1,60 @@
+= Team Reflections
+:sectnums:
+:toclevels: 2
+
+== Reflection Questions
+
+[cols="1,5", options="header"]
+|===
+| Question | Answers
+
+| 1. What went well while writing this deliverable?
+|
+Angela:: +
+Ann:: +
+Ibrahim:: +
+Manan:: +
+Stanley:: +
+
+| 2. What pain points did you experience during this deliverable, and how did you resolve them?
+|
+Angela:: +
+Ann:: +
+Ibrahim:: +
+Manan:: +
+Stanley:: +
+
+| 3. How many of your requirements were inspired by speaking to your client(s) or their proxies (e.g. your peers, stakeholders, potential users)?
+|
+Angela:: +
+Ann:: +
+Ibrahim:: +
+Manan:: +
+Stanley:: +
+
+| 4. Which of the courses you have taken, or are currently taking, will help your team to be successful with your capstone project?
+|
+Angela:: +
+Ann:: +
+Ibrahim:: +
+Manan:: +
+Stanley:: +
+
+| 5. What knowledge and skills will the team collectively need to acquire to successfully complete this capstone project?  
+Examples: domain knowledge, software engineering skills, mechatronics, communication, writing, or management.
+|
+Angela:: +
+Ann:: +
+Ibrahim:: +
+Manan:: +
+Stanley:: +
+
+| 6. For each of the knowledge areas and skills identified above, what are at least two approaches to acquiring the knowledge or mastering the skill?  
+Which approach will each team member pursue, and why?
+|
+Angela:: +
+Ann:: +
+Ibrahim:: +
+Manan:: +
+Stanley:: +
+|===
