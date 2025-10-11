@@ -2,8 +2,9 @@
 === (G.1) Context and Overall Objectives
 
 ifdef::env-draft[]
-TIP: _High-level view of the project: organizational context and reason for building a system. It explains why the project is needed, recalls the business context, and presents the general business objectives._  <<BM22>>
 endif::[]
 
-{emptysec}
+
+Eye-tracking data offers a powerful means to understand how people share and direct their focus across various contexts, including classrooms. Instructors today have limited tools for gathering meaningful insights into student engagement and attention during lectures or group activities. This lack of visibility makes it difficult for educators to identify when students are struggling or disengaged, an issue further compounded by students’ reluctance to voice feedback in real time. Existing methods of collecting feedback, such as surveys and polls, are time-consuming to administer and often fail to capture nuanced moments of confusion or learning challenges. Despite the potential of eye-tracking technology to address these gaps, it remains largely unused in educational settings due to the lack of accessible, scalable platforms designed for classroom use. There is a clear need for a system that can capture and analyze gaze data in real time during learning activities, providing instructors with immediate, data-driven insights into student attention and participation. This capstone project addresses that need by developing a learning platform that integrates group eye-tracking into classroom contexts both synchronous and asynchronous to help educators better understand, adapt to, and enhance the learning experience.
+
 
