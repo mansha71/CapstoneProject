@@ -1,0 +1,31 @@
+@startuml
+!include ../_style/puml.style
+left to right direction
+
+actor Instructor
+actor Researcher
+
+package "Learning Outcome Integration <<System>>" {
+  rectangle "Upload Module" as Upload
+  rectangle "Synchronization Engine" as Sync
+  rectangle "Comparison Module" as Compare
+  rectangle "Correlation Highlighter" as Correlation
+  rectangle "Reporting/Visualization Module" as Report
+}
+
+Instructor --> Upload : Upload/Link Outcome Data
+Researcher --> Upload
+Upload --> Sync : Synchronize with Gaze Data
+Instructor --> Compare : Compare Engagement vs Performance
+Researcher --> Compare
+Compare --> Correlation : Identify Significant Correlations
+Correlation --> Report : Generate Reports/Charts
+Report --> Instructor
+Report --> Researcher
+
+note right of Correlation
+Highlights relation between
+attention patterns and
+learning outcomes
+end note
+@enduml
