@@ -1,0 +1,28 @@
+@startuml
+!include ../_style/puml.style
+left to right direction
+
+actor Instructor
+
+package "Analytics Dashboard <<System>>" {
+  rectangle "Authentication" as Auth
+  rectangle "Data Visualization Engine" as Viz
+  rectangle "Filtering Module" as Filter
+  rectangle "Insight Generator" as Insights
+  rectangle "Report Export Module" as Export
+}
+
+Instructor --> Auth : Login
+Auth --> Viz : Display Analytics
+Instructor --> Filter : Apply Filters
+Filter --> Viz : Adjust Visualizations
+Instructor --> Insights : Review Suggested Insights
+Instructor --> Export : Save/Export Report
+Export --> Instructor : Report/CSV
+
+note right of Insights
+Detects attention drops,
+provides suggested insights
+for teaching or research
+end note
+@enduml
