@@ -1,8 +1,18 @@
 [#p5,reftext=P.5]
-=== (P.5) Required technology elements
+=== (P.5) Risks and Mitigation Analysis
 
-ifdef::env-draft[]
-TIP: _External systems, hardware and software, expected to be necessary for building the system. It lists external technology elements, such as program libraries and hardware devices, that the project is expected to require. Although the actual use of such products belongs to design and implementation rather than requirements, it is part of the requirements task to identify elements whose availability is critical to the success of the project — an important element of risk analysis (<<p6>>)._  <<BM22>>
-endif::[]
+**Risks**
 
-{emptysec}
+1. *Data Security and Identification.* 
+Data and videos from the raw feed can reveal indentities of the users. When we expose the raw information from students, we're rasing privacy and ethical concerns. We also risk leaking recording sensitive information from the student (such as login credentials). To mitigate this issue, we will never expose raw eye tracking video and we will anonymize outputs as they are taken in. Role based access on the dashboard will be present to prevent unauthorized individuals from accessing the information. 
+
+2. *Real-time pipeline performance.* 
+With so many devices connected, the live analytics may lag or drop if there are spikes in input rates. This may ruin the experience and will undermine the confidence the application. To mitigate this, we will reduce input and frequency, and also apply lightweight filtering of data before visualization, making sure the pipeline’s limit is not met.
+
+**Threats**
+
+1. *System Scalability.* 
+Scaling from a single Neon device to several brings along synchronization and performance issues, and classrooms have different layouts, which stretch the UI. Mitigation: test on a single device first, then sequentially scale the architecture to support multiple inputs, and make the dashboard elements modular so layouts can be reconfigured with minimal code alteration. Make real-time analytics light enough to scale across numerous devices.
+
+2. *Hardware Malfunction.* 
+If a device disconnects or there is an issue with the connection, the live capture might stop and the dashboard may appear broken. To mitigate this, we will have an activity section that showcases the connected devices and also updates the page is a device gets disconnected. This lets the dashboard function even if a device is lost during the session.

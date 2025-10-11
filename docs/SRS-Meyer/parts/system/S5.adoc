@@ -1,8 +1,69 @@
 [#s5,reftext=S.5]
 === (S.5) Prioritization
 
-ifdef::env-draft[]
-TIP: _Classification of the behaviors, interfaces and scenarios (<<s2>>, <<s3>> and <<s4>>) by their degree of criticality. It is useful in particular if during the course of the project various pressures force the team to drop certain functions._  <<BM22>>
-endif::[]
+=== Priority Table for Data Ingestion Module
+|===
+| Requirement ID | Requirement name | Priority Level | Reasoning
+| <<FR-1>> | Dual Operational Modes (Recording & Streaming) | High (Must Have) | Core capability enabling both live analytics and offline research.
+| <<FR-2>> | Session Control (Start, Pause, Resume, Stop) | High (Must Have) | Ensures ethical and flexible management of recording sessions.
+| <<FR-3>> | Neon Device Integration via API | High (Must Have) | Fundamental data input pathway; system cannot operate without it.
+| <<FR-5>> | NTP Time Synchronization | High (Must Have) | Critical for temporal accuracy across all data streams.
+| <<FR-6>> | Connection Recovery | Medium (Should Have) | Improves robustness during classroom use but not vital for MVP.
+| <<FR-4>> | Central Camera Integration | Low (Could Have) | Stretch feature for multi-person analysis in later versions.
+|===
 
-{emptysec}
+=== Priority Table for Data Processing & Analytics
+|===
+| Requirement ID | Requirement name | Priority Level | Reasoning
+| <<FR-7>> | Data Filtering and Calibration Correction | High (Must Have) | Required to ensure reliability of all computed gaze metrics.
+| <<FR-8>> | Homography-Based Gaze Mapping | High (Must Have) | Enables projection of gaze into shared coordinate space.
+| <<FR-9>> | Real-Time Engagement Metrics | High (Must Have) | Provides live insights into student attention and engagement.
+| <<FR-10>> | Post-Session Summary Analytics | Medium (Should Have)| Valuable for long-term research but secondary to real-time mode.
+| <<FR-24>> | Replay and Validation | Low (Could Have) | Useful for debugging and validation; not essential initially.
+|===
+
+=== Priority Table for Backend Services
+|===
+| Requirement ID | Requirement name | Priority Level | Reasoning
+| <<FR-11>> | Local and Cloud Storage | High (Must Have) | Ensures secure, persistent data storage for both testing and research.
+| <<FR-12>> | Session Metadata Tracking | High (Must Have) | Enables traceability and supports ethical recordkeeping.
+| <<FR-13>> | REST/GraphQL APIs | High (Must Have) | Core communication layer between frontend and backend.
+| <<FR-22>> | Session Traceability Links | Medium (Should Have) | Supports reproducibility and verification in future studies.
+| <<FR-23>> | Configurable Parameters | Medium (Should Have) | Adds flexibility across environments but not required early on.
+|===
+
+=== Priority Table for Instructor Dashboard
+|===
+| Requirement ID | Requirement name | Priority Level | Reasoning
+| <<FR-14>> | Role-Based Authentication | High (Must Have) | Protects sensitive classroom and participant data.
+| <<FR-15>> | Real-Time Visual Analytics| High (Must Have) | Central to the system’s interactive classroom functionality.
+| <<FR-16>> | Data Export Options | Medium (Should Have) | Useful for research documentation but not required for MVP.
+| <<FR-17>> | Role-Based Views | Low (Could Have) | Stretch enhancement for separating researcher and instructor roles.
+|===
+
+=== Priority Table for Supporting Infrastructure
+|===
+| Requirement ID | Requirement name | Priority Level | Reasoning
+| <<FR-18>> | Logging and Monitoring| Medium (Should Have) | Facilitates diagnostics and long-term stability.
+| <<FR-19>> | Dockerized Deployment | High (Must Have) | Ensures reproducibility and consistency across systems.
+| <<FR-20>> | CI/CD Pipeline | Medium (Should Have) | Promotes maintainability but not mandatory for prototype.
+|===
+
+=== Priority Table for Non-Functional Requirements
+|===
+| Requirement ID | Requirement name | Priority Level | Reasoning
+| <<NFR-1>> | Real-Time Latency (≤1s) | High (Must Have) | Essential for meaningful live feedback during sessions.
+| <<NFR-3>> | Synchronization Accuracy (±20ms) | High (Must Have) | Ensures precise alignment for valid gaze analytics.
+| <<NFR-5>> | Automatic Recovery | Medium (Should Have) | Improves reliability but not essential for Rev 0.
+| <<NFR-9>> | Encrypted Communication | High (Must Have) | Protects data transmission and ensures privacy compliance.
+| <<NFR-10>> | Role-Based Access Control (RBAC) | High (Must Have) | Prevents unauthorized access to classroom analytics.
+| <<NFR-11>> | Anonymized Data Storage | High (Must Have) | Required to meet research ethics and privacy guidelines.
+| <<NFR-12>> | Cross-Platform Deployment | Medium (Should Have) | Adds flexibility across systems but not vital for proof-of-concept.
+| <<NFR-14>> | Automated CI Testing | Medium (Should Have) | Ensures consistent build quality over time.
+| <<NFR-19>> | License Compliance | High (Must Have) | Required to legally use the SocialEyes framework in academia.
+| <<NFR-20>> | Non-Commercial Usage Restriction | High (Must Have) | Ensures compliance with research-only licensing.
+|===
+
+Requirements were prioritized using the MoSCoW method based on their impact on core functionality, user experience, research ethics, and feasibility. High-priority (“Must Have”) items are essential for capturing, processing, and securely visualizing eye-tracking data. Medium-priority (“Should Have”) items improve usability, maintainability, and flexibility but are not mandatory for the Rev 0 proof-of-concept. Low-priority (“Could Have”) items are stretch goals for later revisions (e.g., multi-device central camera workflows, replay tooling).
+
+Security concerns played a central role. Encryption, authentication/authorization, and anonymization (<<FR-14>>, <<NFR-9>>, <<NFR-11>>, <<NFR-10>>) are “Must Have” because they protect participant data and ensure compliance with institutional research ethics; without them, classroom deployment would not be acceptable.
