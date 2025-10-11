@@ -6,7 +6,7 @@
 |===
 |Section | Version | Lead | Delivered on| Reviewer | Approved on
 
-| **<<g1>>** |  |  |  |  |
+| **<<g1>>** | 1 | Ann Shi | 10/09/2025 | All | 10/10/2025
 | **<<g2>>** |  |  |  |  |
 | **<<g3>>** |  |  |  |  |
 | **<<g4>>** |  |  |  |  |
