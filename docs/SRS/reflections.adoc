@@ -11,7 +11,7 @@
 | 1. What went well while writing this deliverable?
 |
 Angela:: +
-Ann:: +
+Ann:: Overall, the deliverable went well. I took the feedback received from the previous milestone (Development Plan and Goals) and applied it to this milestone. For example, I fixed the goals that I wrote in for the Goals section of this deliverable based on critiques I got on the goals being too specific and more like functional requirements. +
 Ibrahim:: +
 Manan:: +
 Stanley:: +
@@ -19,7 +19,7 @@ Stanley:: +
 | 2. What pain points did you experience during this deliverable, and how did you resolve them?
 |
 Angela:: +
-Ann:: +
+Ann:: This deliverable however, was very long and time consuming. I felt that if there was more time given, I would’ve had more time to communicate with professors and my teammates for a more aligned report. +
 Ibrahim:: +
 Manan:: +
 Stanley:: +
@@ -27,7 +27,7 @@ Stanley:: +
 | 3. How many of your requirements were inspired by speaking to your client(s) or their proxies (e.g. your peers, stakeholders, potential users)?
 |
 Angela:: +
-Ann:: +
+Ann:: We mainly got our requirements through our supervisors. During our meetings together as well as a google docs of our main goals and functional requirements of the project, we were able to get a good understanding of the different types of functional and non-functional requirements of the project. +
 Ibrahim:: +
 Manan:: +
 Stanley:: +
@@ -35,7 +35,7 @@ Stanley:: +
 | 4. Which of the courses you have taken, or are currently taking, will help your team to be successful with your capstone project?
 |
 Angela:: +
-Ann:: +
+Ann:: The previous course I took, Software Requirements (3RA3) with Dr. Mosser was extremely beneficial in this deliverable. I continuously referenced my old project / report that I had to submit for that course, as it was very reminiscent of this deliverable. +
 Ibrahim:: +
 Manan:: +
 Stanley:: +
@@ -44,7 +44,7 @@ Stanley:: +
 Examples: domain knowledge, software engineering skills, mechatronics, communication, writing, or management.
 |
 Angela:: +
-Ann:: +
+Ann:: We will definitely need to set up weekly meetings with our supervisors to collect more requirements as the project goes on. So far, we have already done that. We need to collect more feedback on the details of the functional requirements, as well as any metrics from the professor on how to achieve our goals. We will spend time on in-person meetings with our supervisors to learn more about the existing framework we are building upon (SocialEyes) as well as the equipment needed to interact with the system (eye-tracking glasses). Aside from project knowledge, our group members will need to spend some time on the side to learn more about web development for the dashboard as well as how to critically deal with large data and provide analysis and insights. +
 Ibrahim:: +
 Manan:: +
 Stanley:: +
@@ -53,7 +53,7 @@ Stanley:: +
 Which approach will each team member pursue, and why?
 |
 Angela:: +
-Ann:: +
+Ann:: One of the ways we can pursue these sources of knowledge is through documentation as well as online Youtube tutorials to learn any software skills required. For example, for members who are unfamiliar with full-stack development, there are a wide variety of different youtube tutorials that can be used to learn these skills. +
 Ibrahim:: +
 Manan:: +
 Stanley:: +
