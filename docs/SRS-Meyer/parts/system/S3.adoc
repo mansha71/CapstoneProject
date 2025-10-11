@@ -1,8 +1,38 @@
 [#s3,reftext=S.3]
 === (S.3) Interfaces
 
-ifdef::env-draft[]
-TIP: _How the system makes the functionality of <<s2>> available to the rest of the world, particularly user interfaces and program interfaces (APIs). It specifies how that functionality will be made available to the rest of the world, including people (users) and other systems. These are interfaces provided by the system to the outside; the other way around, interfaces from other systems, which the system may use, are specified in <<e2>>._  <<BM22>>
-endif::[]
+==== (S.3.1) APIs
 
-{emptysec}
+===== (S.3.1.1) SessionManagementAPI
+
+The SessionManagementAPI manages the lifecycle of the tracking session within a classroom environment. This enables instructors to start a session, monitor, and also end the tracking session for a given lecture. This should also make sure that all of the connected devices are registered properly. 
+
+===== (S.3.1.2) EyeDataAPI
+
+This API handles the intake of the real-time data from the eye tracking devices and makes it available for analysis. This makes sure that the data integrity is kept while also transmitting multiple devices’ inputs simultaneously. 
+
+
+===== (S.3.1.3) AnalyticsAPI
+
+The AnalyticsAPI API provides computed analytics results for both real-time and post-session dashboards for the instructors. It allows them to see data related to the eye tracking data, attention heatmaps, and metrics for visual engagement. 
+
+.External API exposed by {project-title}
+image::models/S3.svg[scale=70%,align="center"]
+
+
+==== (S.3.2) Wireframe Mockups
+
+===== (S.3.2.1) Live Dashboard
+
+The live dashboard interface is where the instructor can monitor the classroom activity from the eyetracking data. During active sessions, this dashboard can visualize the live gaze data, attention trends, and device connectivity. This dashboard should display the ongoing session information and include controls for starting, pausing, or ending an ongoing session. 
+
+.User: User Profile Page Layout
+image::models/S3a.svg[scale=70%,align="center"]
+
+===== (S.3.2.2) Session Summary
+
+After each session, instructors will be able to review the analytics data through this interface. This page should provide a summary of the attention levels, the metrics of engagement and other time-based patterns from the session. This should show the eyesight heatmaps and engagement charts. 
+
+.User: Challenge Selection Page Layout
+image::models/S3b.svg[scale=70%,align="center"]
+
