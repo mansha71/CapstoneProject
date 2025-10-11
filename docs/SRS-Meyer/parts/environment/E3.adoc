@@ -34,3 +34,4 @@ endif::[]
 *Engineering Decisions*::
 - The system will prioritize classroom-scale scalability (typical class size *TBD users*).
 - Advanced analyses (e.g., deep learning–based homography) will run offline/post-session due to hardware constraints on instructor devices.
+- All deployment will occur within containerized runtimes (e.g., Docker) to standardize development and testing environments.
