@@ -1,0 +1,40 @@
+[#g5,reftext=G.5]
+=== (G.5) High-level usage scenarios
+
+ifdef::env-draft[]
+endif::[]
+
+.High level use cases diagram 
+image::../models/highlevelusage.drawio.png[scale=70%,align="center"]
+
+**UC1: Conduct a Lecture with Eye-Tracking**
+
+1. Instructor logs into the learning platform using their account.  
+2. Instructor starts a lecture session with eye-tracking enabled.  
+3. The system activates group eye-tracking through classroom cameras or integrated headsets.  
+4. Real-time gaze data is collected and mapped to student identities.  
+5. The instructor can monitor live attention heatmaps and engagement indicators.  
+6. At the end of the session, summary analytics (e.g., attention distribution, gaze convergence) are automatically generated.
+
+---
+
+**UC2: Review Post-Session Analytics**
+
+1. Instructor logs into the dashboard after a lecture.  
+2. The system displays visual analytics (e.g., attention heatmaps, engagement timelines, group focus zones).  
+3. Instructor filters data by session, topic, or student group.  
+4. Instructor identifies segments where student attention decreased.  
+5. Instructor reviews suggested insights (e.g., “Attention drop detected during explanation slides”).  
+6. Instructor saves session summary or exports a report for research analysis.
+
+---
+
+**UC3: Integrate Learning Outcome Data**
+
+
+1. Instructor uploads or links external performance data (e.g., quiz scores, feedback forms).  
+2. The system synchronizes outcome data with gaze data timelines.  
+3. Instructor or researcher compares engagement patterns with learning performance.  
+4. The system highlights correlations between gaze focus and comprehension metrics.
+
+

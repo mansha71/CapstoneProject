@@ -1,0 +1,20 @@
+[#p1,reftext=P.1]
+=== (P.1) Roles and personnel
+
+- **Project Manager**: The project manager is responsible for managing the project timelines, meeting schedule, assignment of tasks and milestone tracking. They will make sure that everyone is algined on tasks and there are no blockers. 
+
+  
+
+- **Backend Lead**: The backend lead will be incharge of the design and build of the backend infrastructure. This includes the real time intaking and processing pipeline. They will ensure the system can effectively compute lightweight analytics live. 
+
+  
+
+- **UI/UX and Dashboard Lead**: The UI Lead will oversee the dashboard portion of the project, ensuring the user interface is usable, accessible, and visually consistent. They will work closely with the backend lead to integrate functionality with design  
+
+  
+
+- **Study Development Lead**: The Study Development lead will design the structure of the research study and guide the analysis of the collected data. They will collaborate with the team to translate raw data into meaningful insights 
+
+  
+
+- **Privacy and QA Lead**: The Privacy and QA Lead will enforce privacy and anonymization for the project and make sure these requirements are met effectively. They will also control testing and make sure that quality standards are met. They will ensure that identities are kept safe and that defects are not present.

@@ -1,0 +1,21 @@
+== (G) Goals
+
+ifdef::env-draft[]
+endif::[]
+
+
+include::control.adoc[]
+
+include::G1.adoc[]
+
+include::G2.adoc[]
+
+include::G3.adoc[]
+
+include::G4.adoc[]
+
+include::G5.adoc[]
+
+include::G6.adoc[]
+
+include::G7.adoc[]

@@ -1,0 +1,12 @@
+[#g3,reftext=G.3]
+=== (G.3) Expected Benefits
+
+ifdef::env-draft[]
+endif::[]
+
+The successful completion of this project will significantly advance how instructors understand and respond to student engagement within classroom environments. By extending the SocialEyes framework to support real-time, large-group eye-tracking, the system will provide insight into how students collectively direct their attention during lectures, video viewings, or active learning sessions. Instructors will be able to observe patterns of shared or divergent focus such as whether students are attending to the instructor, learning materials, or their personal devices helping them better interpret engagement in real time.
+The system’s analytics capabilities will further transform how instructional feedback is gathered and applied. Post-session analytics will enable instructors to review detailed visualizations of when and where attention shifted throughout a lecture, offering data-driven perspectives on which moments captured or lost student engagement. Meanwhile, real-time analytics will allow instructors to receive live indicators when collective attention begins to drift, prompting immediate, informed adjustments to their teaching strategies.
+Ultimately, the project will help to advance existing group eye-tracking technology, advancing it from post-hoc data analysis to real-time, classroom-ready educational analytics. The goals that present these benefits, as well as the stakeholders that they affect, can be seen in this goal model diagram:
+
+.Goal model
+image::../models/goal_diagram.drawio.png[scale=70%,align="center"]

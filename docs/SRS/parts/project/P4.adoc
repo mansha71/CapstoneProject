@@ -1,0 +1,13 @@
+[#p4,reftext=P.4]
+=== (P.4) Required Technology Elements
+
+
+- **Real-Time Data Intake and Processing:** The data from Pupul Labs Neon should be processed into a Python pipeline that processing the data and extracts metrics for live users. The transfer and handling of the dta should be secure and anonomyized. 
+
+  
+
+- **Instructor dashboard and visualization:** There should a dashboard for the instructor that shows real time and post session analytics from the teaching session. The dashboard should be responsive and easy to manuever. Data should be presented concisely and look applealing
+
+  
+
+- **Session data storage and retention:** Storage of data from the devices should be in a relational database to make analysis and reproducing the data quick. Only required fields will be stored and access will be guarded to prevent linking back data to users.

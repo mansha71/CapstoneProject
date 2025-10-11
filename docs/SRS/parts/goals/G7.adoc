@@ -1,0 +1,53 @@
+[#g7,reftext=G.7]
+=== (G.7) Stakeholders and requirements sources
+
+ifdef::env-draft[]
+endif::[]
+
+
+.List of stakeholders
+[options="header",cols="1,1,1"]
+|===
+|Stakeholder |Persona |Category
+|Instructors |Professor Lee |Direct
+|Instructors |Professor Alvarez |Direct
+|Researchers |Dr. Nguyen |Direct
+|Students |N/A |Indirect
+|Developers |N/A |Indirect
+|=== 
+.Table 1: Stakeholders for Capstone System
+
+
+[#g7.1,reftext=G.7]
+==== (G.7.1) Direct Stakeholders
+
+* **Instructors**  
+  Instructors are the primary stakeholders of the system. They will utilize the platform to gain insights into student attention patterns, group engagement, and collaborative behaviors during classroom or video-based learning sessions. Their main objectives include improving teaching effectiveness, identifying attention lapses, and adapting instructional strategies in real time or post-session.  
+  Instructors of the app are relevant to the overall objective of the app as their experience, satisfaction, and feedback will significantly impact the success of the product.
+
+  * **Professor Lee (University Instructor)**  
+    A new university instructor at McMaster who teaches large first-year lectures and struggles to gauge when students lose focus. She is passionate about teaching and does her best to create an engaging lecture with a mix of different learning styles, e.g., visuals in her presentation slides and in-class exercises. She often finds that class participation is lower than desired. She wants quick visualizations that summarize when and where engagement drops during class so that she can act accordingly.
+
+  * **Professor Alvarez (Program Director)**  
+    Dr. Alvarez is the Program Director for the undergraduate Engineering program at McMaster University. With over a decade of experience in curriculum development and academic planning, she ensures courses align with accreditation requirements. She frequently reviews student feedback and course evaluations to identify areas where the curriculum could better engage students. Traditional feedback mechanisms (like surveys and grades) provide only partial insights, so she is interested in using aggregated gaze analytics to gain a clearer picture of how students interact with course material across multiple classes, identifying patterns of disengagement or confusion at the program level.
+
+* **Researchers**  
+  Researchers are key stakeholders who use the system to collect, study, and interpret eye-tracking data for research on human attention and cognitive engagement. They focus on data accuracy, synchronization with other learning metrics (e.g., quiz performance, interaction logs), and the ability to export anonymized data for statistical or machine learning analyses. Their requirements emphasize data integrity, privacy, repeatability, and transparency of gaze tracking algorithms. Researchers also serve as advisors for experimental design and may influence how data is stored, anonymized, and ethically shared.
+
+  * **Dr. Nguyen (Educational Researcher)**  
+    Dr. Nguyen is an educational researcher at McMaster University specializing in cognitive science and learning analytics. With a background in psychology and data science, she studies how visual attention, group interaction, and engagement dynamics influence student learning outcomes. She examines how instructors can use real-time feedback from classroom eye-tracking data to identify disengagement early and adapt teaching methods. She collaborates with instructors to collect eye-tracking and behavioral data from live lectures and lab sessions. Dr. Nguyen values data accuracy, ethical data collection, and reproducibility. She needs a platform that can automatically aggregate, anonymize, and visualize group-level gaze data while allowing her to export datasets for quantitative analysis. Her ultimate goal is to publish evidence-based studies that advance understanding of how attention patterns relate to student collaboration and instructional effectiveness.
+
+[#g7.2,reftext=G.7]
+==== (G.7.2) Indirect Stakeholders
+
+* **Students**  
+  Students are indirect stakeholders. While they do not interact directly with the platform, they are participants whose behavior and gaze patterns are analyzed to improve instructional quality and learning outcomes. Their needs are primarily ethical and privacy-related, ensuring their data is collected transparently, stored securely, and only used for approved educational and research purposes. They benefit indirectly from improved course delivery, adaptive teaching strategies, and more engaging learning experiences based on group-level insights.
+
+* **Developers**  
+  Developers are indirect stakeholders responsible for designing, building, and maintaining the system that collects, processes, and visualizes gaze and engagement data. While they do not interact with the system in a teaching or research capacity, their work directly impacts the reliability, usability, and security of the platform. Developers must ensure that the system performs efficiently, handles large-scale data securely, and provides accurate analytics without introducing privacy risks.
+
+[#g7.3,reftext=G.7]
+==== (G.7.3) Requirement Sources
+
+* **Personal Information Protection and Electronic Documents Act (PIPEDA)**  
+  PIPEDA is a federal Canadian law that sets out the ground rules for how private organizations process and use personal information of their customers. It protects the data privacy of Canadian citizens when using digital or non-digital products. PIPEDA is relevant to a system like ACME because user information must be collected to create meaningful real-time and post-session analysis. This data and its processing must conform to federal privacy regulations.  https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/r_o_p/
