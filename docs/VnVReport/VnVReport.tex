@@ -54,12 +54,6 @@ in.}
 
 \tableofcontents
 
-\listoftables
-\wss{Remove this section if it isn't needed}
-
-\listoffigures
-\wss{Remove this section if it isn't needed}
-
 \newpage
 
 \section{Symbols, Abbreviations, and Acronyms}
@@ -90,49 +84,60 @@ The plan will detail the methods, tools, and responsibilities involved in increa
 
 \subsection{Summary}
 
-\wss{Say what software is being tested.  Give its name and a brief overview of
-  its general functions.}
+The software being tested is an enhanced version of the \textbf{SocialEyes} framework, a system originally designed for recording and analyzing group gaze data. This project extends the framework to support \textbf{large-group eye-tracking in classroom environments}, implementing both post-session and real-time analytics for instructors to gain insights into their students and teaching.\newline
+
+The system consists of three primary components:
+
+\begin{itemize}
+    \item \textbf{Instructor Dashboard with RBAC:} Presents gaze and engagement data in a clear, interpretable format.
+    \item \textbf{Post-Session Analytics Module:} Provides aggregated insights to evaluate attention patterns and group interactions after class.
+    \item \textbf{Real-Time Analytics Module:} Delivers live feedback to instructors during lectures to support adaptive teaching.
+\end{itemize}
+
+Together, these components aim to enhance instructors’ understanding of student engagement and contribute to research on attention and collaboration in learning environments.
 
 \subsection{Objectives}
+This project aims to extend the existing SocialEyes system to support real-time session analytics through the integration of a lightweight computer vision algorithm that can efficiently map gaze points from egocentric to central views without compromising accuracy. Verification tests will focus on ensuring that the implemented models will perform correctly and consistently under real-time conditions.
 
-\wss{State what is intended to be accomplished.  The objective will be around
-  the qualities that are most important for your project.  You might have
-  something like: ``build confidence in the software correctness,''
-  ``demonstrate adequate usability.'' etc.  You won't list all of the qualities,
-  just those that are most important.}
+Secondary objectives include the creation of the instructor dashboard for visualizing gaze data and providing analytics. Together, these components aim for easy interpretation of gaze-based feedback for instructors to provide useful feedback.
 
-\wss{You should also list the objectives that are out of scope.  You don't have 
-the resources to do everything, so what will you be leaving out.  For instance, 
-if you are not going to verify the quality of usability, state this.  It is also 
-worthwhile to justify why the objectives are left out.}
+Certain objectives will intentionally be excluded due to project constraints. For instance, full verification of the underlying SuperPoint and SuperGlue models and other third-party libraries will not be performed, as these components are assumed to have been previously validated by their original developers. Additionally, large-scale usability testing with diverse participant groups is beyond the project’s current timeframe and resources. 
 
-\wss{The objectives are important because they highlight that you are aware of 
-limitations in your resources for verification and validation.  You can't do everything, 
-so what are you going to prioritize?  As an example, if your system depends on an 
-external library, you can explicitly state that you will assume that external library 
-has already been verified by its implementation team.}
+
 
 \subsection{Extras}
+This project will include the following extra deliverables that were confirmed during the initial meeting with the project supervisors.
 
-\wss{Summarize the extras (if any) that were tackled by this project.  Extras
-can include usability testing, code walkthroughs, user documentation, formal
-proof, GenderMag personas, Design Thinking, etc.  Extras should have already
-been approved by the course instructor as included in your problem statement.
-You can use a pull request to update your extras (in TeamComposition.csv or
-Repos.csv) if your plan changes as a result of the VnV planning exercise.}
+\begin{enumerate}
+    \item \textbf{Code Walkthrough Report} \\
+    This will be a thorough documentation of the files and folders in the GitHub repository associated with the project.
+    
+    \item \textbf{User Instruction Video} \\
+    This will be an instructional video demonstrating how to interact with the dashboard deliverable of the project for each of the user roles (e.g., instructor).
+\end{enumerate}
+
 
 \subsection{Relevant Documentation}
+The Verification and Validation (V\&V) Plan is dependent on and supported by several key project documents that define the foundation, scope, and success criteria for the group eye-tracking learning platform. These documents collectively guide how requirements are verified and validated throughout the development process.
+\newline
 
-\wss{Reference relevant documentation.  This will definitely include your SRS
-  and your other project documents (design documents, like MG, MIS, etc).  You
-  can include these even before they are written, since by the time the project
-  is done, they will be written.  You can create BibTeX entries for your
-  documents and within those entries include a hyperlink to the documents.}
+\textbf{Software Requirements Specification (SRS)}
+\newline
+\newline
+The \textit{Software Requirements Specification (SRS)} defines the functional and non-functional requirements of the system, serving as the primary reference for the verification process. It specifies what the system must do, how it should perform, and the constraints under which it must operate. Each verification test will be mapped to one or more requirements defined in the SRS.
+\newline
 
-\citet{SRS}
+\textbf{Development Plan}
+\newline
+\newline
+The \textit{Development Plan} outlines the project’s implementation roadmap, including project decomposition, proof-of-concept demonstrations, and the technologies used to conduct it. It informs the scheduling and prioritization of verification and validation activities, ensuring that testing aligns with the overall development timeline and that each module is verified at appropriate stages in the lifecycle.
+\newline
 
-\wss{Don't just list the other documents.  You should explain why they are relevant and 
-how they relate to your VnV efforts.}
+\textbf{Problem Statement and Goals Document}
+\newline
+\newline
+The \textit{Problem Statement and Goals Document} defines the motivation, context, and intended impact of the project. It provides the conceptual foundation for validation activities, ensuring that the developed system not only meets its technical specifications but also fulfills its educational and research goals. This document reinforces the relevance of the V\&V Plan by providing a basis for why the tests being verified are crucial for achieving the project’s goals.
+\newline
 
 \section{Plan}
 
