@@ -3,6 +3,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{hyperref}
+\usepackage{graphicx}
 \hypersetup{
     colorlinks,
     citecolor=blue,
@@ -75,7 +76,7 @@ in.}
 
 \wss{symbols, abbreviations, or acronyms --- you can simply reference the SRS
   \citep{SRS} tables, if appropriate}
-
+ex
 \wss{Remove this section if it isn't needed}
 
 \newpage
@@ -238,59 +239,507 @@ the contents of the subsections.}
 
 \subsection{Tests for Functional Requirements}
 
+\subsection{Tests for Functional Requirements}
+
 \wss{Subsets of the tests may be in related, so this section is divided into
-  different areas.  If there are no identifiable subsets for the tests, this
+  different areas. If there are no identifiable subsets for the tests, this
   level of document structure can be removed.}
 
 \wss{Include a blurb here to explain why the subsections below
-  cover the requirements.  References to the SRS would be good here.}
+  cover the requirements. References to the SRS would be good here.}
 
-\subsubsection{Area of Testing1}
+This subsection provides concrete, executable tests for all Functional Requirements (FRs) in the SRS.
+Tests are grouped by subsystem: Data Acquisition and Ingestion; Data Processing and Analytics; Data
+Management and Backend Services; Visualization and Dashboard Interface; and Supporting Infrastructure
+(and Stretch). Each test specifies Control, Initial State, Input, Output (expected result), Test Case
+Derivation, Test Data / Artefacts, and How the test will be performed.
 
-\wss{It would be nice to have a blurb here to explain why the subsections below
-  cover the requirements.  References to the SRS would be good here.  If a section
-  covers tests for input constraints, you should reference the data constraints
-  table in the SRS.}
-		
-\paragraph{Title for Test}
+\subsubsection{Area of Testing 1 - Data Acquisition and Ingestion}
+
+Note: This area covers FR-1, FR-2, FR-3, FR-5, FR-6, and FR-19 from the SRS (operational modes, instructor session control, device capture, synchronization, recovery, and pre-session calibration).
+
+\paragraph{Mode Switching and Session Control}
 
 \begin{enumerate}
 
-\item{test-id1\\}
+\item \textbf{FR-1-T1} \\
 
-Control: Manual versus Automatic
-					
-Initial State: 
-					
-Input: 
-					
-Output: \wss{The expected result for the given inputs.  Output is not how you
-are going to return the results of the test.  The output is the expected
-result.}
+Control: Automatic
 
-Test Case Derivation: \wss{Justify the expected value given in the Output field}
-					
-How test will be performed: 
-					
-\item{test-id2\\}
+Initial State: System services running; no active session; device simulator available.
 
-Control: Manual versus Automatic
-					
-Initial State: 
-					
-Input: 
-					
-Output: \wss{The expected result for the given inputs}
+Input: (1) From dashboard, start a Recording session and run for 10 s. (2) Switch to Streaming mode via a UI toggle while the session is active.
 
-Test Case Derivation: \wss{Justify the expected value given in the Output field}
+Output: Session state transitions succeed; no crash; data continuity preserved with no inter-packet gap greater than 100 ms around the switch.
 
-How test will be performed: 
+Test Case Derivation: FR-1 requires support for Recording and Streaming operational modes to enable both offline analysis and real-time visualization.
+
+\textit{Test Data / Artefacts:} Synthetic gaze stream (JSON/Parquet), egoview video (MP4/MKV), session state logs (LOG/CSV).
+
+How test will be performed: A UI test script triggers the state changes. A log parser computes inter-packet gaps from ingest timestamps and asserts the maximum gap is less than or equal to 100 ms.
+
+\item \textbf{FR-2-T1 - Instructor Session Controls (Start/Pause/Resume/Stop)} \\
+
+Control: Manual + Automatic
+
+Initial State: Instructor role authenticated; dashboard open on Sessions page.
+
+Input: Click Start, then Pause after 5 s, then Resume after 5 s, then Stop.
+
+Output: UI status changes Active $\rightarrow$ Paused $\rightarrow$ Active $\rightarrow$ Stopped. No data are stored during the pause interval.
+
+Test Case Derivation: FR-2 mandates instructor control to ensure intentional and ethical recording.
+
+\textit{Test Data / Artefacts:} Test user accounts (CSV/YAML), RBAC policy (YAML), session metadata export (CSV), event logs (LOG).
+
+How test will be performed: Tester performs the sequence in the UI while a script queries session metadata and verifies there are no gaze or frame records timestamped within the pause window.
+
+\item \textbf{FR-3-T1 - Device Data Acquisition via External API} \\
+
+Control: Integration (Automatic)
+
+Initial State: Eye-tracking device or simulator connected and reachable via API.
+
+Input: Issue Start Recording.
+
+Output: Synchronized gaze samples and egoview frames are received at expected rates and timestamped.
+
+Test Case Derivation: FR-3 specifies interfacing with supported eye-tracking devices to collect synchronized gaze and video.
+
+\textit{Test Data / Artefacts:} Device API mock responses (JSON), captured video (MP4/MKV), gaze samples (JSON/Parquet), device/config settings (YAML).
+
+How test will be performed: An integration test hits the device API simulator, records 30 s, and checks that sample and frame counts and timestamps are within expected tolerances.
+
+\item \textbf{FR-5-T1 - Multi-Device Time Synchronization} \\
+
+Control: Automatic
+
+Initial State: Two device simulators streaming; NTP service active.
+
+Input: Emit a visible synchronization cue at time t0.
+
+Output: Detected cue timestamps differ by no more than 20 ms across the two devices.
+
+Test Case Derivation: FR-5 requires time-aligned data streams for valid group analysis.
+
+\textit{Test Data / Artefacts:} Dual-stream video with sync cue (MP4), NTP/sync logs (LOG), cue-detection script output (CSV).
+
+How test will be performed: A detector finds the cue frame in both streams and compares timestamps after offset correction.
+
+\item \textbf{FR-6-T1 - Recovery After Transient Network Loss} \\
+
+Control: Automatic
+
+Initial State: Active streaming session (video and gaze).
+
+Input: Introduce a 2 s network drop and then restore the link.
+
+Output: Stream resumes within 5 s of link restoration; the session remains a single continuous session.
+
+Test Case Derivation: FR-6 requires resumption within 5 s for short connectivity issues.
+
+\textit{Test Data / Artefacts:} Network shaping profile (SH/TC config), ingest/application logs (LOG), optional packet capture (PCAP), timing summary (CSV).
+
+How test will be performed: A traffic shaper introduces the drop. The harness measures restoration and resume times and asserts resume within 5 s.
+
+\item \textbf{FR-19-T1 - Automatic Calibration Check Before Recording} \\
+
+Control: Automatic
+
+Initial State: Device connected; no active session.
+
+Input: Click Start Recording.
+
+Output: If calibration score is below threshold, recording is blocked and the user is prompted to recalibrate. If the score meets threshold, recording starts and a CalibrationPassed event is logged.
+
+Test Case Derivation: FR-19 prevents poor data due to miscalibration.
+
+\textit{Test Data / Artefacts:} Calibration result payloads (JSON), UI evidence (PNG screenshot), calibration/decision logs (LOG).
+
+How test will be performed: Mock the device API to return failing and passing calibration states; verify gating and log entries.
 
 \end{enumerate}
 
-\subsubsection{Area of Testing2}
 
-...
+\subsubsection{Area of Testing 2 - Data Processing and Analytics}
+
+Note: This area covers FR-7, FR-8, FR-9, FR-10, FR-20, and FR-24 from the SRS (filtering and correction, projection to a shared space, real-time metrics, post-session analytics, off-screen filtering, and replay).
+
+\paragraph{Analytics Correctness and Latency}
+
+\begin{enumerate}
+
+\item \textbf{FR-7-T1 - Noise and Blink Filtering} \\
+
+Control: Automatic
+
+Initial State: Offline dataset with labeled blink and noise segments.
+
+Input: Run processing pipeline on the dataset.
+
+Output: At least 95\% of labeled blink/noise samples are removed and no more than 2\% of valid samples are removed incorrectly.
+
+Test Case Derivation: FR-7 requires filtering and correction to ensure reliable metrics.
+
+\textit{Test Data / Artefacts:} Labeled blink/noise dataset (CSV), raw gaze stream (Parquet/CSV), filter pipeline configuration (YAML), accuracy report (CSV).
+
+How test will be performed: Compare algorithm output masks to labels; compute precision and recall; assert thresholds.
+
+\item \textbf{FR-8-T1 - Gaze Projection to Shared Coordinate Space} \\
+
+Control: Automatic
+
+Initial State: Egoview frames and central-view frames with visible fiducial markers.
+
+Input: Run the projection to map egocentric gaze to central coordinates.
+
+Output: Mean projection error is less than 3\% of the central-view width; 95th percentile error is less than 10\%.
+
+Test Case Derivation: FR-8 requires accurate projection for group alignment.
+
+\textit{Test Data / Artefacts:} Egoview frames (PNG/JPG), central-view frames (PNG), fiducial/scene map (JSON), projected gaze coordinates (CSV).
+
+How test will be performed: Compute 2D error against fiducial ground truth and assert thresholds.
+
+\item \textbf{FR-9-T1 - Real-Time Metric Latency} \\
+
+Control: Automatic
+
+Initial State: Live stream active; dashboard metrics panel visible.
+
+Input: Stream a scripted gaze trajectory for 60 s.
+
+Output: Metric widgets (velocity, entropy, normalized contour area) update with end-to-end delay less than or equal to 1 s and an effective refresh rate near 20 Hz.
+
+Test Case Derivation: FR-9 specifies real-time computation to support instructional feedback.
+
+\textit{Test Data / Artefacts:} Synthetic trajectory specification (JSON), backend metric logs (LOG), frontend render timestamps (CSV), browser/version note (TXT).
+
+How test will be performed: Backend stamps metric times; frontend logs render times; a script computes latency and effective rate.
+
+\item \textbf{FR-20-T1 - Off-Screen and Invalid Gaze Exclusion} \\
+
+Control: Automatic
+
+Initial State: Dataset with labeled off-screen intervals.
+
+Input: Run real-time and post-session analysis modules.
+
+Output: At least 98\% of off-screen points are flagged and excluded from aggregates; no flagged points appear in heatmaps.
+
+Test Case Derivation: FR-20 requires excluding invalid gaze to prevent misinterpretation.
+
+\textit{Test Data / Artefacts:} Off-screen ground-truth labels (CSV), raw gaze stream (Parquet/CSV), exclusion flags (CSV), generated heatmap (PNG).
+
+How test will be performed: Compute confusion matrix against labels; verify heatmap generator omits flagged points.
+
+\item \textbf{FR-10-T1 - Post-Session Summary Generation} \\
+
+Control: Automatic
+
+Initial State: One completed recording with known scripted attention shifts.
+
+Input: Invoke Generate Summary.
+
+Output: Exported CSV, JSON, and PNG include: session heatmap, time-series of engagement, and participant-level statistics that match an independently recomputed reference within plus or minus 2\%.
+
+Test Case Derivation: FR-10 requires generation of post-session analytics.
+
+\textit{Test Data / Artefacts:} Completed session data (CSV/Parquet), system exports (CSV/JSON/PNG), independent recomputation outputs (CSV/JSON).
+
+How test will be performed: An independent script recomputes metrics from raw data; differences are compared and asserted.
+
+\item \textbf{FR-24-T1 - Replay and Re-Analysis Consistency} \\
+
+Control: Manual + Automatic
+
+Initial State: Stored session available in the replay view.
+
+Input: Play the session from start to finish and trigger Re-run Analytics.
+
+Output: Event timing during replay matches original within less than 50 ms; recomputed metrics differ by less than 1\% from the original.
+
+Test Case Derivation: FR-24 enables verification and debugging using replay.
+
+\textit{Test Data / Artefacts:} Replay media (MP4/MKV), original metric series (CSV), recomputed metric series (CSV), event markers (CSV).
+
+How test will be performed: Compare timestamped events and metric series to the original outputs; assert thresholds.
+
+\end{enumerate}
+
+
+\subsubsection{Area of Testing 3 - Data Management and Backend Services}
+
+Note: This area covers FR-11, FR-12, FR-13, FR-22, and FR-23 from the SRS (persistence, metadata, APIs, traceability, and configurability).
+
+\paragraph{Persistence, Metadata, APIs, and Configurability}
+
+\begin{enumerate}
+
+\item \textbf{FR-11-T1 - Data Persistence Across Restarts} \\
+
+Control: Automatic
+
+Initial State: Clean database; services running.
+
+Input: Record 2 minutes; stop; restart services; load the session.
+
+Output: Raw frames, gaze samples, and derived analytics are present and readable after restart.
+
+Test Case Derivation: FR-11 requires local storage of raw and processed data.
+
+\textit{Test Data / Artefacts:} Database schema (SQL), database snapshot (SQL dump), session directory (mixed files as produced).
+
+How test will be performed: An integration script records, restarts the stack, and then queries by session ID to validate counts and checksums.
+
+\item \textbf{FR-12-T1 - Session Metadata Completeness} \\
+
+Control: Automatic
+
+Initial State: None.
+
+Input: Start and stop a session with two participants.
+
+Output: The session record contains timestamp, session ID, and participant IDs; each data row references the session ID.
+
+Test Case Derivation: FR-12 mandates metadata for traceability.
+
+\textit{Test Data / Artefacts:} Session and participant schemas (DDL/CSV), example record export (CSV), integrity check script (SQL).
+
+How test will be performed: SQL assertions check required columns and foreign key presence.
+
+\item \textbf{FR-13-T1 - Programmatic API for Analytics Retrieval} \\
+
+Control: Automatic
+
+Initial State: One completed session with analytics.
+
+Input: GET /api/sessions/\{id\}/analytics and POST /api/session/start.
+
+Output: HTTP 200 with schema-valid JSON for analytics; start endpoint returns a new session ID.
+
+Test Case Derivation: FR-13 requires APIs for analytics retrieval and session management.
+
+\textit{Test Data / Artefacts:} API specification (OpenAPI YAML), API test collection (JSON), example analytics response (JSON).
+
+How test will be performed: An automated API test validates response codes and JSON schema.
+
+\item \textbf{FR-22-T1 - Traceability From Raw to Reports} \\
+
+Control: Automatic
+
+Initial State: Completed session.
+
+Input: Trace query joining raw, processed, and report tables on session ID.
+
+Output: Complete lineage from raw to processed to export; no orphan rows.
+
+Test Case Derivation: FR-22 requires maintained traceability via unique session identifiers.
+
+\textit{Test Data / Artefacts:} Traceability query (SQL), table extracts for raw/processed/reports (CSV), lineage visualization (PNG/PDF).
+
+How test will be performed: SQL join plus referential integrity checks; fail on nulls or orphans.
+
+\item \textbf{FR-23-T1 - Configuration Changes Take Effect} \\
+
+Control: Automatic
+
+Initial State: Default configuration applied.
+
+Input: Change data directory, export format, and device ID in configuration; restart.
+
+Output: Next session writes to the new directory; exports match the configured formats; device routing uses the new ID.
+
+Test Case Derivation: FR-23 enables flexible deployment without code changes.
+
+\textit{Test Data / Artefacts:} Configuration file (YAML/TOML), directory listings (TXT), export manifest (JSON).
+
+How test will be performed: Start a session and verify filesystem paths, export set, and device mapping.
+
+\end{enumerate}
+
+
+\subsubsection{Area of Testing 4 - Visualization and Dashboard Interface}
+
+Note: This area covers FR-14, FR-15, FR-16, FR-26, and FR-27 from the SRS (RBAC, real-time visual analytics, exports, status indicators, and spatial masking/anonymization).
+
+\paragraph{Access, Status, Exports, and Privacy}
+
+\begin{enumerate}
+
+\item \textbf{FR-14-T1 - Role-Based Access Control} \\
+
+Control: Automatic
+
+Initial State: Two users exist: instructor and unauthorized.
+
+Input: Both users attempt to access Live Analytics and Export views.
+
+Output: Instructor gains access; unauthorized user receives 403 Forbidden; no data leakage occurs.
+
+Test Case Derivation: FR-14 enforces authentication and authorization for sensitive data.
+
+\textit{Test Data / Artefacts:} Test user list (CSV), RBAC policy (YAML), audit log (LOG), denied-access summary (CSV).
+
+How test will be performed: API and UI tests simulate both roles; backend audit logs are checked for denied attempts.
+
+\item \textbf{FR-15-T1 - Real-Time Visual Analytics Render} \\
+
+Control: Automatic
+
+Initial State: Live stream; dashboard analytics tab open.
+
+Input: 60 s of synthetic gaze with known hotspots.
+
+Output: Heatmap tiles and engagement widgets update within 1 s after data arrival and reflect hotspots in the correct regions.
+
+Test Case Derivation: FR-15 requires real-time visual analytics on the dashboard.
+
+\textit{Test Data / Artefacts:} Synthetic hotspot definition (JSON), UI render timestamps (CSV), reference heatmap (PNG).
+
+How test will be performed: DOM probes read widget timestamps; a reference heatmap is computed independently and compared with the rendered result.
+
+\item \textbf{FR-16-T1 - Export Formats and Fidelity} \\
+
+Control: Manual + Automatic
+
+Initial State: Completed session with analytics.
+
+Input: User exports CSV, JSON, and PNG.
+
+Output: Files exist; CSV and JSON schemas are valid; the PNG heatmap visually matches the dashboard with structural similarity index greater than 0.95.
+
+Test Case Derivation: FR-16 requires export of post-session analytics in common formats.
+
+\textit{Test Data / Artefacts:} CSV schema (CSV schema file), JSON schema (JSON schema file), exported outputs (CSV/JSON/PNG), dashboard render reference (PNG).
+
+How test will be performed: A schema validator checks CSV and JSON; an SSIM comparison is run on the PNG versus a server-side render.
+
+\item \textbf{FR-26-T1 - Status Indicators (Latency, Jitter, Drift)} \\
+
+Control: Automatic
+
+Initial State: Live session; status panel visible.
+
+Input: Inject synthetic 150 ms network jitter and 10\% packet loss for 20 s.
+
+Output: Indicators reflect increased latency and loss within two refresh cycles; synchronization drift increases accordingly.
+
+Test Case Derivation: FR-26 requires real-time system status indicators.
+
+\textit{Test Data / Artefacts:} Network impairment profile (SH/TC config), status endpoint samples (JSON), metrics time-series (CSV).
+
+How test will be performed: Traffic shaping is applied; displayed metrics are sampled via test hooks and compared to injected conditions.
+
+\item \textbf{FR-27-T1 - Spatial Masking and Anonymization} \\
+
+Control: Manual + Automatic
+
+Initial State: Privacy mask polygon configured to exclude a region.
+
+Input: Record 30 s with participants present in the masked area; export heatmap and a representative frame.
+
+Output: No identifiable faces or eyes appear in the masked region; exported data for masked pixels are absent or blurred.
+
+Test Case Derivation: FR-27 requires definable exclusion zones for privacy in storage and export.
+
+\textit{Test Data / Artefacts:} Mask configuration (JSON), exported frame (PNG), heatmap (PNG), face-detector output (CSV).
+
+How test will be performed: An automated face detector confirms zero detections inside the mask; a manual spot-check verifies exports.
+
+\end{enumerate}
+
+
+\subsubsection{Area of Testing 5 - Supporting Infrastructure and Stretch (Optional)}
+
+Note: This area covers FR-18 (logging/monitoring) and Stretch FR-4, FR-17, FR-21, FR-25 (Rev 1+ goals).
+
+\paragraph{Observability, Roles, Privacy Pipeline, and Scalability}
+
+\begin{enumerate}
+
+\item \textbf{FR-18-T1 - Runtime Logging and Metrics} \\
+
+Control: Automatic
+
+Initial State: Logging level = INFO; metrics collector enabled.
+
+Input: Run a 2 min session with one induced warning (device reconnect).
+
+Output: Log contains timestamped events for start/stop, warnings, and metrics snapshots; metrics series include FPS, jitter, and dropped frames.
+
+Test Case Derivation: FR-18 requires logging diagnostics and performance metrics for monitoring.
+
+\textit{Test Data / Artefacts:} Logging configuration (YAML), runtime logs (LOG), metrics export (CSV), event list (CSV).
+
+How test will be performed: Parse logs and metrics endpoint; assert presence and cadence.
+
+\item \textbf{FR-4-T1 - Central Camera Integration (Stretch)} \\
+
+Control: Integration (Automatic)
+
+Initial State: Central-camera RTSP source available.
+
+Input: Start session with central-view enabled; two egoviews active.
+
+Output: Central view frames are timestamped and aligned with egoviews; the projection module accepts the central feed without error.
+
+Test Case Derivation: FR-4 optionally interfaces with a central camera for shared-scene alignment.
+
+\textit{Test Data / Artefacts:} RTSP stream configuration (TXT), central-view video (MP4), alignment results (CSV), error logs (LOG).
+
+How test will be performed: RTSP ingest with timestamp alignment check; verify projection module operates with the central frames present.
+
+\item \textbf{FR-17-T1 - Role-Based View Separation (Stretch)} \\
+
+Control: Manual + Automatic
+
+Initial State: Two roles exist: Instructor and Researcher.
+
+Input: Log in as each role and open the dashboard.
+
+Output: Instructor view hides researcher-only analytics (and vice versa); access attempts outside role return 403 Forbidden.
+
+Test Case Derivation: FR-17 provides separate role-based views to enhance usability and compliance.
+
+\textit{Test Data / Artefacts:} Role/view configuration (YAML), UI screenshots (PNG), endpoint access matrix (CSV), audit logs (LOG).
+
+How test will be performed: UI inspection combined with API role assertions and audit log checks.
+
+\item \textbf{FR-21-T1 - Privacy Anonymization Pipeline (Stretch)} \\
+
+Control: Manual + Automatic
+
+Initial State: Example frames containing identifiable faces and eyes; anonymization enabled.
+
+Input: Export video frame and heatmap with anonymization on.
+
+Output: No identifiable faces or eye images remain; face detector confidence below threshold throughout; heatmap contains no pixel data from masked regions.
+
+Test Case Derivation: FR-21 ensures ethical compliance and participant anonymity in exports.
+
+\textit{Test Data / Artefacts:} Example frames for anonymization (PNG), anonymized outputs (PNG), detector results (CSV), privacy compliance checklist (PDF/MD).
+
+How test will be performed: Automated face-blur verification plus manual review of a sample of exports.
+
+\item \textbf{FR-25-T1 - Multi-Device Scaling (Stretch)} \\
+
+Control: Automatic
+
+Initial State: Ten device simulators configured.
+
+Input: Start streaming all 10 concurrently for 5 min.
+
+Output: Inter-device synchronization drift stays within $\pm 20$ ms; no ingest backpressure beyond configured queue thresholds; no service crash.
+
+Test Case Derivation: FR-25 targets scaling to $\ge 10$ devices while maintaining synchronization accuracy.
+
+\textit{Test Data / Artefacts:} Multi-device simulator configuration (YAML), system metrics (CSV), synchronization drift summary (CSV), queue depth logs (CSV).
+
+How test will be performed: Synthetic load plus synchronization measurement as in FR-5-T1; report drift statistics and queue depths.
+
+\end{enumerate}
+
 
 \subsection{Tests for Nonfunctional Requirements}
 
@@ -355,6 +804,11 @@ How test will be performed:
 
 \wss{Provide a table that shows which test cases are supporting which
   requirements.}
+
+  Funtional Requirements Traceability Matrix:
+\begin{center}
+  \includegraphics[width=\textwidth]{Images/FR-Tests-Traceability-Matrix.png}
+\end{center}
 
 \section{Unit Test Description}
 
@@ -513,7 +967,7 @@ graduate attribute of Lifelong Learning.
 \begin{enumerate}
   \item What went well while writing this deliverable? 
   \begin{itemize}
-      \item \textbf{Angela} ...
+      \item \textbf{Angela} Writing this deliverable went fine since I focused on mapping the FR tests to requirements. Having the SRS finalized helped make the traceability and test design process straightforward.  
       \item \textbf{Ann} ...
       \item \textbf{Ibrahim} ...
       \item \textbf{Manan} ...
@@ -522,7 +976,7 @@ graduate attribute of Lifelong Learning.
   \item What pain points did you experience during this deliverable, and how
     did you resolve them?
   \begin{itemize}
-      \item \textbf{Angela} ...
+      \item \textbf{Angela} The main challenge was ensuring the test cases aligned correctly with the requirements, especially when some FRs were broad. I resolved this by reviewing our SRS revision and confirming test coverage with the team.
       \item \textbf{Ann} ...
       \item \textbf{Ibrahim} ...
       \item \textbf{Manan} ...
@@ -535,7 +989,7 @@ graduate attribute of Lifelong Learning.
   static testing knowledge, specific tool usage, Valgrind etc.  You should look to
   identify at least one item for each team member.
   \begin{itemize}
-      \item \textbf{Angela} ...
+      \item \textbf{Angela} I will need to strengthen my understanding of test automation and CI workflows to help verify FR-level functionality efficiently.
       \item \textbf{Ann} ...
       \item \textbf{Ibrahim} ...
       \item \textbf{Manan} ...
@@ -547,7 +1001,7 @@ graduate attribute of Lifelong Learning.
   mastering the skill?  Of the identified approaches, which will each team
   member pursue, and why did they make this choice?
   \begin{itemize}
-      \item \textbf{Angela} ...
+      \item \textbf{Angela} I plan to review CI documentation for GitHub Actions and explore automated testing frameworks like PyTest as it supports the test workflows we will implement later in the project.
       \item \textbf{Ann} ...
       \item \textbf{Ibrahim} ...
       \item \textbf{Manan} ...
