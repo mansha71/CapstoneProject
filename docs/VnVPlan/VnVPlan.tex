@@ -1217,11 +1217,93 @@ This is where you can place additional information.
 The definition of the test cases will call for SYMBOLIC\_CONSTANTS.
 Their values are defined in this section for easy maintenance.
 
+The following symbolic parameters are referenced in the FR and NFR test cases.
 
+\begin{itemize}
+  \item $\Delta t_{\text{gap}}$ – Maximum inter-packet gap allowed during mode switch (100 ms)
+  \item $\epsilon_{\text{sync}}$ – Maximum synchronization drift between devices (20 ms)
+  \item $L_{\text{resume}}$ – Maximum recovery latency after network loss (5 s)
+  \item $E_{\text{proj}}$ – Mean gaze projection error threshold (3\% of frame width)
+  \item $E_{\text{proj,95}}$ – 95th percentile projection error (10\%)
+  \item $R_{\text{valid}}$ – Minimum valid sample retention after filtering (98\%)
+  \item $R_{\text{blink}}$ – Minimum blink/noise removal accuracy (95\%)
+  \item $L_{\text{rt}}$ – End-to-end real-time metric latency (1 s)
+  \item $f_{\text{ui}}$ – Dashboard update rate (approx. 20 Hz)
+  \item $\sigma_{\text{SSIM}}$ – Image similarity threshold for export validation (0.95)
+  \item $P_{\text{loss}}$ – Injected packet loss for status indicator tests (10\%)
+  \item $J_{\text{net}}$ – Injected network jitter for status indicator tests (150 ms)
+  \item $\epsilon_{\text{ts}}$ – Maximum database timestamp drift (33 ms)
+\end{itemize}
 
-\subsection{Usability Survey Questions?}
+\subsection{Test Artefacts}
 
-\wss{This is a section that would be appropriate for some projects.}
+The following artefacts represent the data and configurations that will be used
+during testing. Only general data types and formats are listed.
+
+\subsubsection*{Functional Requirement Artefacts}
+
+\begin{itemize}
+  \item \textbf{Acquisition \& Ingestion (FR-1,2,3,5,6,19):} synthetic gaze streams (JSON or CSV), egoview videos (MP4), session logs (LOG), calibration results (JSON or PNG screenshot)
+  \item \textbf{Processing \& Analytics (FR-7,8,9,10,20,24):} labeled gaze datasets (CSV), fiducial maps (JSON), heatmaps (PNG), trajectory files (JSON), replay sessions (MP4)
+  \item \textbf{Data Management \& Backend (FR-11,12,13,22,23):} database schemas (SQL), API definitions (YAML), example queries (SQL), configuration files (YAML or TOML)
+  \item \textbf{Visualization \& Dashboard (FR-14,15,16,26,27):} RBAC policy files (YAML), audit logs (LOG), heatmap images (PNG), status metrics (CSV or JSON), privacy mask configs (JSON)
+  \item \textbf{Supporting \& Stretch (FR-4,17,18,21,25):} central camera streams (MP4), simulator configurations (YAML), runtime metrics (CSV), anonymized images (PNG)
+\end{itemize}
+
+\subsubsection*{Nonfunctional Requirement Artefacts}
+
+\begin{itemize}
+  \item \textbf{Performance and Scalability:} latency logs (CSV), load profiles (TXT)
+  \item \textbf{Reliability and Backup:} uptime reports (CSV), recovery logs (LOG)
+  \item \textbf{Security and Privacy:} TLS configuration (TXT), consent records (CSV)
+  \item \textbf{Usability and Accessibility:} audit reports (TXT), survey results (CSV)
+  \item \textbf{Maintainability and Process:} linting reports (TXT), CI logs (TXT)
+  \item \textbf{Research Validity:} reference datasets (CSV), model outputs (CSV)
+\end{itemize}
+
+\subsection{Test Environment}
+
+\begin{itemize}
+  \item Operating system: Windows, macOS, or Ubuntu (containerized setup if applicable)
+  \item Browser: Chrome or Firefox, most recent stable release
+  \item Network: NTP synchronization enabled for time alignment
+  \item Logging: All timestamps in UTC, millisecond precision
+  \item Randomization: Use fixed seeds for reproducible results
+\end{itemize}
+
+\subsection{Environmental Setup Checklist (NFR-23)}
+
+To ensure consistency before each test session:
+
+\begin{enumerate}
+  \item Confirm room lighting and camera alignment meet specifications
+  \item Verify network connection and baseline latency
+  \item Confirm consent and privacy notices are visible
+  \item Check that calibration and synchronization are complete
+  \item Ensure required artefacts are available (config files, datasets)
+\end{enumerate}
+
+\subsection{Usability Survey (NFR-7, NFR-21)}
+
+These questions will be used during usability testing and validation:
+
+\begin{enumerate}
+  \item The dashboard visualizations were easy to interpret during sessions.
+  \item System responses were timely and informative.
+  \item The replay and export features were useful for review.
+  \item The interface was clear and easy to navigate.
+  \item I would use this system again for teaching or research.
+\end{enumerate}
+
+\subsection{Reproducibility Notes}
+
+\begin{itemize}
+  \item All time-based measurements use UTC timestamps.
+  \item Visual comparisons include reference images and SSIM scores.
+  \item For each test, record configuration files and random seeds used.
+  \item Store outputs (logs, metrics, summaries) with the same naming convention as the corresponding test ID.
+\end{itemize}
+
 
 \newpage{}
 \section*{Appendix --- Reflection}
