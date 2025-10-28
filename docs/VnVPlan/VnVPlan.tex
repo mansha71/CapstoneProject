@@ -42,84 +42,94 @@ Date 2 & 1.1 & Notes\\
 
 \tableofcontents
 
-\listoftables
-\wss{Remove this section if it isn't needed}
-
-\listoffigures
-\wss{Remove this section if it isn't needed}
-
 \newpage
 
 \section{Symbols, Abbreviations, and Acronyms}
 
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{l l} 
+\begin{tabular}{l p{10cm}} 
   \toprule		
-  \textbf{symbol} & \textbf{description}\\
+  \textbf{Acronym} & \textbf{Description}\\
   \midrule 
-  T & Test\\
+  ET & Eye-tracking: the process of measuring where a person is looking (the gaze point) using specialized hardware, such as wearable glasses.\\
+  NTP & Network Time Protocol: used to align timestamps across multiple devices, ensuring synchronized data streams.\\
+  CI/CD & Continuous Integration / Continuous Delivery: a software engineering practice involving automated building, testing, and deployment pipelines.\\
+  API & Application Programming Interface: defined methods and data formats that allow system components or external applications to communicate.\\
+  RBAC & Role-based Access Control: a security model that restricts system access based on user roles and permissions.\\
+  POC & Proof-of-Concept: the initial implementation phase (Rev 0) focusing on single-device operation, local data processing, and dashboard visualization.\\
   \bottomrule
-\end{tabular}\\
-
-\wss{symbols, abbreviations, or acronyms --- you can simply reference the SRS
-  \citep{SRS} tables, if appropriate}
-ex
-\wss{Remove this section if it isn't needed}
+\end{tabular}
 
 \newpage
 
 \pagenumbering{arabic}
 
-This document ... \wss{provide an introductory blurb and roadmap of the
-  Verification and Validation plan}
+This document outlines the Verification and Validation (VnV) plan for the group eye-tracking learning platform developed in this capstone project. The purpose of this plan is to establish a structured approach for verifying that the system has been built according to its specifications and validating that it meets its intended purpose.
+The plan will detail the methods, tools, and responsibilities involved in increasing the confidence of the developed software. It includes documentation of general information, team roles, verification procedures across the system’s lifecycle stages (requirements, design, and implementation), and both system plus the eventual addition of unit-level test specifications. The document also defines the testing framework for functional and non-functional requirements, along with traceability between requirements, modules, and test cases.
+
+
 
 \section{General Information}
 
 \subsection{Summary}
 
-\wss{Say what software is being tested.  Give its name and a brief overview of
-  its general functions.}
+The software being tested is an enhanced version of the \textbf{SocialEyes} framework, a system originally designed for recording and analyzing group gaze data. This project extends the framework to support \textbf{large-group eye-tracking in classroom environments}, implementing both post-session and real-time analytics for instructors to gain insights into their students and teaching.
+
+The system consists of three primary components:
+
+\begin{itemize}
+    \item \textbf{Instructor Dashboard with RBAC:} Presents gaze and engagement data in a clear, interpretable format.
+    \item \textbf{Post-Session Analytics Module:} Provides aggregated insights to evaluate attention patterns and group interactions after class.
+    \item \textbf{Real-Time Analytics Module:} Delivers live feedback to instructors during lectures to support adaptive teaching.
+\end{itemize}
+
+Together, these components aim to enhance instructors’ understanding of student engagement and contribute to research on attention and collaboration in learning environments.
+
 
 \subsection{Objectives}
 
-\wss{State what is intended to be accomplished.  The objective will be around
-  the qualities that are most important for your project.  You might have
-  something like: ``build confidence in the software correctness,''
-  ``demonstrate adequate usability.'' etc.  You won't list all of the qualities,
-  just those that are most important.}
+This project aims to extend the existing SocialEyes system to support real-time session analytics through the integration of a lightweight computer vision algorithm that can efficiently map gaze points from egocentric to central views without compromising accuracy. Verification tests will focus on ensuring that the implemented models will perform correctly and consistently under real-time conditions.
+\newline
+\newline
+Secondary objectives include the creation of the instructor dashboard for visualizing gaze data and providing analytics. Together, these components aim for easy interpretation of gaze-based feedback for instructors to provide useful feedback.
+\newline
+\newline
+Certain objectives will intentionally be excluded due to project constraints. For instance, full verification of the underlying SuperPoint and SuperGlue models and other third-party libraries will not be performed, as these components are assumed to have been previously validated by their original developers. Additionally, large-scale usability testing with diverse participant groups is beyond the project’s current timeframe and resources. 
 
-\wss{You should also list the objectives that are out of scope.  You don't have 
-the resources to do everything, so what will you be leaving out.  For instance, 
-if you are not going to verify the quality of usability, state this.  It is also 
-worthwhile to justify why the objectives are left out.}
-
-\wss{The objectives are important because they highlight that you are aware of 
-limitations in your resources for verification and validation.  You can't do everything, 
-so what are you going to prioritize?  As an example, if your system depends on an 
-external library, you can explicitly state that you will assume that external library 
-has already been verified by its implementation team.}
 
 \subsection{Extras}
 
-\wss{Summarize the extras (if any) that were tackled by this project.  Extras
-can include usability testing, code walkthroughs, user documentation, formal
-proof, GenderMag personas, Design Thinking, etc.  Extras should have already
-been approved by the course instructor as included in your problem statement.
-You can use a pull request to update your extras (in TeamComposition.csv or
-Repos.csv) if your plan changes as a result of the VnV planning exercise.}
+This project will include the following extra deliverables that were confirmed during the initial meeting with the project supervisors.
+
+\begin{enumerate}
+    \item \textbf{Code Walkthrough Report} \\
+    This will be a thorough documentation of the files and folders in the GitHub repository associated with the project.
+    
+    \item \textbf{User Instruction Video} \\
+    This will be an instructional video demonstrating how to interact with the dashboard deliverable of the project for each of the user roles (e.g., instructor).
+\end{enumerate}
+
 
 \subsection{Relevant Documentation}
 
-\wss{Reference relevant documentation.  This will definitely include your SRS
-  and your other project documents (design documents, like MG, MIS, etc).  You
-  can include these even before they are written, since by the time the project
-  is done, they will be written.  You can create BibTeX entries for your
-  documents and within those entries include a hyperlink to the documents.}
-
-\citet{SRS}
-
-\wss{Don't just list the other documents.  You should explain why they are relevant and 
-how they relate to your VnV efforts.}
+The Verification and Validation (V\&V) Plan is dependent on and supported by several key project documents that define the foundation, scope, and success criteria for the group eye-tracking learning platform. These documents collectively guide how requirements are verified and validated throughout the development process.
+\newline
+\newline
+\textbf{Software Requirements Specification (SRS)}
+\newline
+The \textit{Software Requirements Specification (SRS)} defines the functional and non-functional requirements of the system, serving as the primary reference for the verification process. It specifies what the system must do, how it should perform, and the constraints under which it must operate. Each verification test will be mapped to one or more requirements defined in the SRS.
+\newline
+\newline
+\textbf{Development Plan}
+\newline
+The \textit{Development Plan} outlines the project’s implementation roadmap, including project decomposition, proof-of-concept demonstrations, and the technologies used to conduct it. It informs the scheduling and prioritization of verification and validation activities, ensuring that testing aligns with the overall development timeline and that each module is verified at appropriate stages in the lifecycle.
+\newline
+\newline
+\textbf{Problem Statement and Goals Document}
+\newline
+The \textit{Problem Statement and Goals Document} defines the motivation, context, and intended impact of the project. It provides the conceptual foundation for validation activities, ensuring that the developed system not only meets its technical specifications but also fulfills its educational and research goals. This document reinforces the relevance of the V\&V Plan by providing a basis for why the tests being verified are crucial for achieving the project’s goals.
+\newline
+\newline
 
 \section{Plan}
 
@@ -212,23 +222,11 @@ At the end of each development iteration, the CI dashboard will export a summary
 
 \subsection{Software Validation}
 
-\wss{If there is any external data that can be used for validation, you should
-  point to it here.  If there are no plans for validation, you should state that
-  here.}
-
-\wss{You might want to use review sessions with the stakeholder to check that
-the requirements document captures the right requirements.  Maybe task based
-inspection?}
-
-\wss{For those capstone teams with an external supervisor, the Rev 0 demo should 
-be used as an opportunity to validate the requirements.  You should plan on 
-demonstrating your project to your supervisor shortly after the scheduled Rev 0 demo.  
-The feedback from your supervisor will be very useful for improving your project.}
-
-\wss{For teams without an external supervisor, user testing can serve the same purpose 
-as a Rev 0 demo for the supervisor.}
-
-\wss{This section might reference back to the SRS verification section.}
+The validation of the enhanced SocialEyes framework will primarily be conducted through regular review sessions and iterative demonstrations with project supervisors Dr. Lauren Fink and Dr. Irene Yuan. Weekly meetings will serve as checkpoints to assess progress against the requirements outlined in the Software Requirements Specification (SRS), ensuring that the evolving system aligns with both the technical and research goals of the project.
+\newline
+A formal Rev 0 demonstration will be presented to the supervisors once completed. This demo will be used to validate that the core system features—real-time gaze analytics, post-session data visualization, and the instructor dashboard—accurately reflect the intended requirements and provide value within a classroom context. Feedback from this session will guide subsequent iterations and refinement of the system.
+In addition to supervisor reviews, user validation will be obtained through feedback from a postdoctoral researcher affiliated with the SocialEyes project who has experience conducting lectures and an interest in applying this technology to teaching contexts. This will help validate the system’s usability and relevance from an instructor’s perspective.
+\newline
 
 \section{System Tests}
 
