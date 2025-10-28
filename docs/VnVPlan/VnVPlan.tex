@@ -232,19 +232,7 @@ as a Rev 0 demo for the supervisor.}
 
 \section{System Tests}
 
-\wss{There should be text between all headings, even if it is just a roadmap of
-the contents of the subsections.}
-
 \subsection{Tests for Functional Requirements}
-
-\subsection{Tests for Functional Requirements}
-
-\wss{Subsets of the tests may be in related, so this section is divided into
-  different areas. If there are no identifiable subsets for the tests, this
-  level of document structure can be removed.}
-
-\wss{Include a blurb here to explain why the subsections below
-  cover the requirements. References to the SRS would be good here.}
 
 This subsection provides concrete, executable tests for all Functional Requirements (FRs) in the SRS.
 Tests are grouped by subsystem: Data Acquisition and Ingestion; Data Processing and Analytics; Data
@@ -741,72 +729,355 @@ How test will be performed: Synthetic load plus synchronization measurement as i
 
 \subsection{Tests for Nonfunctional Requirements}
 
-\wss{The nonfunctional requirements for accuracy will likely just reference the
-  appropriate functional tests from above.  The test cases should mention
-  reporting the relative error for these tests.  Not all projects will
-  necessarily have nonfunctional requirements related to accuracy.}
-
-\wss{For some nonfunctional tests, you won't be setting a target threshold for
-passing the test, but rather describing the experiment you will do to measure
-the quality for different inputs.  For instance, you could measure speed versus
-the problem size.  The output of the test isn't pass/fail, but rather a summary
-table or graph.}
-
-\wss{Tests related to usability could include conducting a usability test and
-  survey.  The survey will be in the Appendix.}
-
-\wss{Static tests, review, inspections, and walkthroughs, will not follow the
-format for the tests given below.}
-
-\wss{If you introduce static tests in your plan, you need to provide details.
-How will they be done?  In cases like code (or document) walkthroughs, who will
-be involved? Be specific.}
-
-\subsubsection{Area of Testing1}
-		
-\paragraph{Title for Test}
-
 \begin{enumerate}
 
-\item{test-id1\\}
+\subsubsection{Performance, Reliability, and Scalability Tests}
 
-Type: Functional, Dynamic, Manual, Static etc.
-					
-Initial State: 
-					
-Input/Condition: 
-					
-Output/Result: 
-					
-How test will be performed: 
-					
-\item{test-id2\\}
+\item{TC-NFR-1-Latency\\} 
+Type: Dynamic, Automated\\ 
 
-Type: Functional, Dynamic, Manual, Static etc.
-					
-Initial State: 
-					
-Input: 
-					
-Output: 
-					
-How test will be performed: 
+Initial State: Both backend and frontend are running locally and the system is connected to mock eye tracking data source.\\
+
+Input/Condition: Conduct a 30 min, test session with simulated eye tracking and video data. Then record the timestamps of when data is recorded, processed and displayed.\\ 
+
+Output/Result: Record the average latency between capturing and visualizing data. Pass if latency is less than 1.5 s.\\ 
+
+How test will be performed: Log the timestamp when data is inputted, and when the dashboard is updated. Then compute the delay from the logs of timestamps.\\ 
+
+\item{TC-NFR-2-UpdateHz\\} 
+Type: Dynamic, Automated\\ 
+
+Initial State: Dashboard is rendering heatmaps in browser.\\ 
+
+Input/Condition: For a 10 min session, with browser performance logs recording the render times.\\ 
+
+Output/Result: Average and 95th percentile render frequency. Test will pass if the mean is greater than 20 Hz and the 95th percentile is greater than 18 Hz. This will include FPS histogram and timeline graph.\\ 
+
+How test will be performed: The performance at each render will be recorded by using a Javascript probe, then the data will be summarized automatically in the command line.\\ 
+
+\item{TC-NFR-3-SyncDrift\\}
+Type: Dynamic, Automated\\
+
+Initial State: 3 to 10 devices synchronized via Network Time Protocol (NTP), all streaming gaze and egoview data under standard classroom conditions.\\
+
+Input/Condition: Each device emits synchronization markers once per second during a session.\\
+
+Output/Result: Time-difference series between devices with maximum drift per minute recorded. Pass if drift stays within 20 ms.\\
+
+How test will be performed: Match sync markers by frame index across devices and compute drift statistics to verify requirement.
+
+\item{TC-NFR-4-JitterLoss\\}
+Type: Dynamic, Automated\\
+
+Initial State: Live data streaming between devices and analytics backend.\\
+
+Input/Condition: Browser script sends WebSocket heartbeat every 100 ms while measuring round-trip delay.\\
+
+Output/Result: Logs containing average, P95, and maximum jitter and a chart of packet loss vs jitter.\\
+
+How test will be performed: Browser records timestamps for sent/received messages, computes latency variation, and summarizes results in dashboard or CI logs.
+
+\item{TC-NFR-16-Scale10\\}
+Type: Load\\
+
+Initial State: Backend services running, synthetic gaze stream generators configured.\\
+
+Input/Condition: Simulate 1, 3, 5, and 10 devices concurrently for up to 20 minutes each, streaming gaze data at normal rates.\\
+
+Output/Result: CPU and memory usage, latency percentiles, and sync error recorded. Pass if sync error < 20 ms at 10 devices. Produce plots of latency vs device count and sync error vs device count.\\
+
+How test will be performed: Use synthetic streams to simulate multiple devices while collecting system metrics; visualize results.
+
+\item{TC-NFR-5-AutoRecover\\}
+Type: Dynamic, Automated\\
+
+Initial State: Multiple devices actively streaming gaze data to backend.\\
+
+Input/Condition: Intentionally disconnect each device stream for 10 seconds at randomized intervals, repeated 20 times.\\
+
+Output/Result: Reconnection time for each disconnection; pass if all streams automatically reconnect without data loss or corruption.\\
+
+How test will be performed: Scripted disconnections; backend verifies reconnection by checking frame sequence continuity and comparing checksums before/after reconnection.
+
+\item{TC-NFR-6-Uptime\\}
+Type: Long-run observation\\
+
+Initial State: Full classroom analytics system deployed and running under normal conditions.\\
+
+Input/Condition: Conduct three scheduled 90-minute sessions across one week while tracking uptime metrics.\\
+
+Output/Result: Summary report with total uptime percentage, number of downtime incidents, and average recovery time.\\
+
+How test will be performed: Send a signal every 10 seconds; missed signals logged as downtime and recovery duration measured.
+
+\item{TC-NFR-17-TimeACID\\}
+Type: Dynamic, Static\\
+
+Initial State: Database running and handling necessary operations.\\
+
+Input/Condition: Insert 10,000 events with known timestamps while performing multiple transactions.\\
+
+Output/Result: Timestamp drift within 33 ms and ACID properties maintained.\\
+
+How test will be performed: Compare database timestamps to ingestion clock and verify transactions commit/rollback correctly using transactional test suite.
+
+\item{TC-NFR-18-BigSession\\}
+Type: Load test\\
+
+Initial State: System ready for large-scale data intake.\\
+
+Input/Condition: Process 50 x 200 GB of generated session data while running ingestion and analytics queries concurrently.\\
+
+Output/Result: Throughput and query latency remain stable; record any performance degradation or curves.\\
+
+How test will be performed: Batch load generated data, monitor CPU/memory (Prometheus), and measure query response times under increasing load.
+
+\item{TC-NFR-26-BackupRestore\\}
+Type: Static, Dynamic\\
+
+Initial State: Backup configuration active and scheduled.\\
+
+Input/Condition: Trigger full system backup and restore into clean database instance.\\
+
+Output/Result: Verify encryption during backup and exact match of restored data; pass if checksums and verification logs match.\\
+
+How test will be performed: Activate backup workflow, restore data, and perform row-by-row hash comparison to confirm data integrity.
+
+\subsubsection{Usability and Accessibility}
+
+\item{TC-NFR-7-Onboarding\\}
+Type: Usability study, task-based inspection\\
+
+Initial State: Dashboard deployed and accessible to first-time users.\\
+
+Input/Condition: New instructors complete key tasks (start session, view heatmaps, export data).\\
+
+Output/Result: Users complete tasks within expected onboarding time; collect ease-of-use notes and feedback.\\
+
+How test will be performed: Observe task completion times and collect short post-task surveys.
+
+\item{TC-NFR-8-Contrast\\}
+Type: Static, Dynamic\\
+
+Initial State: Dashboard functional in web browser.\\
+
+Input/Condition: Run automated accessibility audits and manual checks under various lighting.\\
+
+Output/Result: UI elements meet WCAG AA contrast standards and are legible under classroom lighting.\\
+
+How test will be performed: Use Lighthouse or axe and verify results visually with contrast checkers.
+
+\item{TC-NFR-21-UCD\\}
+Type: Iterative usability study\\
+
+Initial State: Dashboard prototype ready for user testing.\\
+
+Input/Condition: Conduct multiple usability sessions with instructors and TAs using realistic scenarios.\\
+
+Output/Result: Improvements in task completion rates, reduced errors, and higher satisfaction across iterations.\\
+
+How test will be performed: Run structured sessions, analyze feedback, and compare results across iterations.
+
+\subsubsection{Security and Privacy}
+
+\item{TC-NFR-9-TLSOnly\\}
+
+Type: Static, Dynamic\\
+
+Initial State: Application deployed with HTTPS proxy enabled.\\
+
+Input/Condition: Attempt requests using both HTTP and HTTPS.\\
+
+Output/Result: HTTP requests blocked or redirected; HTTPS succeeds with valid certificate.\\
+
+How test will be performed: Use curl and browser devtools to confirm redirects and certificate validity.
+
+\item{TC-NFR-10-RBAC\\}
+Type: Dynamic\\
+
+Initial State: Backend roles configured for instructor and researcher accounts.\\
+
+Input/Condition: Send API requests under different roles to verify access control.\\
+
+Output/Result: Only authorized roles access protected endpoints; unauthorized requests rejected.\\
+
+How test will be performed: Use Postman or automated scripts with varied tokens to test role enforcement.
+
+\item{TC-NFR-11-AnonStore\\}
+Type: Static, Dynamic\\
+
+Initial State: Database populated with session data.\\
+
+Input/Condition: Inspect stored session records and IDs.\\
+
+Output/Result: No personal identifiers stored; only pseudonyms or session IDs used.\\
+
+How test will be performed: Run SQL queries and manually review samples to ensure anonymization.
+
+\item{TC-NFR-24-Consent\\}
+Type: Static, Dynamic\\
+
+Initial State: Application ready for a new recording session.\\
+
+Input/Condition: Attempt to start recording without completing consent process.\\
+
+Output/Result: Recording cannot start until consent explicitly confirmed.\\
+
+How test will be performed: Observe UI behavior and check consent status recorded in database.
+
+\subsubsection{Portability, Maintainability, and Process}
+
+\item{TC-NFR-12-CrossPlat\\}
+Type: Dynamic\\
+
+Initial State: System containerized and ready for deployment.\\
+
+Input/Condition: Run setup on Windows, macOS, and Ubuntu.\\
+
+Output/Result: Application runs successfully with no critical functional issues on all platforms.\\
+
+How test will be performed: Use Docker Compose or equivalent to deploy on each OS and verify key flows.
+
+\item{TC-NFR-13-Linters\\}
+Type: Static\\
+
+Initial State: Source code repository available.\\
+
+Input/Condition: Run ESLint for JS/TS and flake8/ruff for Python.\\
+
+Output/Result: No linting errors or style violations reported.\\
+
+How test will be performed: Run linting tools in CI and fix or document any findings.
+
+\item{TC-NFR-14-CI\\}
+Type: Process verification
+
+Initial State: Continuous integration (CI) pipeline configured.
+
+Input/Condition: Push a new pull request to trigger CI.
+
+Output/Result: The build, lint, and test stages run automatically and pass without errors.
+
+How test will be performed: Review CI logs and confirm successful artifact generation.
+
+\item{TC-NFR-15-Config\\}
+Type: Static, dynamic
+
+Initial State: Configuration files and environment variables defined.
+
+Input/Condition: Modify configuration values without changing the code.
+
+Output/Result: Application updates behavior correctly based on new configurations.
+
+How test will be performed: Edit .env values or config files and restart the service to verify changes take effect.
+
+\item{TC-NFR-19-License\\}
+Type: Static
+
+Initial State: Dependency list available.
+
+Input/Condition: Run a license scan across all dependencies.
+
+Output/Result: All dependencies comply with NCRL-1.0 or compatible licenses.
+
+How test will be performed: Use tools like license-checker to scan and validate license information.
+
+\item{TC-NFR-20-NonComm\\}
+Type: Static
+
+Initial State: Documentation and UI ready for review.
+
+Input/Condition: Review license text and all visible legal disclaimers.
+
+Output/Result: Academic use only or equivalent notice is clearly displayed in the documentation and UI.
+
+How test will be performed: Manually inspect the README, EULA, and app splash screen.
+
+\item{TC-NFR-23-EnvProtocol\\}
+Type: Checklist, observation
+
+Initial State: Classroom setup complete.
+
+Input/Condition: Run the environmental calibration checklist.
+
+Output/Result: All requirements lighting, distance, calibration, and setup are met and documented.
+
+How test will be performed: Complete the checklist, take supporting photos, and attach them to the report.
+
+\item{TC-NFR-25-Comfort\\}
+Type: Observation, survey
+
+Initial State: Session underway with active participants.
+
+Input/Condition: Gather short post-session feedback from participants.
+
+Output/Result: Record comfort ratings using a Likert scale and collect optional comments.
+
+How test will be performed: Conduct an anonymous feedback survey followed by a brief debrief session.
+
+\subsubsection{Research Validity}
+
+\item{TC-NFR-22-Model\\}
+Type: Dynamic, review
+
+Initial State: Analytics model implemented and trained.
+
+Input/Condition: Run the model on a labeled dataset with known ground truth.
+
+Output/Result: Model predictions closely match reference results; report scalar relative error and vector norm differences.
+
+How test will be performed: Compare model outputs with the reference dataset, calculate error metrics, and document findings, including any observed bias.
 
 \end{enumerate}
-
-\subsubsection{Area of Testing2}
 
 ...
 
 \subsection{Traceability Between Test Cases and Requirements}
 
-\wss{Provide a table that shows which test cases are supporting which
-  requirements.}
 
   Funtional Requirements Traceability Matrix:
 \begin{center}
   \includegraphics[width=\textwidth]{Images/FR-Tests-Traceability-Matrix.png}
 \end{center}
+
+\begin{table}[htbp]
+\centering
+\caption{Traceability Between NFRs and Test Cases}
+\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabular}{p{2cm} p{4cm} p{7cm}}
+\hline
+\textbf{NFR (SRS)} & \textbf{Test Case ID(s)} & \textbf{Area} \\
+\hline
+NFR-1 & TC-NFR-1-Latency & A1: Data Pipeline \& Ingestion \\
+NFR-2 & TC-NFR-2-UpdateHz & A2: Visualization \& Rendering \\
+NFR-3 & TC-NFR-3-SyncDrift, TC-NFR-16-Scale10 & A1: Multi-Device Synchronization \\
+NFR-4 & TC-NFR-4-JitterLoss & A1: Network Stability \\
+NFR-5 & TC-NFR-5-AutoRecover & A1: Data Pipeline Reliability \\
+NFR-6 & TC-NFR-6-Uptime & A5: Operational Resilience \\
+NFR-7 & TC-NFR-7-Onboarding & A4: Usability \& UI Flow \\
+NFR-8 & TC-NFR-8-Contrast & A4: Accessibility \\
+NFR-9 & TC-NFR-9-TLSOnly & A3: Security (Transport) \\
+NFR-10 & TC-NFR-10-RBAC & A3: Security (Access Control) \\
+NFR-11 & TC-NFR-11-AnonStore & A3: Privacy \& Storage \\
+NFR-12 & TC-NFR-12-CrossPlat & A5: Portability \\
+NFR-13 & TC-NFR-13-Linters & A5: Maintainability (Code Quality) \\
+NFR-14 & TC-NFR-14-CI & A5: Maintainability (CI/CD) \\
+NFR-15 & TC-NFR-15-Config & A5: Maintainability (Configuration) \\
+NFR-16 & TC-NFR-16-Scale10, TC-NFR-3-SyncDrift & A1: Scalability \& Multi-Device Load \\
+NFR-17 & TC-NFR-17-TimeACID & A3: Database Integrity \\
+NFR-18 & TC-NFR-18-BigSession & A3: Backend Performance \\
+NFR-19 & TC-NFR-19-License & A5: Compliance \\
+NFR-20 & TC-NFR-20-NonComm & A5: Compliance \\
+NFR-21 & TC-NFR-21-UCD & A4: Usability Iteration \\
+NFR-22 & TC-NFR-22-Model & A2: Analytics \& Validation \\
+NFR-23 & TC-NFR-23-EnvProtocol & A1: Environmental Setup \\
+NFR-24 & TC-NFR-24-Consent & A3: Privacy \& Consent Flow \\
+NFR-25 & TC-NFR-25-Comfort & A4: User Study Feedback \\
+NFR-26 & TC-NFR-26-BackupRestore & A3: Data Backup \& Recovery \\
+\hline
+\end{tabular}
+\end{table}
 
 \section{Unit Test Description}
 
