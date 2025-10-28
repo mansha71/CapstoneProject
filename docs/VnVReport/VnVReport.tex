@@ -202,20 +202,33 @@ Each new feature merged into the main branch will automatically trigger a CI/CD 
 
 \subsection{Automated Testing and Verification Tools}
 
-\wss{What tools are you using for automated testing.  Likely a unit testing
-  framework and maybe a profiling tool, like ValGrind.  Other possible tools
-  include a static analyzer, make, continuous integration tools, test coverage
-  tools, etc.  Explain your plans for summarizing code coverage metrics.
-  Linters are another important class of tools.  For the programming language
-  you select, you should look at the available linters.  There may also be tools
-  that verify that coding standards have been respected, like flake9 for
-  Python.}
+Automation is a central part of the verification strategy, ensuring that every commit is tested consistently. The following tools and frameworks will be used throughout development.
 
-\wss{If you have already done this in the development plan, you can point to
-that document.}
+\begin{table}[htbp]
+\centering
+\caption{Automated Testing and Verification Tools}
+\begin{tabularx}{\textwidth}{|p{3cm}|p{4cm}|X|}
+\hline
+\textbf{Tool} & \textbf{Purpose} & \textbf{Verification Activity} \\
+\hline
+GitHub Actions & Continuous integration pipeline that runs automatically on each pull request & Executes all test suites, linting, and build checks. Prevents merges if tests fail. \\
+\hline
+PyTest & Python testing framework for backend and data processing modules & Unit tests for data parsing, computation accuracy, and real-time gaze mapping \\
+\hline
+Jest and React Testing Library & Front-end testing for user interface components and data visualizations & Verifies correct rendering and state management on the instructor dashboard \\
+\hline
+ESLint, Prettier, and flake8 & Static code analysis and style enforcement tools & Ensures consistent syntax, formatting, and code quality \\
+\hline
+Valgrind or cProfile & Profiling and memory analysis tools & Identifies performance bottlenecks and inefficiencies in real-time data handling \\
+\hline
+Coverage.py and Codecov & Code coverage tracking utilities & Measures test completeness and identifies untested portions of the codebase \\
+\hline
+Docker & Reproducible environment for testing and deployment & Verifies installability and portability of the full system across different machines \\
+\hline
+\end{tabularx}
+\end{table}
 
-\wss{The details of this section will likely evolve as you get closer to the
-  implementation.}
+At the end of each development iteration, the CI dashboard will export a summary of test coverage, lint violations, and failed cases. These results will be included in the final VnV Report as objective evidence of verification and overall system reliability.
 
 \subsection{Software Validation}
 
