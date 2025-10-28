@@ -612,14 +612,59 @@ How test will be performed: Compare model outputs with the reference dataset, ca
 
 \end{enumerate}
 
-\subsubsection{Area of Testing2}
-
 ...
 
 \subsection{Traceability Between Test Cases and Requirements}
 
-\wss{Provide a table that shows which test cases are supporting which
-  requirements.}
+\begin{table}[htbp]
+\centering
+\caption{Traceability Between NFRs and Test Cases}
+\renewcommand{\arraystretch}{1.1}
+\small
+\begin{tabular}{p{2cm} p{4cm} p{7cm}}
+\hline
+\textbf{NFR (SRS)} & \textbf{Test Case ID(s)} & \textbf{Area} \\
+\hline
+NFR-1 & TC-NFR-1-Latency & A1: Data Pipeline \& Ingestion \\
+NFR-2 & TC-NFR-2-UpdateHz & A2: Visualization \& Rendering \\
+NFR-3 & TC-NFR-3-SyncDrift, TC-NFR-16-Scale10 & A1: Multi-Device Synchronization \\
+NFR-4 & TC-NFR-4-JitterLoss & A1: Network Stability \\
+NFR-5 & TC-NFR-5-AutoRecover & A1: Data Pipeline Reliability \\
+NFR-6 & TC-NFR-6-Uptime & A5: Operational Resilience \\
+NFR-7 & TC-NFR-7-Onboarding & A4: Usability \& UI Flow \\
+NFR-8 & TC-NFR-8-Contrast & A4: Accessibility \\
+NFR-9 & TC-NFR-9-TLSOnly & A3: Security (Transport) \\
+NFR-10 & TC-NFR-10-RBAC & A3: Security (Access Control) \\
+NFR-11 & TC-NFR-11-AnonStore & A3: Privacy \& Storage \\
+NFR-12 & TC-NFR-12-CrossPlat & A5: Portability \\
+NFR-13 & TC-NFR-13-Linters & A5: Maintainability (Code Quality) \\
+NFR-14 & TC-NFR-14-CI & A5: Maintainability (CI/CD) \\
+NFR-15 & TC-NFR-15-Config & A5: Maintainability (Configuration) \\
+NFR-16 & TC-NFR-16-Scale10, TC-NFR-3-SyncDrift & A1: Scalability \& Multi-Device Load \\
+NFR-17 & TC-NFR-17-TimeACID & A3: Database Integrity \\
+NFR-18 & TC-NFR-18-BigSession & A3: Backend Performance \\
+NFR-19 & TC-NFR-19-License & A5: Compliance \\
+NFR-20 & TC-NFR-20-NonComm & A5: Compliance \\
+NFR-21 & TC-NFR-21-UCD & A4: Usability Iteration \\
+NFR-22 & TC-NFR-22-Model & A2: Analytics \& Validation \\
+NFR-23 & TC-NFR-23-EnvProtocol & A1: Environmental Setup \\
+NFR-24 & TC-NFR-24-Consent & A3: Privacy \& Consent Flow \\
+NFR-25 & TC-NFR-25-Comfort & A4: User Study Feedback \\
+NFR-26 & TC-NFR-26-BackupRestore & A3: Data Backup \& Recovery \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent
+\textit{Note.} The “Area” column groups related quality attributes:
+\begin{itemize}
+  \item \textbf{A1:} Data Pipeline, Ingestion, and Device Sync  
+  \item \textbf{A2:} Visualization and Analytics  
+  \item \textbf{A3:} Data Management, Security, and Privacy  
+  \item \textbf{A4:} Usability and User Experience  
+  \item \textbf{A5:} Maintainability, Portability, and Compliance  
+\end{itemize}
+
 
 \section{Unit Test Description}
 
@@ -777,17 +822,25 @@ graduate attribute of Lifelong Learning.
 
 \begin{enumerate}
   \item What went well while writing this deliverable? 
+
+  Manan: The team collaborated effectively, dividing tasks based on individual strengths, which streamlined the process. We also held regular meetings to discuss progress and address any challenges promptly.
   \item What pain points did you experience during this deliverable, and how
     did you resolve them?
+
+  Manan: One challenge was ensuring consistency in formatting and terminology across sections written by different team members. We resolved this by designating a final editor who reviewed the entire document for coherence and uniformity.
   \item What knowledge and skills will the team collectively need to acquire to
   successfully complete the verification and validation of your project?
   Examples of possible knowledge and skills include dynamic testing knowledge,
   static testing knowledge, specific tool usage, Valgrind etc.  You should look to
   identify at least one item for each team member.
+
+  Manan: The team will need to acquire knowledge in dynamic testing methodologies, static code analysis techniques, and proficiency in using automated testing tools such as pytest for Python and Jest for JavaScript.
   \item For each of the knowledge areas and skills identified in the previous
   question, what are at least two approaches to acquiring the knowledge or
   mastering the skill?  Of the identified approaches, which will each team
   member pursue, and why did they make this choice?
+
+  Manan: To acquire knowledge in dynamic testing methodologies, team members can attend workshops or webinars focused on software testing best practices, and also engage in hands-on practice by writing and executing test cases for our project.
 \end{enumerate}
 
 \end{document}
