@@ -159,8 +159,7 @@ Stanley Chen & 2 & 2 \\
 Note: Size of issues vary which explains why some members have more issues than others. 
 
 \section{CICD}
-
-\wss{Say how CICD will be used in your project}
+We will run GitHub Actions on every PR. The jobs will include \texttt{lint}, \texttt{test}, and \texttt{build} all to ensure code quality. A PR will not merge unless all jobs succeed. Secrets and environment variables will be stored in GitHub Actions Secrets to keep them secure. Environments will require approval for deploy jobs if added later.
 
 \section{Team Charter Trigger Items}
 
