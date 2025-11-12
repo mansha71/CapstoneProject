@@ -131,103 +131,354 @@ The following table is taken directly from the Module Guide document for this pr
 \textbf{Level 1} & \textbf{Level 2}\\
 \midrule
 
-{Hardware-Hiding} & ~ \\
+{Hardware-Hiding} & Pupil Labs Neon Glasses, Central Camera, Instructor Laptop/Desktop \\
 \midrule
 
-\multirow{7}{0.3\textwidth}{Behaviour-Hiding} & Input Parameters\\
-& Output Format\\
-& Output Verification\\
-& Temperature ODEs\\
-& Energy Equations\\ 
-& Control Module\\
-& Specification Parameters Module\\
+\multirow{8}{0.3\textwidth}{Behaviour-Hiding} 
+& Data Ingestion Module\\
+& Real-Time Streaming Module\\
+& Data Preprocessing Module\\
+& Privacy \& Infrastructure Module\\
+& Engagement Analytics Module\\
+& Correlation \& Visual Analysis Module\\
+& Dashboard Visualization Module\\
+& Reporting Module\\
 \midrule
 
-\multirow{3}{0.3\textwidth}{Software Decision} & {Sequence Data Structure}\\
-& ODE Solver\\
-& Plotting\\
+\multirow{3}{0.3\textwidth}{Software Decision} 
+& Data Storage and API Layer\\
+& Authentication and Session Management\\
+& Visualization Frameworks and Libraries\\
 \bottomrule
 
 \end{tabular}
-\caption{Module Hierarchy}
+\caption{Module Hierarchy for Visionaries System}
 \label{TblMH}
 \end{table}
 
 \newpage
 ~\newpage
 
-\section{MIS of \wss{Module Name}} \label{Module} \wss{Use labels for
-  cross-referencing}
-
-\wss{You can reference SRS labels, such as R\ref{R_Inputs}.}
-
-\wss{It is also possible to use \LaTeX for hypperlinks to external documents.}
+\section{MIS of Data Ingestion Module} \label{DataIngestionModule}
 
 \subsection{Module}
 
-\wss{Short name for the module}
+This module is responsible for collecting eye-tracking and video data from multiple eye-tracking devices and also the central camera. It makes sure that the raw data streams are captured, synchronized, and stored in a structured format. Making it suitable for further processing.
 
 \subsection{Uses}
 
+Real-Time Streaming Module, Data Preprocessing Module, Privacy \& Infrastructure Module
 
 \subsection{Syntax}
 
 \subsubsection{Exported Constants}
 
+None.
+
 \subsubsection{Exported Access Programs}
 
-\begin{center}
-\begin{tabular}{p{2cm} p{4cm} p{4cm} p{2cm}}
-\hline
-\textbf{Name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions} \\
-\hline
-\wss{accessProg} & - & - & - \\
-\hline
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+collectData & deviceID, streamConfig & rawData & ConnectionError \\
+syncTimestamps & dataStreams & syncedData & SyncError \\
+storeRawData & syncedData & status & IOError \\
+\bottomrule
 \end{tabular}
-\end{center}
+\caption{Exported Access Programs for Data Ingestion Module}
+\label{tab:dataIngestionAP}
+\end{table}
+
 
 \subsection{Semantics}
 
 \subsubsection{State Variables}
 
-\wss{Not all modules will have state variables.  State variables give the module
-  a memory.}
+storedData: list of captured data streams currently saved in local or cloud storage.
 
 \subsubsection{Environment Variables}
 
-\wss{This section is not necessary for all modules.  Its purpose is to capture
-  when the module has external interaction with the environment, such as for a
-  device driver, screen interface, keyboard, file, etc.}
+Connection to Pupil Labs Neon devices and the central camera feed.
 
 \subsubsection{Assumptions}
 
-\wss{Try to minimize assumptions and anticipate programmer errors via
-  exceptions, but for practical purposes assumptions are sometimes appropriate.}
+The eye-tracking devices are properly connected and the network latency is within acceptable limits for real-time data transfer.
 
 \subsubsection{Access Routine Semantics}
 
-\noindent \wss{accessProg}():
+\noindent collectData():
 \begin{itemize}
-\item transition: \wss{if appropriate} 
-\item output: \wss{if appropriate} 
-\item exception: \wss{if appropriate} 
+\item transition: Starts capturing data streams from connected devices.
+\item output: Returns the raw data collected.
+\item exception: Raises ConnectionError if device is unavailable.
 \end{itemize}
 
-\wss{A module without environment variables or state variables is unlikely to
-  have a state transition.  In this case a state transition can only occur if
-  the module is changing the state of another module.}
+\noindent syncTimestamps():
+\begin{itemize}
+\item transition: Aligns timestamps between multiple devices using NTP or local clock sync.
+\item output: Returns synchronized data streams.
+\item exception: Raises SyncError if timestamp alignment fails.
+\end{itemize}
 
-\wss{Modules rarely have both a transition and an output.  In most cases you
-  will have one or the other.}
+\noindent storeRawData():
+\begin{itemize}
+\item transition: Saves synchronized data to secure storage.
+\item output: Returns success status.
+\item exception: Raises IOError if data cannot be written.
+\end{itemize}
 
 \subsubsection{Local Functions}
 
-\wss{As appropriate} \wss{These functions are for the purpose of specification.
-  They are not necessarily something that is going to be implemented
-  explicitly.  Even if they are implemented, they are not exported; they only
-  have local scope.}
+validateStream(deviceID), checkIntegrity(dataChunk)
 
 \newpage
+
+\section{MIS of Real-Time Streaming Module} \label{RealTimeStreamingModule}
+
+\subsection{Module}
+
+This module handles the continuous transmission of eye-tracking and video data to the dashboard for the live visualization. It ensures low-latency data flow and manages temporary buffering to keep the stream stable.
+
+\subsection{Uses}
+
+Data Ingestion Module, Data Preprocessing Module, Dashboard Visualization Module
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+initializeStream & configSettings & streamSession & ConnectionError \\
+transmitData & processedData & status & StreamError \\
+terminateStream & sessionID & status & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Real-Time Streaming Module}
+\label{tab:realTimeStreamingAP}
+\end{table}
+
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+activeStream: maintains the current streaming session status.
+
+\subsubsection{Environment Variables}
+
+Network socket for dashboard communication and connected video devices.
+
+\subsubsection{Assumptions}
+
+Stable network connection and active dashboard session are available.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent initializeStream():
+\begin{itemize}
+\item transition: Opens a new connection to the dashboard and starts transmitting.
+\item output: Returns a session object.
+\item exception: Raises ConnectionError if the network fails.
+\end{itemize}
+
+\noindent transmitData():
+\begin{itemize}
+\item transition: Sends processed gaze and video frames in real time.
+\item output: Returns success confirmation.
+\item exception: Raises StreamError if data loss occurs.
+\end{itemize}
+
+\noindent terminateStream():
+\begin{itemize}
+\item transition: Ends the streaming session and clears buffers.
+\item output: Returns final session status.
+\item exception: None.
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+bufferData(), reconnectStream()
+
+\newpage
+
+\section{MIS of Data Preprocessing Module} \label{DataPreprocessingModule}
+
+\subsection{Module}
+
+This module prepares the captured data for analysis by filtering noise, normalizing the coordinates, and structuring the gaze and video data into useable formats.
+
+\subsection{Uses}
+
+Data Ingestion Module, Real-Time Streaming Module, Privacy \& Infrastructure Module
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+filterNoise & rawData & cleanData & DataError \\
+normalizeCoordinates & cleanData & normalizedData & MathError \\
+formatForAnalysis & normalizedData & structuredData & FormatError \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Data Preprocessing Module}
+\label{tab:dataPreprocessingAP}
+\end{table}
+
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+None. Operates statelessly on provided input data.
+
+\subsubsection{Environment Variables}
+
+None.
+
+\subsubsection{Assumptions}
+
+Input data follows the expected format and has valid timestamps.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent filterNoise():
+\begin{itemize}
+\item transition: Applies smoothing or low-pass filters to reduce jitter.
+\item output: Returns cleaned gaze and video data.
+\item exception: Raises DataError for corrupted or incomplete data.
+\end{itemize}
+
+\noindent normalizeCoordinates():
+\begin{itemize}
+\item transition: Converts device-specific gaze coordinates to a shared reference frame.
+\item output: Returns normalized gaze data.
+\item exception: Raises MathError if coordinate mapping fails.
+\end{itemize}
+
+\noindent formatForAnalysis():
+\begin{itemize}
+\item transition: Structures data into a consistent schema for downstream analytics.
+\item output: Returns data in the standardized format.
+\item exception: Raises FormatError for invalid schema generation.
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+interpolateMissingFrames(), alignStreams()
+
+\newpage
+
+\section{MIS of Privacy and Infrastructure Module} \label{PrivacyInfrastructureModule}
+
+\subsection{Module}
+
+This module ensures secure data handling and stability of the system. It manages anonymization, encryption, and access control. It also handles maintaining infrastructure-level configurations and compliance with privacy policies.
+
+\subsection{Uses}
+
+Data Ingestion Module, Data Preprocessing Module, Real-Time Streaming Module
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+encryptData & plainData & encryptedData & EncryptionError \\
+anonymizeParticipant & userData & anonymizedData & PrivacyError \\
+validateAccess & userRole, resource & permissionStatus & AuthError \\
+monitorInfrastructure & metrics & systemReport & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Privacy and Infrastructure Module}
+\label{tab:privacyInfrastructureAP}
+\end{table}
+
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+accessLog: records of authenticated access attempts and actions performed.
+
+\subsubsection{Environment Variables}
+
+System environment variables for encryption keys, network configurations, and role-based access rules.
+
+\subsubsection{Assumptions}
+
+All data passing through this module adheres to encryption and anonymization standards under PIPEDA.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent encryptData():
+\begin{itemize}
+\item transition: Applies encryption to sensitive data before storage or transmission.
+\item output: Returns encrypted data.
+\item exception: Raises EncryptionError if encryption fails.
+\end{itemize}
+
+\noindent anonymizeParticipant():
+\begin{itemize}
+\item transition: Removes personally identifiable information from datasets.
+\item output: Returns anonymized data.
+\item exception: Raises PrivacyError if anonymization is incomplete.
+\end{itemize}
+
+\noindent validateAccess():
+\begin{itemize}
+\item transition: Checks user permissions based on their assigned role.
+\item output: Returns access approval or denial.
+\item exception: Raises AuthError for invalid credentials.
+\end{itemize}
+
+\noindent monitorInfrastructure():
+\begin{itemize}
+\item transition: Tracks system metrics and logs anomalies for administrative review.
+\item output: Returns current system status.
+\item exception: None.
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+generateKey(), rotateLogs(), alertAdmin()
+
+\newpage
+
 
 \bibliographystyle {plainnat}
 \bibliography {../../../refs/References}
