@@ -191,8 +191,23 @@ below, which are leaves in the hierarchy tree, are the modules that will
 actually be implemented.
 
 \begin{description}
-\item [\refstepcounter{mnum} \mthemnum \label{mHH}:] Hardware-Hiding Module
-\item ...
+  \item[\refstepcounter{mnum} \mthemnum \label{mHH}:] Hardware-Hiding Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mDIM}:] Data Ingestion Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mRTS}:] Real-Time Streaming Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mDVM}:] Dashboard Visualization Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mRM}:] Reporting Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mDPM}:] Data Preprocessing Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mPIM}:] Privacy \& Infrastructure Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mEAM}:] Engagement Analytics Module
+
+  \item[\refstepcounter{mnum} \mthemnum \label{mCVAM}:] Correlation \& Visual Analysis Module
 \end{description}
 
 
@@ -203,28 +218,28 @@ actually be implemented.
 \textbf{Level 1} & \textbf{Level 2}\\
 \midrule
 
-{Hardware-Hiding Module} & ~ \\
+Hardware-Hiding Module & Hardware-Hiding Module (\mref{mHH}) \\
 \midrule
 
-\multirow{7}{0.3\textwidth}{Behaviour-Hiding Module} & ?\\
-& ?\\
-& ?\\
-& ?\\
-& ?\\
-& ?\\
-& ?\\ 
-& ?\\
+\multirow{4}{0.3\textwidth}{Behaviour-Hiding Module} 
+  & Data Ingestion Module (\mref{mDIM})\\
+  & Real-Time Streaming Module (\mref{mRTS})\\
+  & Dashboard Visualization Module (\mref{mDVM})\\
+  & Reporting Module (\mref{mRM})\\
 \midrule
 
-\multirow{3}{0.3\textwidth}{Software Decision Module} & {?}\\
-& ?\\
-& ?\\
+\multirow{4}{0.3\textwidth}{Software Decision Module} 
+  & Data Preprocessing Module (\mref{mDPM})\\
+  & Privacy \& Infrastructure Module (\mref{mPIM})\\
+  & Engagement Analytics Module (\mref{mEAM})\\
+  & Correlation \& Visual Analysis Module (\mref{mCVAM})\\
 \bottomrule
 
 \end{tabular}
 \caption{Module Hierarchy}
 \label{TblMH}
 \end{table}
+
 
 \section{Connection Between Requirements and Design} \label{SecConnection}
 
@@ -238,6 +253,84 @@ between requirements and modules is listed in Table~\ref{TblRT}.
   they are explicitly recorded here.  For instance, if a program has security
   requirements, a specific design decision may be made to satisfy those
   requirements with a password.}
+
+  \begin{itemize}
+
+  \item \textbf{Separation of data ingestion from preprocessing:}
+  Requirements relating to multi-device input, raw data capture, timing
+  synchronization, and recovery from connection loss motivated the creation of a
+  dedicated \emph{Data Ingestion Module}. Requirements concerning noise
+  reduction, calibration correction, homography projection, and coordinate
+  normalization are distinct and subject to change independently, motivating the
+  \emph{Data Preprocessing Module}. This reflects the SRS separation between raw
+  data capture and analytic data preparation.
+
+  \item \textbf{Explicit handling of real-time constraints:}
+  The need for live metrics, dashboard updating, latency guarantees, and
+  real-time streaming (as described in the SRS operational modes) led to the
+  creation of a separate \emph{Real-Time Streaming Module}. This encapsulates
+  decisions about streaming frameworks, buffering policy, and delivery latency,
+  which are likely to evolve as performance constraints change.
+
+  \item \textbf{Distinguishing analytics computation from visualization:}
+  Engagement metrics, instructor–student gaze alignment, heatmap generation,
+  and correlation analyses are internal computations not directly described to
+  the end user. These behaviours motivated two separate software-decision
+  modules: the \emph{Engagement Analytics Module} and the \emph{Correlation \&
+  Visual Analysis Module}. Meanwhile, all visible UI behaviours—including
+  real-time views, playback, filtering, and seat-map interactions—are grouped in
+  the \emph{Dashboard Visualization Module}. This follows the SRS distinction
+  between analytic computation and user-facing presentation.
+
+  \item \textbf{Privacy and anonymization as a first-class design concern:}
+  The SRS explicitly lists privacy, anonymization, secure handling of raw video,
+  and compliance with data retention constraints. These requirements cannot be
+  embedded inside ingestion, analytics, or dashboard logic without creating
+  strong coupling. They therefore motivate the independent
+  \emph{Privacy \& Infrastructure Module}, which encapsulates the design
+  decisions related to face blurring, spatial masking, secure storage,
+  authorization, and logging.
+
+  \item \textbf{Support for offline summaries and instructor reporting:}
+  Requirements calling for post-session summaries, exportable metrics, and
+  instructor-friendly performance reports lead to the \emph{Reporting Module}.
+  This module encapsulates decisions about report structure, export format, and
+  summarization logic—decisions that are likely to change independently of both
+  preprocessing and dashboard design.
+
+  \item \textbf{Abstraction of physical devices and OS services:}
+  The SRS assumes multiple hardware sources (eye-tracking glasses, central
+  camera, audio, file storage, and network interfaces). To prevent downstream
+  modules from depending on specific device drivers or OS-level behaviour, a
+  general \emph{Hardware-Hiding Module} is included. This encapsulates the
+  design decision to virtualize camera and sensor access, a key anticipated
+  change identified in the hazards and SRS (e.g., replacing Neon with another
+  device).
+
+  \item \textbf{Backend service and session-lifecycle requirements:}
+  The SRS specifies requirements for creating, managing, and retrieving recorded
+  sessions, as well as backend API access for live or historical data (SRS:
+  Service \& API requirements; Session Lifecycle Requirements). These behaviours
+  are not purely real-time streaming nor visualization concerns. This motivated
+  folding backend session-control logic into the \emph{Real-Time Streaming
+  Module}, which now encapsulates API endpoints for session creation, playback
+  control, and client subscriptions.
+
+  \item \textbf{Secure storage, retention, and access-control requirements:}
+  The SRS defines requirements for data retention policies, authenticated access,
+  role-based controls (e.g., instructor vs.\ researcher), and logging of data
+  access. Embedding these into ingestion or analytics would create tight coupling,
+  so these decisions are isolated in the \emph{Privacy \& Infrastructure Module}.
+  This module therefore owns secure storage, retention strategy, authorization,
+  and audit logging as design decisions hidden from the rest of the system.
+
+\end{itemize}
+
+Overall, the module structure shows the boundaries between behaviours visible
+to the user, performance-driven internal computations, privacy-critical
+infrastructure, and hardware-specific interactions. This makes sure that changes in
+requirements - such as improved analytics, new privacy constraints, or new
+hardware - affect only the module that hides the corresponding decision.
 
 \section{Module Decomposition} \label{SecMD}
 
@@ -255,57 +348,193 @@ Only the leaf modules in the hierarchy have to be implemented. If a dash
 (\emph{--}) is shown, this means that the module is not a leaf and will not have
 to be implemented.
 
-\subsection{Hardware Hiding Modules (\mref{mHH})}
+\subsection{Hardware Hiding Module (\mref{mHH})}
 
 \begin{description}
-\item[Secrets:]The data structure and algorithm used to implement the virtual
-  hardware.
-\item[Services:]Serves as a virtual hardware used by the rest of the
-  system. This module provides the interface between the hardware and the
-  software. So, the system can use it to display outputs or to accept inputs.
-\item[Implemented By:] OS
+\item[Secrets:] The device-specific interfaces, drivers, and low-level OS
+mechanisms used to access eye-tracking glasses (Neon), world camera
+input, microphones, GPU acceleration, file system APIs, local and cloud
+storage backends, network sockets, and system time synchronization (e.g.,
+NTP services).
+\item[Services:] Provides a virtualized hardware interface for capturing gaze
+streams, world camera frames, audio signals, timestamps, and device metadata,
+and for reading/writing data to persistent storage. Exposes uniform APIs so
+downstream modules do not depend on specific device models, storage engines,
+or operating systems.
+\item[Implemented By:] OS, vendor SDKs, device drivers
+\item[Type of Module:] Library
 \end{description}
 
-\subsection{Behaviour-Hiding Module}
+\subsection{Behaviour-Hiding Modules}
 
 \begin{description}
-\item[Secrets:]The contents of the required behaviours.
-\item[Services:]Includes programs that provide externally visible behaviour of
-  the system as specified in the software requirements specification (SRS)
-  documents. This module serves as a communication layer between the
-  hardware-hiding module and the software decision module. The programs in this
-  module will need to change if there are changes in the SRS.
+\item[Secrets:] The externally visible behaviours of the system, including
+session playback, dashboard display logic, ingestion behaviour, and reporting
+rules as defined in the SRS.
+\item[Services:] Provides all user-facing behaviours, connecting virtualized
+hardware to internal algorithms. These modules must change if the SRS behaviour
+changes.
 \item[Implemented By:] --
 \end{description}
 
-\subsubsection{Input Format Module (\mref{mInput})}
+\subsubsection{Data Ingestion Module (\mref{mDIM})}
 
 \begin{description}
-\item[Secrets:]The format and structure of the input data.
-\item[Services:]Converts the input data into the data structure used by the
-  input parameters module.
-\item[Implemented By:] [Your Program Name Here]
-\item[Type of Module:] [Record, Library, Abstract Object, or Abstract Data Type]
-  [Information to include for leaf modules in the decomposition by secrets tree.]
+\item[Secrets:] The method of connecting to and receiving data from multiple
+hardware sources (glasses, cameras, microphones), including device protocols,
+buffering policy, timestamp alignment strategy (including use of system/NTP
+time), and fault-recovery behaviour for dropped connections or device failures.
+\item[Services:]
+\begin{itemize}
+  \item Accepts raw gaze, video, audio, and metadata streams from all devices.
+  \item Performs initial timestamping and session indexing using a common time
+        base.
+  \item Manages session start/stop hooks that allow backend services to create
+        sessions, register participants, and mark completed recordings.
+  \item Outputs unified raw data packets for preprocessing and optional storage.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Object
 \end{description}
 
-\subsubsection{Etc.}
-
-
-\subsection{Software Decision Module}
+\subsubsection{Real-Time Streaming Module (\mref{mRTS})}
 
 \begin{description}
-\item[Secrets:] The design decision based on mathematical theorems, physical
-  facts, or programming considerations. The secrets of this module are
-  \emph{not} described in the SRS.
-\item[Services:] Includes data structure and algorithms used in the system that
-  do not provide direct interaction with the user. 
-  % Changes in these modules are more likely to be motivated by a desire to
-  % improve performance than by externally imposed changes.
+\item[Secrets:] The design decisions for real-time transport (Kafka, WebSockets),
+latency buffering, stream synchronization, retry/timeout strategies, throttling,
+and the external API endpoints through which clients subscribe to streams and
+control session state (e.g., REST/GraphQL/WebSocket interfaces).
+\item[Services:]
+\begin{itemize}
+  \item Exposes backend APIs for creating, listing, and controlling live or
+        replay sessions (start, pause, stop) used by the dashboard and other
+        clients.
+  \item Delivers live preprocessed data and analytics to the dashboard and other
+        authorized consumers with bounded latency.
+  \item Maintains real-time session state (live/offline toggle, paused state,
+        health status) and reports it to monitoring/logging infrastructure.
+  \item Ensures smooth playback for recorded sessions by streaming stored data
+        through the same interfaces used for live sessions.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Object
+\end{description}
+
+\subsubsection{Dashboard Visualization Module (\mref{mDVM})}
+
+\begin{description}
+\item[Secrets:] The visualization grammar, UI layout, interaction rules,
+playback controls, and display logic for heatmaps, timelines, seat maps,
+and instructor–student alignment graphs.
+\item[Services:]
+\begin{itemize}
+  \item Presents real-time and historical analytics.
+  \item Renders heatmaps, fixation charts, engagement over time, and gaze-alignment plots.
+  \item Supports filters (student, seat zone, activity type, time window).
+  \item Provides playback and zoom-in on individual student streams.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Object
+\end{description}
+
+\subsubsection{Reporting Module (\mref{mRM})}
+
+\begin{description}
+\item[Secrets:] The structure and formatting of summaries, metrics, annotations,
+and export formats (PDF/HTML) and the rules for instructor reflection.
+\item[Services:]
+\begin{itemize}
+  \item Generates session summaries, attention-duration metrics, and engagement timelines.
+  \item Produces exportable reports for instructors and teaching portfolios.
+  \item Supports annotation, note-taking, screengrabs, and timeline cropping.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Library
+\end{description}
+
+\subsection{Software Decision Modules}
+
+\begin{description}
+\item[Secrets:] Internal algorithms, mathematical models, data structures, and
+analytic methods that are not externally visible. These change primarily due to
+performance or research-driven improvements, not due to changes in behaviour.
+\item[Services:] Provides internal data processing, analytics, correlations, and
+privacy enforcement services for behaviour-hiding modules.
 \item[Implemented By:] --
 \end{description}
 
-\subsubsection{Etc.}
+\subsubsection{Data Preprocessing Module (\mref{mDPM})}
+
+\begin{description}
+\item[Secrets:] Filtering algorithms (smoothing, denoising), calibration
+transformations, gaze-to-screen homography methods, fixation detection rules,
+and temporal alignment techniques.
+\item[Services:]
+\begin{itemize}
+  \item Converts raw gaze vectors into screen/world-space coordinates.
+  \item Denoises and filters gaze data.
+  \item Identifies fixations, saccades, attention windows.
+  \item Standardizes multimodal streams for analytics.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Data Type
+\end{description}
+
+\subsubsection{Privacy \& Infrastructure Module (\mref{mPIM})}
+
+\begin{description}
+\item[Secrets:] The anonymization pipeline, face-blurring method, device
+obfuscation, consent rules, access-control and role-based authorization
+policies, logging and monitoring configuration, database schema and storage
+layout for raw and processed data, and data retention and deletion strategy.
+\item[Services:]
+\begin{itemize}
+  \item Performs face blurring, device masking, and area-of-interest redaction
+        on video and gaze data before it is exposed to user-facing modules.
+  \item Ensures audio and video privacy filtering before data reaches the dashboard.
+  \item Manages authentication and authorization for backend APIs and the
+        dashboard (e.g., instructor vs.\ researcher roles).
+  \item Provides secure storage and retrieval of raw and processed data in the
+        underlying database or file system according to defined retention rules.
+  \item Provides logging and monitoring hooks (e.g., audit logs, API access
+        logs, health checks) used by other modules.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Library
+\end{description}
+
+\subsubsection{Engagement Analytics Module (\mref{mEAM})}
+
+\begin{description}
+\item[Secrets:] The mathematical models used to compute engagement metrics,
+moving averages, attention peaks/troughs, activity-phase detection, and time-on-task calculations.
+\item[Services:]
+\begin{itemize}
+  \item Computes engagement over time for individuals and aggregates.
+  \item Detects disengagement periods and high-attention intervals.
+  \item Classifies lecture activities (discussion, slides, group work).
+  \item Generates metrics for reporting and dashboard visualization.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Data Type
+\end{description}
+
+\subsubsection{Correlation \& Visual Analysis Module (\mref{mCVAM})}
+
+\begin{description}
+\item[Secrets:] The gaze-correlation model, instructor–student alignment formulas,
+visual material detection (text block, image region), and methods for transforming
+heatmaps into interpretable coordinate-space analytics.
+\item[Services:]
+\begin{itemize}
+  \item Computes correlations between instructor gaze and class gaze.
+  \item Maps class attention onto slide regions or world-camera space.
+  \item Identifies which visual elements students focus on, and how this changes over time.
+  \item Supports seat-map and spatial-zone based metrics and filters.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Data Type
+\end{description}
 
 \section{Traceability Matrix} \label{SecTM}
 
