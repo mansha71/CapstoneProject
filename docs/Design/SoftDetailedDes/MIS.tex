@@ -509,11 +509,11 @@ generateKey(), rotateLogs(), alertAdmin()
 
 \subsection{Module}
 
-This module analyzes student engagement by combining attention metrics with pre- and post-lecture questionnaire results. Questionnaire data is collected through the Data Ingestion Module, anonymized by the Privacy \& Infrastructure Module and preprocessed before reaching this module. Each question is associated with the content of a specific slide, helping compute slide-level learning scores. With pre- and post-lecture questionnaires, changes in student understanding can be identified and correlated with gaze-data. These analytics quantify the effectiveness of each slide, object type, instructor-directed attention, and instructor audio trends.
+This module ensures secure data handling and stability of the system. It manages anonymization, encryption, and access control. It also handles maintaining infrastructure-level configurations and compliance with privacy policies. This includes securing instructor audio recordings and questionnaire response data through encryption and anonymization.
 
 \subsection{Uses}
 
-Data Preprocessing Module, Privacy \& Infrastructure Module
+Data Ingestion Module, Data Preprocessing Module, Real-Time Streaming Module
 
 \subsection{Syntax}
 
@@ -526,300 +526,70 @@ None.
 \begin{table}[h!]
 \centering
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
 \toprule
 \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
 \midrule
-computeLearningScores & anonymizedQuestionnaireData, slideMap & learningScores & DataError \\
+encryptData & plainData & encryptedData & EncryptionError \\
+anonymizeParticipant & userData & anonymizedData & PrivacyError \\
+validateAccess & userRole, resource & permissionStatus & AuthError \\
+monitorInfrastructure & metrics & systemReport & None \\
 \bottomrule
 \end{tabular}
-\caption{Exported Access Programs for Engagement Analytics Module}
-\label{tab:engagementAnalyticsAP}
+\caption{Exported Access Programs for Privacy and Infrastructure Module}
+\label{tab:privacyInfrastructureAP}
 \end{table}
+
 
 \subsection{Semantics}
 
 \subsubsection{State Variables}
 
-None.
+accessLog: records of authenticated access attempts and actions performed.
 
 \subsubsection{Environment Variables}
 
-None.
+System environment variables for encryption keys, network configurations, and role-based access rules.
 
 \subsubsection{Assumptions}
 
-Questionnaire data has already been collected, anonymized, and validated.  
-Each questionnaire item includes a slide reference.
+All data passing through this module adheres to encryption and anonymization standards under PIPEDA.
+
+Audio data and questionnaire responses must also follow the system's encryption and anonymization requirements.
 
 \subsubsection{Access Routine Semantics}
 
-\noindent computeLearningScores():
+\noindent encryptData():
 \begin{itemize}
-\item transition: Computes pre/post learning gains per slide using questionnaire data linked to slide identifiers. Aggregates multiple questions associated with the same slide.
-\item output: Returns learning scores per slide and overall session learning outcome scores.
-\item exception: Raises DataError for missing, malformed, or improperly mapped questionnaire items.
+\item transition: Applies encryption to sensitive data before storage or transmission.
+\item output: Returns encrypted data.
+\item exception: Raises EncryptionError if encryption fails.
 \end{itemize}
 
-\subsubsection{Local Functions}
-
-computeLearningDelta(), aggregateSlideScores()
-
-\newpage
-
-\section{MIS of Correlation and Visual Analysis Module} \label{CorrelationVisualAnalysisModule}
-
-\subsection{Module}
-
-This module maps world-view gaze coordinates into screen-space coordinates and instructor-region coordinates. It identifies slide transitions, classifies gaze targets, and labels all gaze data with object-level or instructor-region tags. It also aligns learning scores from the Engagement Analytics Module with each slide for downstream visualization and reporting.
-
-\subsection{Uses}
-
-Data Preprocessing Module, Engagement Analytics Module
-
-\subsection{Syntax}
-
-\subsubsection{Exported Constants}
-
-None.
-
-\subsubsection{Exported Access Programs}
-
-\begin{table}[h!]
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-\toprule
-\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-\midrule
-mapCoordinatesToScene & worldViewData, sceneModel & mappedData & MappingError \\
-detectSlideTransitions & videoStream & slideTimeline & VideoError \\
-classifyGazeTarget & mappedData, slideObjects, instructorCoords & labeledGazeData & ClassificationError \\
-alignLearningScores & learningScores, slideTimeline & slideLearningMap & None \\
-\bottomrule
-\end{tabular}
-\caption{Exported Access Programs for Correlation and Visual Analysis Module}
-\label{tab:correlationVisualAnalysisAP}
-\end{table}
-
-\subsection{Semantics}
-
-\subsubsection{State Variables}
-
-None.
-
-\subsubsection{Environment Variables}
-
-None.
-
-\subsubsection{Assumptions}
-
-Instructor coordinates and slide-object metadata are available.  
-Learning scores reference valid slide identifiers.
-
-\subsubsection{Access Routine Semantics}
-
-\noindent mapCoordinatesToScene():
+\noindent anonymizeParticipant():
 \begin{itemize}
-\item transition: Converts world-view gaze vectors into screen-plane or instructor-region coordinates.
-\item output: Returns mapped gaze data relative to the scene.
-\item exception: Raises MappingError if projection fails.
+\item transition: Removes personally identifiable information from datasets.
+\item output: Returns anonymized data.
+\item exception: Raises PrivacyError if anonymization is incomplete.
 \end{itemize}
 
-\noindent detectSlideTransitions():
+\noindent validateAccess():
 \begin{itemize}
-\item transition: Detects slide changes from video or metadata.
-\item output: Returns a timeline of slide transitions.
-\item exception: Raises VideoError for detection failures.
+\item transition: Checks user permissions based on their assigned role.
+\item output: Returns access approval or denial.
+\item exception: Raises AuthError for invalid credentials.
 \end{itemize}
 
-\noindent classifyGazeTarget():
+\noindent monitorInfrastructure():
 \begin{itemize}
-\item transition: Classifies each gaze point as directed at a screen object, the instructor region, or off-screen.
-\item output: Returns labeled gaze data.
-\item exception: Raises ClassificationError for ambiguous or invalid mappings.
-\end{itemize}
-
-\noindent alignLearningScores():
-\begin{itemize}
-\item transition: Associates each slide with its corresponding learning outcome scores.
-\item output: Returns a mapping of slide IDs to learning metrics.
+\item transition: Tracks system metrics and logs anomalies for administrative review.
+\item output: Returns current system status.
 \item exception: None.
 \end{itemize}
 
 \subsubsection{Local Functions}
 
-projectToPlane(), identifyObjects(), mergeWithLearningData()
-
-\newpage
-
-\section{MIS of Dashboard Visualization Module} \label{DashboardVisualizationModule}
-
-\subsection{Module}
-
-This module visualizes gaze, focus, instructor-region attention, object-level attention, and learning outcome scores. It provides a synchronized playback interface that overlays heatmaps, slide boundaries, object segments, and learning scores. The dashboard supports multiple viewing modes, including world-view playback, symbolic screen view, and object-specific focus reconstruction.
-
-\subsection{Uses}
-
-Real-Time Streaming Module, Correlation \& Visual Analysis Module, Engagement Analytics Module
-
-\subsection{Syntax}
-
-\subsubsection{Exported Constants}
-
-None.
-
-\subsubsection{Exported Access Programs}
-
-\begin{table}[h!]
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-\toprule
-\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-\midrule
-renderPlayer & playbackData & playerUI & RenderError \\
-generateHeatmap & gazeData, mode & heatmap & VisualizationError \\
-displayObjectStats & labeledGazeData & statsView & None \\
-showLearningScores & slideLearningMap & learningPanel & None \\
-segmentPlayback & segmentationRules & segmentedTimeline & None \\
-\bottomrule
-\end{tabular}
-\caption{Exported Access Programs for Dashboard Visualization Module}
-\label{tab:dashboardVisualizationAP}
-\end{table}
-
-\subsection{Semantics}
-
-\subsubsection{State Variables}
-
-activeView: currently selected visualization mode.
-
-\subsubsection{Environment Variables}
-
-Rendering and graphical libraries within the dashboard environment.
-
-\subsubsection{Assumptions}
-
-All gaze, slide, instructor, and learning score metadata is synchronized.
-
-\subsubsection{Access Routine Semantics}
-
-\noindent renderPlayer():
-\begin{itemize}
-\item transition: Displays synchronized playback with audio, heatmaps, symbolic overlays, and slide markers.
-\item output: Returns a player UI instance.
-\item exception: Raises RenderError if visual components fail to load.
-\end{itemize}
-
-\noindent generateHeatmap():
-\begin{itemize}
-\item transition: Produces continuous or object-discrete heatmaps.
-\item output: Returns a heatmap image or overlay.
-\item exception: Raises VisualizationError if heatmap creation fails.
-\end{itemize}
-
-\noindent displayObjectStats():
-\begin{itemize}
-\item transition: Displays percentage of gaze directed at each object and the instructor region.
-\item output: Returns a statistical summary panel.
-\item exception: None.
-\end{itemize}
-
-\noindent showLearningScores():
-\begin{itemize}
-\item transition: Displays slide-level learning outcome scores alongside the playback timeline.
-\item output: Returns a learning score panel or overlay.
-\item exception: None.
-\end{itemize}
-
-\noindent segmentPlayback():
-\begin{itemize}
-\item transition: Splits playback based on audio cues, slide boundaries, or focus patterns.
-\item output: Segmented playback timeline.
-\item exception: None.
-\end{itemize}
-
-\subsubsection{Local Functions}
-
-buildSlidePanels(), computeDiscreteFocus(), overlayLearningIndicators()
-
-\newpage
-
-\section{MIS of Reporting Module} \label{ReportingModule}
-
-\subsection{Module}
-
-This module generates automated or customized reports integrating object-level attention, instructor-region attention, slide timelines, and learning outcome scores. Reports summarize both attention patterns and learning gains, enabling instructors to evaluate instructional effectiveness.
-
-\subsection{Uses}
-
-Engagement Analytics Module, Dashboard Visualization Module
-
-\subsection{Syntax}
-
-\subsubsection{Exported Constants}
-
-None.
-
-\subsubsection{Exported Access Programs}
-
-\begin{table}[h!]
-\centering
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-\toprule
-\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-\midrule
-generateAutoReport & analyticsData, slideLearningMap & reportDocument & ReportError \\
-customizeReport & selectionCriteria, analyticsData, slideLearningMap & customReport & None \\
-exportReport & reportDocument, format & fileOutput & FileError \\
-\bottomrule
-\end{tabular}
-\caption{Exported Access Programs for Reporting Module}
-\label{tab:reportingAP}
-\end{table}
-
-\subsection{Semantics}
-
-\subsubsection{State Variables}
-
-None.
-
-\subsubsection{Environment Variables}
-
-Access to file storage or cloud-based export locations.
-
-\subsubsection{Assumptions}
-
-All analytics and learning score data inputs are precomputed and validated.
-
-\subsubsection{Access Routine Semantics}
-
-\noindent generateAutoReport():
-\begin{itemize}
-\item transition: Produces a full report with aggregated attention graphs, instructor-region attention, slide-object attention, and learning outcome scores.
-\item output: Returns a comprehensive report document.
-\item exception: Raises ReportError if report generation fails.
-\end{itemize}
-
-\noindent customizeReport():
-\begin{itemize}
-\item transition: Creates a report for selected slides, objects, audio portions, or instructor-region attention metrics.
-\item output: Returns a customized report document.
-\item exception: None.
-\end{itemize}
-
-\noindent exportReport():
-\begin{itemize}
-\item transition: Converts the report to the specified format (PDF, HTML, etc.) and writes it to storage.
-\item output: Returns the exported file.
-\item exception: Raises FileError if export fails.
-\end{itemize}
-
-\subsubsection{Local Functions}
-
-plotLearningVsAttention(), compileSlideSections(), exportFile()
+generateKey(), rotateLogs(), alertAdmin()
 
 \newpage
 
