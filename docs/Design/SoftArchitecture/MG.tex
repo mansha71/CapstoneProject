@@ -557,9 +557,87 @@ analysis, and long-term data storage.
 
 \section{Timeline}
 
-\wss{Schedule of tasks and who is responsible}
+This section outlines the implementation timeline for \progname{}.  
+The schedule is organized according to the module hierarchy described in 
+Section~\ref{SecMH}, with lower‐level modules developed first to enable 
+higher‐level functionality. The work is divided into phases that reflect the 
+system’s data pipeline: ingestion, preprocessing, analytics, and visualization.
 
-\wss{You can point to GitHub if this information is included there}
+\subsection*{Phase 1 — Foundations and Hardware Integration}
+\begin{itemize}
+  \item \textbf{M1: Hardware-Hiding Module}  
+  Set up and test Pupil Labs Neon glasses, central camera, and instructor 
+  workstation. Confirm data access points and ensure that device drivers and 
+  calibration tools function reliably.
+
+  \item \textbf{M2: Data Ingestion Module}  
+  Implement raw gaze and video capture, device synchronization, and 
+  time-stamped buffering. Establish initial interfaces for downstream modules.
+\end{itemize}
+
+\subsection*{Phase 2 — Data Processing and Infrastructure}
+\begin{itemize}
+  \item \textbf{M6: Data Preprocessing Module}  
+  Develop filtering, noise reduction, coordinate normalization, and 
+  outlier detection routines. Produce preprocessed frames for use by analytics 
+  modules.
+
+  \item \textbf{M7: Privacy \& Infrastructure Module}  
+  Implement anonymization, secure data storage, access control, and 
+  infrastructure services (session management, integrity checks).
+\end{itemize}
+
+\subsection*{Phase 3 — Real-Time and Analytical Capabilities}
+\begin{itemize}
+  \item \textbf{M3: Real-Time Streaming Module}  
+  Construct the pipeline for sending processed gaze frames and attention signals 
+  to the dashboard at 1–2 second intervals.
+
+  \item \textbf{M8: Engagement Analytics Module}  
+  Build algorithms for attention scoring, fixation detection, and aggregated 
+  engagement metrics.
+
+  \item \textbf{M9: Correlation \& Visual Analysis Module}  
+  Implement spatial correlation calculations, heatmap generation, and visual 
+  analysis tools using preprocessed data and analytics outputs.
+\end{itemize}
+
+\subsection*{Phase 4 — User-Facing Interfaces}
+\begin{itemize}
+  \item \textbf{M4: Dashboard Visualization Module}  
+  Integrate real-time streaming, analytics, and correlation outputs into a 
+  unified instructor-facing dashboard. Design displays for class-level and 
+  region-level attention indicators.
+
+  \item \textbf{M5: Reporting Module}  
+  Generate post-session summaries that combine analytics and visualizations. 
+  Produce exports or formatted reports based on session data.
+\end{itemize}
+
+\subsection*{Phase 5 — Integration, Testing, and Refinement}
+\begin{itemize}
+  \item \textbf{System Integration}  
+  Combine all modules into an end-to-end pipeline from ingestion to reporting. 
+  Ensure consistent data formats and stable communication across modules.
+
+  \item \textbf{Verification and Validation}  
+  Conduct unit tests, integration tests, and scenario-based validation 
+  following the VnV Plan. Address feedback based on latency, accuracy, and 
+  usability tests.
+
+  \item \textbf{Performance and Privacy Review}  
+  Verify that modules meet privacy constraints, maintain real-time performance 
+  targets, and operate reliably under varying classroom conditions.
+
+  \item \textbf{Final Documentation and Deliverables}  
+  Prepare final reports, updated design documents, and demonstration artifacts 
+  for Rev 1 and project completion.
+\end{itemize}
+
+This phased timeline ensures that core data-handling components are completed 
+first, enabling analytics and visualization to be developed on a stable 
+foundation. It also supports iterative testing and refinement as the pipeline 
+becomes fully integrated.
 
 \bibliographystyle {plainnat}
 \bibliography{../../../refs/References}
