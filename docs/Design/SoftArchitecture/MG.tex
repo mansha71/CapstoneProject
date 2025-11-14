@@ -439,7 +439,121 @@ needed. Drawings, Sketches, Figma}
 
 \section{Design of Communication Protocols}
 
-\wss{If appropriate}
+This section describes the communication protocols used within \progname{}. 
+Communication occurs between the client-facing dashboard, the real-time 
+streaming backend, the analytics components, and the system’s secure storage 
+infrastructure. All communication follows a modular service-based pattern 
+where each module exposes a set of services that may be invoked by higher-level 
+modules as shown in the uses hierarchy.
+
+\subsection{11.1 Overall Architecture}
+
+System communication is organized around three main channels:
+
+\begin{itemize}
+  \item \textbf{Real-Time Data Delivery:} Raw gaze streams and aggregated 
+  attention metrics are transmitted from the Data Ingestion and Real-Time 
+  Streaming modules to the Dashboard Visualization module.
+  
+  \item \textbf{Asynchronous Analytics Pipeline:} Preprocessed gaze data is 
+  passed from the Data Preprocessing module to the Engagement Analytics and 
+  Correlation \& Visual Analysis modules for metric generation.
+
+  \item \textbf{Secure Storage and Retrieval:} Privacy \& Infrastructure 
+  manages anonymized storage of both raw and processed data, making it 
+  accessible to authorized modules such as Reporting.
+\end{itemize}
+
+All communication follows structured data formats, with components interacting 
+through well-defined access routines specified in the MIS. Communication does 
+not rely on shared global state; instead, modules exchange data through 
+explicit service calls or via the streaming pipeline.
+
+\subsection{11.2 Data Flow Patterns}
+
+Communication follows two major patterns:
+
+\begin{itemize}
+  \item \textbf{Push-Based Real-Time Streaming:} The Real-Time Streaming module 
+  (M3) pushes processed gaze data and attention indicators to the Dashboard 
+  Visualization module (M4). This enables instructors to view attention trends 
+  with minimal latency.
+
+  \item \textbf{Pull-Based Analysis and Reporting:} The Engagement Analytics 
+  module (M8), Correlation \& Visual Analysis module (M9), and Reporting module 
+  (M5) request preprocessed or stored data from the Privacy \& Infrastructure 
+  module (M7) and Data Preprocessing module (M6) as needed to compute summary 
+  statistics or generate class reports.
+\end{itemize}
+
+\subsubsection*{Temporal Characteristics}
+
+\begin{itemize}
+  \item Real-time streams operate on short intervals (approximately 1–2 seconds).
+  \item Analytics requests are event-driven rather than continuous.
+  \item Reporting operations occur after class and may be batched.
+\end{itemize}
+
+\subsection{11.3 Message Types}
+
+Modules exchange data using structured message formats. Typical messages include:
+
+\begin{itemize}
+  \item \textbf{GazeFrame:} Raw or preprocessed gaze coordinates, timestamps, 
+  pupil size, and detection confidence.
+
+  \item \textbf{AttentionSummary:} Aggregated per-region or per-student 
+  attention metrics computed by the Engagement Analytics module.
+
+  \item \textbf{CorrelationMap:} Data structures produced by the Correlation \& 
+  Visual Analysis module describing gaze distribution heatmaps.
+
+  \item \textbf{SessionRecord:} Metadata describing a class session, stored and 
+  retrieved through the Privacy \& Infrastructure module.
+
+  \item \textbf{ReportBundle:} Final compiled data provided to the Reporting 
+  module for output formatting.
+\end{itemize}
+
+These message formats allow the system to maintain a separation of concerns: 
+modules only require knowledge of the structure of the data they consume, 
+not how it was generated.
+
+\subsection{11.4 Privacy and Security Constraints}
+
+All communication adheres to the privacy and security requirements outlined in 
+the Hazard Analysis. Key protections include:
+
+\begin{itemize}
+  \item \textbf{Anonymization:} No personal identifiers are stored or transmitted 
+  with gaze data.
+  \item \textbf{Access Control:} Only authorized modules may request stored 
+  data from M7 (Privacy \& Infrastructure).
+  \item \textbf{Data Minimization:} Real-time streaming transmits only 
+  aggregated or anonymized indicators rather than raw identifying visual data.
+  \item \textbf{Integrity Checks:} Modules using stored datasets perform 
+  checksum or timestamp validation to avoid stale or corrupted data.
+\end{itemize}
+
+\subsection{11.5 Design Considerations}
+
+The communication protocol design prioritizes:
+
+\begin{itemize}
+  \item \textbf{Low Latency:} Real-time streaming ensures timely updates for 
+  instructors during live sessions.
+  \item \textbf{Scalability:} Analytics modules operate independently of the 
+  real-time pipeline, allowing more complex computations without slowing down 
+  the dashboard.
+  \item \textbf{Modularity:} Modules communicate through stable abstractions 
+  defined in the MIS, reducing interdependencies.
+  \item \textbf{Reliability:} Data retrieval and reporting do not depend on 
+  the continuous availability of real-time processes, enabling fault tolerance.
+\end{itemize}
+
+This design ensures consistent, secure, and efficient communication between 
+modules in \progname{}, supporting real-time visualization, post-session 
+analysis, and long-term data storage.
 
 \section{Timeline}
 
