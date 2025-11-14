@@ -53,8 +53,7 @@ urlcolor=cyan          % color of external links
 \begin{tabularx}{\textwidth}{p{3cm}p{2cm}X}
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
-Date 1 & 1.0 & Notes\\
-Date 2 & 1.1 & Notes\\
+Nov 13 & 1.0 & Version 1 completed\\
 \bottomrule
 \end{tabularx}
 
@@ -62,9 +61,7 @@ Date 2 & 1.1 & Notes\\
 
 \section{Symbols, Abbreviations and Acronyms}
 
-See SRS Documentation at \wss{give url}
-
-\wss{Also add any additional symbols, abbreviations or acronyms}
+See SRS Documentation at \url{https://github.com/mansha71/CapstoneProject/tree/main/docs/SRS}
 
 \newpage
 
@@ -76,17 +73,13 @@ See SRS Documentation at \wss{give url}
 
 \section{Introduction}
 
-The following document details the Module Interface Specifications for
-\wss{Fill in your project name and description}
+The following document details the Module Interface Specifications for Visionaries, a system designed to analyze and visualize student engagement during lectures using eye-tracking technology. Each module is described in terms of its purpose, syntax, semantics, and interactions with other modules.
 
 Complementary documents include the System Requirement Specifications
 and Module Guide.  The full documentation and implementation can be
-found at \url{...}.  \wss{provide the url for your repo}
+found at \url{https://github.com/mansha71/CapstoneProject}.
 
 \section{Notation}
-
-\wss{You should describe your notation.  You can use what is below as
-  a starting point.}
 
 The structure of the MIS for modules comes from \citet{HoffmanAndStrooper1995},
 with the addition that template modules have been adapted from
@@ -163,7 +156,7 @@ The following table is taken directly from the Module Guide document for this pr
 
 \subsection{Module}
 
-This module is responsible for collecting eye-tracking and video data from multiple eye-tracking devices and also the central camera. It makes sure that the raw data streams are captured, synchronized, and stored in a structured format. Making it suitable for further processing.
+This module is responsible for collecting eye-tracking and video data from multiple eye-tracking devices and also the central camera. It makes sure that the raw data streams are captured, synchronized, and stored in a structured format. Making it suitable for further processing. It also collects instructor audio recordings, slide content from the lecture, and pre-/post-lecture questionnaire responses.
 
 \subsection{Uses}
 
@@ -185,6 +178,9 @@ None.
 \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
 \midrule
 collectData & deviceID, streamConfig & rawData & ConnectionError \\
+collectAudio & deviceID & audioData & ConnectionError \\
+collectSlides & slideSource & slideData & IOError \\
+collectQuestionnaire & formInput & questionnaireData & FormatError \\
 syncTimestamps & dataStreams & syncedData & SyncError \\
 storeRawData & syncedData & status & IOError \\
 \bottomrule
@@ -202,7 +198,7 @@ storedData: list of captured data streams currently saved in local or cloud stor
 
 \subsubsection{Environment Variables}
 
-Connection to Pupil Labs Neon devices and the central camera feed.
+Connection to Pupil Labs Neon devices, the central camera feed, audio recording devices, slide file sources, and questionnaire input sources.
 
 \subsubsection{Assumptions}
 
@@ -217,6 +213,27 @@ The eye-tracking devices are properly connected and the network latency is withi
 \item exception: Raises ConnectionError if device is unavailable.
 \end{itemize}
 
+\noindent collectAudio():
+\begin{itemize}
+\item transition: Captures raw instructor audio from the recording device.
+\item output: Returns raw audio data.
+\item exception: Raises ConnectionError if the audio device is unavailable.
+\end{itemize}
+
+\noindent collectSlides():
+\begin{itemize}
+\item transition: Retrieves slide files or slide metadata from the specified source.
+\item output: Returns slide data.
+\item exception: Raises IOError if slide files cannot be accessed.
+\end{itemize}
+
+\noindent collectQuestionnaire():
+\begin{itemize}
+\item transition: Collects pre- or post-lecture questionnaire responses.
+\item output: Returns questionnaire data.
+\item exception: Raises FormatError for incomplete or malformed questionnaire submissions.
+\end{itemize}
+
 \noindent syncTimestamps():
 \begin{itemize}
 \item transition: Aligns timestamps between multiple devices using NTP or local clock sync.
@@ -226,7 +243,7 @@ The eye-tracking devices are properly connected and the network latency is withi
 
 \noindent storeRawData():
 \begin{itemize}
-\item transition: Saves synchronized data to secure storage.
+\item transition: Saves synchronized gaze, video, audio, slide, and questionnaire data to secure storage.
 \item output: Returns success status.
 \item exception: Raises IOError if data cannot be written.
 \end{itemize}
@@ -319,7 +336,7 @@ bufferData(), reconnectStream()
 
 \subsection{Module}
 
-This module prepares the captured data for analysis by filtering noise, normalizing the coordinates, and structuring the gaze and video data into useable formats.
+This module prepares the captured data for analysis by filtering noise, normalizing the coordinates, and structuring the gaze and video data into useable formats. It also cleans questionnaire responses by removing empty, duplicate, or invalid entries before analysis.
 
 \subsection{Uses}
 
@@ -387,9 +404,16 @@ Input data follows the expected format and has valid timestamps.
 \item exception: Raises FormatError for invalid schema generation.
 \end{itemize}
 
+\noindent cleanQuestionnaireResponses():
+\begin{itemize}
+\item transition: Removes empty responses, malformed entries, and invalid questionnaire submissions.
+\item output: Returns cleaned questionnaire data ready for engagement analytics.
+\item exception: Raises DataError if response data cannot be validated.
+\end{itemize}
+
 \subsubsection{Local Functions}
 
-interpolateMissingFrames(), alignStreams()
+interpolateMissingFrames(), alignStreams(), cleanQuestionnaireResponses()
 
 \newpage
 
@@ -397,7 +421,7 @@ interpolateMissingFrames(), alignStreams()
 
 \subsection{Module}
 
-This module ensures secure data handling and stability of the system. It manages anonymization, encryption, and access control. It also handles maintaining infrastructure-level configurations and compliance with privacy policies.
+This module ensures secure data handling and stability of the system. It manages anonymization, encryption, and access control. It also handles maintaining infrastructure-level configurations and compliance with privacy policies. This includes securing instructor audio recordings and questionnaire response data through encryption and anonymization.
 
 \subsection{Uses}
 
@@ -443,6 +467,8 @@ System environment variables for encryption keys, network configurations, and ro
 
 All data passing through this module adheres to encryption and anonymization standards under PIPEDA.
 
+Audio data and questionnaire responses must also follow the system's encryption and anonymization requirements.
+
 \subsubsection{Access Routine Semantics}
 
 \noindent encryptData():
@@ -483,17 +509,9 @@ generateKey(), rotateLogs(), alertAdmin()
 \bibliographystyle {plainnat}
 \bibliography {../../../refs/References}
 
-\newpage
-
-\section{Appendix} \label{Appendix}
-
-\wss{Extra information if required}
-
 \newpage{}
 
 \section*{Appendix --- Reflection}
-
-\wss{Not required for CAS 741 projects}
 
 The information in this section will be used to evaluate the team members on the
 graduate attribute of Problem Analysis and Design.
@@ -502,19 +520,79 @@ graduate attribute of Problem Analysis and Design.
 
 \begin{enumerate}
   \item What went well while writing this deliverable? 
+
+\textbf{Stanley:} 
+
+\textbf{Manan:} The team was able to work well together and we were able to split the work effectively.
+
+\textbf{Angela:} 
+
+\textbf{Ann:} 
+
+\textbf{Ibrahim:} 
   \item What pain points did you experience during this deliverable, and how
     did you resolve them?
+
+\textbf{Stanley:} 
+
+\textbf{Manan:} The main pain point we experienced was coordinating with our supervisors and coming up with a list of modules we though worked well with out system.
+
+\textbf{Angela:} 
+
+\textbf{Ann:} 
+
+\textbf{Ibrahim:} 
   \item Which of your design decisions stemmed from speaking to your client(s)
   or a proxy (e.g. your peers, stakeholders, potential users)? For those that
   were not, why, and where did they come from?
+
+\textbf{Stanley:} 
+
+\textbf{Manan:} Decisions regarding the modules were made after speaking with our TA and supervisor to ensure that we were on the right track. We were suggested to add more modules to better break down the system and also focus on the processing aspect of the system.
+
+\textbf{Angela:} 
+
+\textbf{Ann:} 
+
+\textbf{Ibrahim:} 
   \item While creating the design doc, what parts of your other documents (e.g.
   requirements, hazard analysis, etc), it any, needed to be changed, and why?
+
+\textbf{Stanley:} 
+
+\textbf{Manan:} Nothing significantly changed for over previous documents as we had a solid foundation from our SRS and other documents.
+
+\textbf{Angela:} 
+
+\textbf{Ann:} 
+
+\textbf{Ibrahim:} 
   \item What are the limitations of your solution?  Put another way, given
   unlimited resources, what could you do to make the project better? (LO\_ProbSolutions)
+
+\textbf{Stanley:} 
+
+\textbf{Manan:} We are limited by the availability of eye-tracking devices and the accuracy of those devices. Being able to have these devices on hand at all times would make it easier to plan a system that works well with the hardware.
+
+\textbf{Angela:} 
+
+\textbf{Ann:} 
+
+\textbf{Ibrahim:} 
   \item Give a brief overview of other design solutions you considered.  What
   are the benefits and tradeoffs of those other designs compared with the chosen
   design?  From all the potential options, why did you select the documented design?
   (LO\_Explores)
+
+\textbf{Stanley:} 
+
+\textbf{Manan:} We considered breaking down the modules further but we felt that the current breakdown was sufficient to cover all aspects of the system without overcomplicating it. The tradeoff with having too many modules is that it can make the system harder to manage and understand.
+
+\textbf{Angela:} 
+
+\textbf{Ann:} 
+
+\textbf{Ibrahim:} 
 \end{enumerate}
 
 
