@@ -557,17 +557,17 @@ requirements and between the modules and the anticipated changes.
 \toprule
 \textbf{Req.} & \textbf{Modules}\\
 \midrule
-R1 & \mref{mHH}, \mref{mInput}, \mref{mParams}, \mref{mControl}\\
-R2 & \mref{mInput}, \mref{mParams}\\
-R3 & \mref{mVerify}\\
-R4 & \mref{mOutput}, \mref{mControl}\\
-R5 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}, \mref{mSeqDS}, \mref{mSolver}, \mref{mPlot}\\
-R6 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}, \mref{mSeqDS}, \mref{mSolver}, \mref{mPlot}\\
-R7 & \mref{mOutput}, \mref{mEnergy}, \mref{mControl}, \mref{mSeqDS}, \mref{mPlot}\\
-R8 & \mref{mOutput}, \mref{mEnergy}, \mref{mControl}, \mref{mSeqDS}, \mref{mPlot}\\
-R9 & \mref{mVerifyOut}\\
-R10 & \mref{mOutput}, \mref{mODEs}, \mref{mControl}\\
-R11 & \mref{mOutput}, \mref{mODEs}, \mref{mEnergy}, \mref{mControl}\\
+FR-3  & \mref{mHH}, \mref{mDIM} \\
+FR-7  & \mref{mDPM} \\
+FR-8  & \mref{mDPM} \\
+FR-9  & \mref{mEAM} \\
+FR-15 & \mref{mDVM}, \mref{mRTS} \\
+FR-16 & \mref{mRM} \\
+FR-21 & \mref{mPIM} \\
+NFR-1  & \mref{mDPM}, \mref{mDVM} \\
+NFR-3  & \mref{mHH}, \mref{mDIM} \\
+NFR-11 & \mref{mPIM} \\
+
 \bottomrule
 \end{tabular}
 \caption{Trace Between Requirements and Modules}
@@ -580,18 +580,11 @@ R11 & \mref{mOutput}, \mref{mODEs}, \mref{mEnergy}, \mref{mControl}\\
 \toprule
 \textbf{AC} & \textbf{Modules}\\
 \midrule
-\acref{acHardware} & \mref{mHH}\\
-\acref{acInput} & \mref{mInput}\\
-\acref{acParams} & \mref{mParams}\\
-\acref{acVerify} & \mref{mVerify}\\
-\acref{acOutput} & \mref{mOutput}\\
-\acref{acVerifyOut} & \mref{mVerifyOut}\\
-\acref{acODEs} & \mref{mODEs}\\
-\acref{acEnergy} & \mref{mEnergy}\\
-\acref{acControl} & \mref{mControl}\\
-\acref{acSeqDS} & \mref{mSeqDS}\\
-\acref{acSolver} & \mref{mSolver}\\
-\acref{acPlot} & \mref{mPlot}\\
+\acref{acDashboard} & \mref{mDVM}, \mref{mRM}, \mref{mDPM} \mref{mEAM}, \mref{mCVAM}  \\
+\acref{acHomography} & \mref{mRTS}, \mref{mDPM} \\
+\acref{acAnalytics} & \mref{mDPM}, \\
+\acref{acPrivacy} &  \mref{mPIM}\\
+
 \bottomrule
 \end{tabular}
 \caption{Trace Between Anticipated Changes and Modules}
@@ -611,54 +604,14 @@ the modules. It can be seen that the graph is a directed acyclic graph
 system, and modules in the higher level of the hierarchy are essentially simpler
 because they use modules from the lower levels.
 
-At a high level, the use hierarchy for \progname{} is organized into layers:
+\wss{The uses relation is not a data flow diagram.  In the code there will often
+be an import statement in module A when it directly uses module B.  Module B
+provides the services that module A needs.  The code for module A needs to be
+able to see these services (hence the import statement).  Since the uses
+relation is transitive, there is a use relation without an import, but the
+arrows in the diagram typically correspond to the presence of import statement.}
 
-\begin{itemize}
-  \item \textbf{Level 0 – Hardware layer}: 
-  Hardware-Hiding Module (M1) encapsulates the details of the Pupil Labs Neon
-  glasses, central camera, and instructor workstation. No other module is used
-  by M1.
-
-  \item \textbf{Level 1 – Data acquisition}: 
-  Data Ingestion Module (M2) uses M1 to collect raw gaze and video streams from
-  the eye-tracking hardware and central camera.
-
-  \item \textbf{Level 2 – Preparation and infrastructure}: 
-  Data Preprocessing Module (M6) uses M2 to filter, normalize, and structure
-  the captured data.  
-  Privacy \& Infrastructure Module (M7) uses M1, M2, and M6 to apply
-  anonymization, access control, and secure storage over the ingested and
-  preprocessed data.
-
-  \item \textbf{Level 3 – Analytics and streaming}: 
-  Real-Time Streaming Module (M3) uses M2, M6, and M7 to serve live, privacy-
-  compliant streams to the dashboard.  
-  Engagement Analytics Module (M8) uses M6 to compute engagement metrics over
-  preprocessed data.  
-  Correlation \& Visual Analysis Module (M9) uses M6 and M8 to compute
-  gaze-correlation and spatial visual analytics.
-
-  \item \textbf{Level 4 – User-facing visualization}: 
-  Dashboard Visualization Module (M4) uses M3, M7, M8, and M9 to display
-  real-time and historical analytics while respecting privacy constraints.
-
-  \item \textbf{Level 5 – Reporting and exports}: 
-  Reporting Module (M5) uses M4, M8, and M9 to generate summaries and exported
-  reports based on the visualizations and analytics.
-\end{itemize}
-
-The main uses relations can be summarized as:
-
-\begin{itemize}
-  \item M2 uses M1.
-  \item M6 uses M2.
-  \item M7 uses M1, M2, and M6.
-  \item M3 uses M2, M6, and M7.
-  \item M8 uses M6.
-  \item M9 uses M6 and M8.
-  \item M4 uses M3, M7, M8, and M9.
-  \item M5 uses M4, M8, and M9.
-\end{itemize}
+\wss{If module A uses module B, the arrow is directed from A to B.}
 
 \begin{figure}[H]
 \centering
@@ -676,205 +629,13 @@ needed. Drawings, Sketches, Figma}
 
 \section{Design of Communication Protocols}
 
-This section describes the communication protocols used within \progname{}. 
-Communication occurs between the client-facing dashboard, the real-time 
-streaming backend, the analytics components, and the system’s secure storage 
-infrastructure. All communication follows a modular service-based pattern 
-where each module exposes a set of services that may be invoked by higher-level 
-modules as shown in the uses hierarchy.
-
-\subsection{11.1 Overall Architecture}
-
-System communication is organized around three main channels:
-
-\begin{itemize}
-  \item \textbf{Real-Time Data Delivery:} Raw gaze streams and aggregated 
-  attention metrics are transmitted from the Data Ingestion and Real-Time 
-  Streaming modules to the Dashboard Visualization module.
-  
-  \item \textbf{Asynchronous Analytics Pipeline:} Preprocessed gaze data is 
-  passed from the Data Preprocessing module to the Engagement Analytics and 
-  Correlation \& Visual Analysis modules for metric generation.
-
-  \item \textbf{Secure Storage and Retrieval:} Privacy \& Infrastructure 
-  manages anonymized storage of both raw and processed data, making it 
-  accessible to authorized modules such as Reporting.
-\end{itemize}
-
-All communication follows structured data formats, with components interacting 
-through well-defined access routines specified in the MIS. Communication does 
-not rely on shared global state; instead, modules exchange data through 
-explicit service calls or via the streaming pipeline.
-
-\subsection{11.2 Data Flow Patterns}
-
-Communication follows two major patterns:
-
-\begin{itemize}
-  \item \textbf{Push-Based Real-Time Streaming:} The Real-Time Streaming module 
-  (M3) pushes processed gaze data and attention indicators to the Dashboard 
-  Visualization module (M4). This enables instructors to view attention trends 
-  with minimal latency.
-
-  \item \textbf{Pull-Based Analysis and Reporting:} The Engagement Analytics 
-  module (M8), Correlation \& Visual Analysis module (M9), and Reporting module 
-  (M5) request preprocessed or stored data from the Privacy \& Infrastructure 
-  module (M7) and Data Preprocessing module (M6) as needed to compute summary 
-  statistics or generate class reports.
-\end{itemize}
-
-\subsubsection*{Temporal Characteristics}
-
-\begin{itemize}
-  \item Real-time streams operate on short intervals (approximately 1–2 seconds).
-  \item Analytics requests are event-driven rather than continuous.
-  \item Reporting operations occur after class and may be batched.
-\end{itemize}
-
-\subsection{11.3 Message Types}
-
-Modules exchange data using structured message formats. Typical messages include:
-
-\begin{itemize}
-  \item \textbf{GazeFrame:} Raw or preprocessed gaze coordinates, timestamps, 
-  pupil size, and detection confidence.
-
-  \item \textbf{AttentionSummary:} Aggregated per-region or per-student 
-  attention metrics computed by the Engagement Analytics module.
-
-  \item \textbf{CorrelationMap:} Data structures produced by the Correlation \& 
-  Visual Analysis module describing gaze distribution heatmaps.
-
-  \item \textbf{SessionRecord:} Metadata describing a class session, stored and 
-  retrieved through the Privacy \& Infrastructure module.
-
-  \item \textbf{ReportBundle:} Final compiled data provided to the Reporting 
-  module for output formatting.
-\end{itemize}
-
-These message formats allow the system to maintain a separation of concerns: 
-modules only require knowledge of the structure of the data they consume, 
-not how it was generated.
-
-\subsection{11.4 Privacy and Security Constraints}
-
-All communication adheres to the privacy and security requirements outlined in 
-the Hazard Analysis. Key protections include:
-
-\begin{itemize}
-  \item \textbf{Anonymization:} No personal identifiers are stored or transmitted 
-  with gaze data.
-  \item \textbf{Access Control:} Only authorized modules may request stored 
-  data from M7 (Privacy \& Infrastructure).
-  \item \textbf{Data Minimization:} Real-time streaming transmits only 
-  aggregated or anonymized indicators rather than raw identifying visual data.
-  \item \textbf{Integrity Checks:} Modules using stored datasets perform 
-  checksum or timestamp validation to avoid stale or corrupted data.
-\end{itemize}
-
-\subsection{11.5 Design Considerations}
-
-The communication protocol design prioritizes:
-
-\begin{itemize}
-  \item \textbf{Low Latency:} Real-time streaming ensures timely updates for 
-  instructors during live sessions.
-  \item \textbf{Scalability:} Analytics modules operate independently of the 
-  real-time pipeline, allowing more complex computations without slowing down 
-  the dashboard.
-  \item \textbf{Modularity:} Modules communicate through stable abstractions 
-  defined in the MIS, reducing interdependencies.
-  \item \textbf{Reliability:} Data retrieval and reporting do not depend on 
-  the continuous availability of real-time processes, enabling fault tolerance.
-\end{itemize}
-
-This design ensures consistent, secure, and efficient communication between 
-modules in \progname{}, supporting real-time visualization, post-session 
-analysis, and long-term data storage.
+\wss{If appropriate}
 
 \section{Timeline}
 
-This section outlines the implementation timeline for \progname{}.  
-The schedule is organized according to the module hierarchy described in 
-Section~\ref{SecMH}, with lower‐level modules developed first to enable 
-higher‐level functionality. The work is divided into phases that reflect the 
-system’s data pipeline: ingestion, preprocessing, analytics, and visualization.
+\wss{Schedule of tasks and who is responsible}
 
-\subsection*{Phase 1 — Foundations and Hardware Integration}
-\begin{itemize}
-  \item \textbf{M1: Hardware-Hiding Module}  
-  Set up and test Pupil Labs Neon glasses, central camera, and instructor 
-  workstation. Confirm data access points and ensure that device drivers and 
-  calibration tools function reliably.
-
-  \item \textbf{M2: Data Ingestion Module}  
-  Implement raw gaze and video capture, device synchronization, and 
-  time-stamped buffering. Establish initial interfaces for downstream modules.
-\end{itemize}
-
-\subsection*{Phase 2 — Data Processing and Infrastructure}
-\begin{itemize}
-  \item \textbf{M6: Data Preprocessing Module}  
-  Develop filtering, noise reduction, coordinate normalization, and 
-  outlier detection routines. Produce preprocessed frames for use by analytics 
-  modules.
-
-  \item \textbf{M7: Privacy \& Infrastructure Module}  
-  Implement anonymization, secure data storage, access control, and 
-  infrastructure services (session management, integrity checks).
-\end{itemize}
-
-\subsection*{Phase 3 — Real-Time and Analytical Capabilities}
-\begin{itemize}
-  \item \textbf{M3: Real-Time Streaming Module}  
-  Construct the pipeline for sending processed gaze frames and attention signals 
-  to the dashboard at 1–2 second intervals.
-
-  \item \textbf{M8: Engagement Analytics Module}  
-  Build algorithms for attention scoring, fixation detection, and aggregated 
-  engagement metrics.
-
-  \item \textbf{M9: Correlation \& Visual Analysis Module}  
-  Implement spatial correlation calculations, heatmap generation, and visual 
-  analysis tools using preprocessed data and analytics outputs.
-\end{itemize}
-
-\subsection*{Phase 4 — User-Facing Interfaces}
-\begin{itemize}
-  \item \textbf{M4: Dashboard Visualization Module}  
-  Integrate real-time streaming, analytics, and correlation outputs into a 
-  unified instructor-facing dashboard. Design displays for class-level and 
-  region-level attention indicators.
-
-  \item \textbf{M5: Reporting Module}  
-  Generate post-session summaries that combine analytics and visualizations. 
-  Produce exports or formatted reports based on session data.
-\end{itemize}
-
-\subsection*{Phase 5 — Integration, Testing, and Refinement}
-\begin{itemize}
-  \item \textbf{System Integration}  
-  Combine all modules into an end-to-end pipeline from ingestion to reporting. 
-  Ensure consistent data formats and stable communication across modules.
-
-  \item \textbf{Verification and Validation}  
-  Conduct unit tests, integration tests, and scenario-based validation 
-  following the VnV Plan. Address feedback based on latency, accuracy, and 
-  usability tests.
-
-  \item \textbf{Performance and Privacy Review}  
-  Verify that modules meet privacy constraints, maintain real-time performance 
-  targets, and operate reliably under varying classroom conditions.
-
-  \item \textbf{Final Documentation and Deliverables}  
-  Prepare final reports, updated design documents, and demonstration artifacts 
-  for Rev 1 and project completion.
-\end{itemize}
-
-This phased timeline ensures that core data-handling components are completed 
-first, enabling analytics and visualization to be developed on a stable 
-foundation. It also supports iterative testing and refinement as the pipeline 
-becomes fully integrated.
+\wss{You can point to GitHub if this information is included there}
 
 \bibliographystyle {plainnat}
 \bibliography{../../../refs/References}
