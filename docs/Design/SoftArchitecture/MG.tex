@@ -662,8 +662,106 @@ The main uses relations can be summarized as:
 
 \section{User Interfaces}
 
-\wss{Design of user interface for software and hardware.  Attach an appendix if
-needed. Drawings, Sketches, Figma}
+This section provides conceptual sketches of the primary user interface screens
+for \progname{}. These sketches represent the core interactions and visual layout
+of the system. They are intended to illustrate how instructors will navigate
+through the platform, monitor real-time classroom attention, and review analytics
+after each session. The sketches are early design mockups and may evolve as the
+implementation progresses.
+
+\subsection{10.1 Student Overview}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Student_Overview.png}
+\caption{Student Overview Screen}
+\label{fig:student-overview}
+\end{figure}
+
+This screen serves as the entry point to the platform. Instructors can begin a
+new live session or review summaries of previously recorded sessions.
+
+\subsection{10.2 Live Classroom Dashboard}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Live-Classroom-Dashboard.png}
+\caption{Live Classroom Dashboard}
+\label{fig:live-dashboard}
+\end{figure}
+
+During an active session, instructors are presented with a real-time dashboard.
+It displays the recording state, a live camera feed from the capture device, and
+a heatmap preview showing the current distribution of gaze activity.
+
+\subsection{10.3 Student Attention Panel}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Student_Attention_Panel.png}
+\caption{Student Attention Panel}
+\label{fig:student-attention-panel}
+\end{figure}
+
+This panel provides a real-time overview of individual student attention levels.
+Each student is listed with a visual bar indicator, allowing the instructor to
+quickly identify who is highly engaged, who is disengaged, and how attention
+varies across learners.
+
+\subsection{10.4 Selected Student Detail View}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Selected_Student.png}
+\caption{Selected Student Detail View}
+\label{fig:selected-student}
+\end{figure}
+
+When a specific student is selected, the instructor is shown a detailed breakdown
+of that student’s gaze distribution across key classroom regions (e.g., board,
+instructor, walls). A small trend graph summarizes how their engagement changes
+over time.
+
+\subsection{10.5 Region-of-Interest Analytics}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Region_of_Interest_Analytics.png}
+\caption{Region-of-Interest (ROI) Analytics}
+\label{fig:roi-analytics}
+\end{figure}
+
+This screen provides a post-session analytical view of where attention was
+distributed in the classroom. Percentages for each region-of-interest are listed,
+and an accompanying graph displays temporal patterns. Instructors may also toggle
+visual elements such as scanpaths.
+
+\subsection{10.6 Session Summary}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Session_Summary.png}
+\caption{Session Summary Screen}
+\label{fig:session-summary}
+\end{figure}
+
+After a session ends, the summary view presents key metrics, including duration,
+overall engagement, and the periods of highest attention. Instructors may export
+a report for documentation or further analysis.
+
+\subsection{10.7 Settings \& Calibration}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.55\textwidth]{figure/Settings_Calibration.png}
+\caption{Settings and Calibration Screen}
+\label{fig:settings-calibration}
+\end{figure}
+
+The settings screen allows instructors to calibrate their eye-tracking device,
+check battery level, test the camera feed, and adjust privacy or data storage
+preferences. This screen ensures that sessions begin with reliable and
+well-initialized hardware.
 
 \section{Design of Communication Protocols}
 
