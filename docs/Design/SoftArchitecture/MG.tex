@@ -374,14 +374,54 @@ the modules. It can be seen that the graph is a directed acyclic graph
 system, and modules in the higher level of the hierarchy are essentially simpler
 because they use modules from the lower levels.
 
-\wss{The uses relation is not a data flow diagram.  In the code there will often
-be an import statement in module A when it directly uses module B.  Module B
-provides the services that module A needs.  The code for module A needs to be
-able to see these services (hence the import statement).  Since the uses
-relation is transitive, there is a use relation without an import, but the
-arrows in the diagram typically correspond to the presence of import statement.}
+At a high level, the use hierarchy for \progname{} is organized into layers:
 
-\wss{If module A uses module B, the arrow is directed from A to B.}
+\begin{itemize}
+  \item \textbf{Level 0 – Hardware layer}: 
+  Hardware-Hiding Module (M1) encapsulates the details of the Pupil Labs Neon
+  glasses, central camera, and instructor workstation. No other module is used
+  by M1.
+
+  \item \textbf{Level 1 – Data acquisition}: 
+  Data Ingestion Module (M2) uses M1 to collect raw gaze and video streams from
+  the eye-tracking hardware and central camera.
+
+  \item \textbf{Level 2 – Preparation and infrastructure}: 
+  Data Preprocessing Module (M6) uses M2 to filter, normalize, and structure
+  the captured data.  
+  Privacy \& Infrastructure Module (M7) uses M1, M2, and M6 to apply
+  anonymization, access control, and secure storage over the ingested and
+  preprocessed data.
+
+  \item \textbf{Level 3 – Analytics and streaming}: 
+  Real-Time Streaming Module (M3) uses M2, M6, and M7 to serve live, privacy-
+  compliant streams to the dashboard.  
+  Engagement Analytics Module (M8) uses M6 to compute engagement metrics over
+  preprocessed data.  
+  Correlation \& Visual Analysis Module (M9) uses M6 and M8 to compute
+  gaze-correlation and spatial visual analytics.
+
+  \item \textbf{Level 4 – User-facing visualization}: 
+  Dashboard Visualization Module (M4) uses M3, M7, M8, and M9 to display
+  real-time and historical analytics while respecting privacy constraints.
+
+  \item \textbf{Level 5 – Reporting and exports}: 
+  Reporting Module (M5) uses M4, M8, and M9 to generate summaries and exported
+  reports based on the visualizations and analytics.
+\end{itemize}
+
+The main uses relations can be summarized as:
+
+\begin{itemize}
+  \item M2 uses M1.
+  \item M6 uses M2.
+  \item M7 uses M1, M2, and M6.
+  \item M3 uses M2, M6, and M7.
+  \item M8 uses M6.
+  \item M9 uses M6 and M8.
+  \item M4 uses M3, M7, M8, and M9.
+  \item M5 uses M4, M8, and M9.
+\end{itemize}
 
 \begin{figure}[H]
 \centering
