@@ -157,16 +157,14 @@ adapted here is called design for
 change.
 
 \begin{description}
-\item[\refstepcounter{acnum} \actheacnum \label{acHardware}:] The specific
-  hardware on which the software is running.
-\item[\refstepcounter{acnum} \actheacnum \label{acInput}:] The format of the
-  initial input data.
-\item ...
-\end{description}
+\item[\refstepcounter{acnum} \actheacnum \label{acDashboard}:] The design and presentation of output data may evolve as we introduce a dashboard for post-session and real-time analytics. Visualizations and their underlying implementations are expected to change based on usability feedback and new instructor needs.
+\item[\refstepcounter{acnum} \actheacnum \label{acHomography}:] The current homography module is anticipated to be updated with lighter-weight or more efficient algorithms. These changes aim to improve alignment accuracy and reduce latency for real-time gaze projection.
 
-\wss{Anticipated changes relate to changes that would be made in requirements,
-design or implementation choices.  They are not related to changes that are made
-at run-time, like the values of parameters.}
+\item[\refstepcounter{acnum} \actheacnum \label{acAnalytics}:] Additional analytics such as engagement metrics or anomaly detection may be added as part of the dashboard.
+
+\item[\refstepcounter{acnum} \actheacnum \label{acPrivacy}:] A privacy module may be added to the SocialEyes framework used to censor sensitive information that may be captured in gaze data (e.g: phone screen, laptop screen, human faces) if time permits. 
+
+\end{description}
 
 \subsection{Unlikely Changes} \label{SecUchange}
 
@@ -178,9 +176,20 @@ will potentially need to be modified. Hence, it is not intended that these
 decisions will be changed.
 
 \begin{description}
-\item[\refstepcounter{ucnum} \uctheucnum \label{ucIO}:] Input/Output devices
-  (Input: File and/or Keyboard, Output: File, Memory, and/or Screen).
-\item ...
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucHardware}:] The existing system relies on fixed hardware (Pupil Labs Neon Eye Tracking Glasses, Android smartphone, network webcam), and changing these devices would require extensive redesign. 
+
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucAPIs}:] The pipeline depends heavily on Pupil Labs’ APIs for data access and synchronization. Modifying or replacing these APIs would impact multiple system components, making such changes unlikely.
+
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucInput}:] The system assumes specific input data formats. Altering these formats would require large-scale changes to parsing and processing modules.
+
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucCLI}:] The existing CLI supports essential homography, visualization, and analysis functions. Its role in offline processing makes major changes unlikely.
+
+\item[\refstepcounter{ucnum} \uctheucnum \label{ucGlassesRecordModule}:] The existing GlassesRecord module handles multi-glasses recording and synchronization through a custom terminal interface will most likely not be changed. 
+
+
+
+
+
 \end{description}
 
 \section{Module Hierarchy} \label{SecMH}
