@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, XCircle, BarChart3, Clock, TrendingUp, Activity, Mic, MicOff } from 'lucide-react';
 import AttentionPlayer from './AttentionPlayer';
+import Heatmap from './Heatmap';
 
 // Utility functions
 const getFocusColor = (percentage) => {
@@ -353,6 +354,7 @@ const Metrics = ({
   const metrics = data || mockData;
   return (
     <div className="metrics-container">
+      <Heatmap />
       <div className="metrics-header">
         <h2 className="metrics-title">
           <BarChart3 size={24} style={{ marginRight: '0.5rem' }} />
