@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
-import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, XCircle, BarChart3, Clock, TrendingUp, Activity, Mic, MicOff } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, XCircle, BarChart3, Clock, TrendingUp, TrendingDown, Activity, Mic, MicOff } from 'lucide-react';
 import AttentionPlayer from './AttentionPlayer';
 import Heatmap from './Heatmap';
 
-// Utility functions
+// Utility functions - Colorblind-friendly color scheme
+// Uses Blue/Orange/Purple instead of Green/Amber/Red for better accessibility
+// Blue (#3b82f6) = High/Good (≥75%), Orange (#f97316) = Medium/Warning (50-74%), Purple (#8b5cf6) = Low/Bad (<50%)
 const getFocusColor = (percentage) => {
-  if (percentage >= 75) return '#10b981'; // green
-  if (percentage >= 50) return '#f59e0b'; // amber
-  return '#ef4444'; // red
+  if (percentage >= 75) return '#3b82f6'; // blue (high/good)
+  if (percentage >= 50) return '#f97316'; // orange (medium/warning)
+  return '#8b5cf6'; // purple (low/bad)
 };
 
 const getFocusLabel = (percentage) => {
@@ -17,19 +19,19 @@ const getFocusLabel = (percentage) => {
   return 'Low';
 };
 
-// Distinct colors for different objects
+// Distinct colors for different objects - Colorblind-friendly palette
 const getObjectColor = (index) => {
   const colors = [
     '#3b82f6', // blue
     '#8b5cf6', // purple
     '#ec4899', // pink
-    '#f59e0b', // amber
-    '#10b981', // green
-    '#06b6d4', // cyan
     '#f97316', // orange
+    '#06b6d4', // cyan
     '#6366f1', // indigo
     '#14b8a6', // teal
-    '#ef4444', // red
+    '#f59e0b', // amber
+    '#a855f7', // violet
+    '#ef4444', // red (kept for non-status uses, but avoid for status indicators)
   ];
   return colors[index % colors.length];
 };
@@ -183,15 +185,16 @@ const FocusOverTimeCard = ({ data }) => {
     <MetricCard title="Focus Over Time" className="full-width">
       <div className="metrics-subgrid">
         <div>
+          <h4 className="sub-metric-title">Time Metrics</h4>
           <MetricRow label="Average Focus" value={`${data.focusOverTime.average}%`} />
           <MetricRow label="High Focus (>75%)" value={`${data.focusOverTime.highFocusDuration} min`} />
           <MetricRow label="Low Focus (<40%)" value={`${data.focusOverTime.lowFocusDuration} min`} />
         </div>
         <div>
           <h4 className="sub-metric-title">Focus Distribution</h4>
-          <MetricRow label="High" value={`${data.focusOverTime.distribution.high}%`} color="#10b981" />
-          <MetricRow label="Medium" value={`${data.focusOverTime.distribution.medium}%`} color="#f59e0b" />
-          <MetricRow label="Low" value={`${data.focusOverTime.distribution.low}%`} color="#ef4444" />
+          <MetricRow label="High" value={`${data.focusOverTime.distribution.high}%`} color="#3b82f6" />
+          <MetricRow label="Medium" value={`${data.focusOverTime.distribution.medium}%`} color="#f97316" />
+          <MetricRow label="Low" value={`${data.focusOverTime.distribution.low}%`} color="#8b5cf6" />
         </div>
       </div>
       {sparklineData.length > 0 && (
@@ -247,72 +250,26 @@ const SlidePerformanceCard = ({ data }) => (
           label="Best Slide" 
           value={`Slide ${data.slidePerformance.bestSlide.number} — ${data.slidePerformance.bestSlide.score.toFixed(2)}`}
           icon={TrendingUp}
-          color="#10b981"
+          color="#3b82f6"
         />
         <MetricRow 
           label="Worst Slide" 
           value={`Slide ${data.slidePerformance.worstSlide.number} — ${data.slidePerformance.worstSlide.score.toFixed(2)}`}
-          color="#ef4444"
+          icon={TrendingDown}
+          color="#8b5cf6"
         />
       </div>
     </div>
   </MetricCard>
 );
 
-const PerObjectAttentionCard = ({ data }) => {
-  if (!data.objectAttention || data.objectAttention.length === 0) return null;
-  
-  // Calculate total for percentage normalization (in case it doesn't sum to 100)
-  const total = data.objectAttention.reduce((sum, obj) => sum + obj.attention, 0);
-  
-  return (
-    <MetricCard title="Per-Object Attention" className="full-width">
-      <div className="object-attention-stacked">
-        <div className="stacked-bar">
-          {data.objectAttention.map((obj, idx) => {
-            const widthPercent = total > 0 ? (obj.attention / total) * 100 : 0;
-            return (
-              <div
-                key={idx}
-                className="stacked-segment"
-                style={{
-                  width: `${widthPercent}%`,
-                  backgroundColor: getObjectColor(idx)
-                }}
-                title={`${obj.name}: ${obj.attention}%`}
-              >
-                {widthPercent > 10 && (
-                  <span className="stacked-label">{obj.attention}%</span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        <div className="stacked-legend">
-          {data.objectAttention.map((obj, idx) => {
-            return (
-              <div key={idx} className="legend-item">
-                <div 
-                  className="legend-color"
-                  style={{ backgroundColor: getObjectColor(idx) }}
-                />
-                <span className="legend-name">{obj.name}</span>
-                <span className="legend-percentage">{obj.attention}%</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </MetricCard>
-  );
-};
 
 const SessionHealthCard = ({ data }) => (
   <MetricCard title="Session Health / Data Quality" className="full-width">
     <div className="metrics-subgrid">
       <MetricRow label="Valid Data" value={`${data.sessionHealth.validDataPercent}%`} icon={Activity} />
-      <MetricRow label="Avg Active Devices" value={data.sessionHealth.avgActiveDevices.toFixed(1)} />
-      <MetricRow label="Max Dropout" value={`${data.sessionHealth.maxDropout} devices`} />
+      <MetricRow label="Avg Active Devices" value={data.sessionHealth.avgActiveDevices.toFixed(1)} icon={Monitor} />
+      <MetricRow label="Max Dropout" value={`${data.sessionHealth.maxDropout} devices`} icon={AlertCircle} />
     </div>
   </MetricCard>
 );
@@ -333,6 +290,7 @@ const AudioSegmentsCard = ({ data }) => (
       <MetricRow 
         label="Slides with Speech" 
         value={`${data.audio.slidesWithSpeech}%`}
+        icon={BarChart3}
       />
     </div>
   </MetricCard>
@@ -390,9 +348,11 @@ const Metrics = ({
             <div className="secondary-metrics-group">
               <h4 className="secondary-group-title">Slides</h4>
               <SlidePerformanceCard data={metrics} />
-              <PerObjectAttentionCard data={metrics} />
               <div className="attention-player-in-metrics">
-                <AttentionPlayer />
+                <AttentionPlayer 
+                  objectAttention={metrics.objectAttention}
+                  slideNumber={metrics.learningScore?.slideNumber}
+                />
               </div>
             </div>
             {/* Data Quality Section */}
