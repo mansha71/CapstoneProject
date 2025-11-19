@@ -5,10 +5,31 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import AttentionPlayer from './AttentionPlayer';
 import Heatmap from './Heatmap';
 
-// Utility functions - Colorblind-friendly color scheme
-// Uses Blue/Orange/Purple instead of Green/Amber/Red for better accessibility
+// Utility functions for fractions
+const calculatePercentage = (value) => {
+  if (typeof value === 'number') return value; // Already a percentage
+  if (value && typeof value === 'object' && 'numerator' in value && 'denominator' in value) {
+    if (value.denominator === 0) return 0;
+    return (value.numerator / value.denominator) * 100;
+  }
+  return 0;
+};
+
+const formatFraction = (value) => {
+  if (typeof value === 'number') {
+    return `${value}%`;
+  }
+  if (value && typeof value === 'object' && 'numerator' in value && 'denominator' in value) {
+    if (value.denominator === 0) return 'N/A';
+    const percentage = calculatePercentage(value);
+    return `${value.numerator}/${value.denominator} (${Math.round(percentage)}%)`;
+  }
+  return 'N/A';
+};
+
 // Blue (#3b82f6) = High/Good (≥75%), Orange (#f97316) = Medium/Warning (50-74%), Purple (#8b5cf6) = Low/Bad (<50%)
-const getFocusColor = (percentage) => {
+const getFocusColor = (value) => {
+  const percentage = typeof value === 'number' ? value : calculatePercentage(value);
   if (percentage >= 75) return '#3b82f6'; // blue (high/good)
   if (percentage >= 50) return '#f97316'; // orange (medium/warning)
   return '#8b5cf6'; // purple (low/bad)
@@ -20,7 +41,6 @@ const getFocusLabel = (percentage) => {
   return 'Low';
 };
 
-// Distinct colors for different objects - Colorblind-friendly palette
 const getObjectColor = (index) => {
   const colors = [
     '#3b82f6', // blue
@@ -37,7 +57,7 @@ const getObjectColor = (index) => {
   return colors[index % colors.length];
 };
 
-// Mock data - replace with real data when backend is ready
+// Mock data
 const mockData = {
   // Core Metrics
   currentFocus: 76,
@@ -85,8 +105,8 @@ const mockData = {
   ],
   sessionHealth: {
     validDataPercent: 94,
-    avgActiveDevices: 26.4,
-    maxDropout: 4
+    avgActiveDevices: { numerator: 27, denominator: 30 }, // 27/30 = 90%
+    maxDropout: { numerator: 4, denominator: 30 } // 4/30 = 13%
   },
   audio: {
     talkingDuration: 18, // minutes
@@ -305,8 +325,8 @@ const SessionHealthCard = ({ data }) => (
   <MetricCard title="Session Health / Data Quality" className="full-width">
     <div className="metrics-subgrid">
       <MetricRow label="Valid Data" value={`${data.sessionHealth.validDataPercent}%`} icon={Activity} />
-      <MetricRow label="Avg Active Devices" value={data.sessionHealth.avgActiveDevices.toFixed(1)} icon={Monitor} />
-      <MetricRow label="Max Dropout" value={`${data.sessionHealth.maxDropout} devices`} icon={AlertCircle} />
+      <MetricRow label="Avg Active Devices" value={formatFraction(data.sessionHealth.avgActiveDevices)} icon={Monitor} />
+      <MetricRow label="Max Dropout" value={formatFraction(data.sessionHealth.maxDropout)} icon={AlertCircle} />
     </div>
   </MetricCard>
 );
