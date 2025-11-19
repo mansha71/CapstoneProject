@@ -271,7 +271,7 @@ const SlidePerformanceCard = ({ data }) => (
     <div className="metrics-subgrid">
       <div>
         <h4 className="sub-metric-title">Current Slide</h4>
-        <MetricRow label="Avg Attention" value={`${data.slidePerformance.currentSlide.avgAttention}%`} />
+        <MetricRow label="Avg Attention" value={`${data.slidePerformance.currentSlide.avgAttention}%`} icon={Eye} />
         <MetricRow 
           label="Time Spent" 
           value={data.slidePerformance.currentSlide.timeSpent}
