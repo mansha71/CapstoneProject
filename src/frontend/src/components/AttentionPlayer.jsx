@@ -1,10 +1,12 @@
 import { Eye } from 'lucide-react';
 
-// Utility function to get color for attention percentage
+// Utility function to get color for attention percentage - Colorblind-friendly
+// Uses Blue/Orange/Purple instead of Green/Amber/Red for better accessibility
+// Blue (#3b82f6) = High/Good (≥75%), Orange (#f97316) = Medium/Warning (50-74%), Purple (#8b5cf6) = Low/Bad (<50%)
 const getAttentionColor = (percentage) => {
-  if (percentage >= 75) return '#10b981'; // green
-  if (percentage >= 50) return '#f59e0b'; // amber
-  return '#ef4444'; // red
+  if (percentage >= 75) return '#3b82f6'; // blue (high/good)
+  if (percentage >= 50) return '#f97316'; // orange (medium/warning)
+  return '#8b5cf6'; // purple (low/bad)
 };
 
 // Utility function to get color with opacity for overlay
@@ -15,6 +17,47 @@ const getAttentionColorWithOpacity = (percentage) => {
   const g = parseInt(baseColor.slice(3, 5), 16);
   const b = parseInt(baseColor.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, 0.3)`;
+};
+
+// Helper function to convert objectAttention array to screenData format
+const convertObjectAttentionToScreenData = (objectAttention, slideNumber = null) => {
+  if (!objectAttention || objectAttention.length === 0) {
+    return null;
+  }
+
+  // Generate default positions in a grid-like layout
+  const objects = objectAttention.map((obj, idx) => {
+    // Simple grid layout: distribute objects across the screen
+    const cols = Math.ceil(Math.sqrt(objectAttention.length));
+    const row = Math.floor(idx / cols);
+    const col = idx % cols;
+    const itemsPerRow = Math.ceil(objectAttention.length / cols);
+    
+    const width = 90 / cols; // 90% total width divided by columns
+    const height = 80 / itemsPerRow; // 80% total height divided by rows
+    const x = 5 + (col * (100 / cols)); // Start at 5%, distribute evenly
+    const y = 10 + (row * (90 / itemsPerRow)); // Start at 10%, distribute evenly
+
+    return {
+      id: `${obj.name.toLowerCase().replace(/\s+/g, '-')}-${idx}`,
+      name: obj.name,
+      attention: obj.attention,
+      position: {
+        x: Math.min(x, 85), // Ensure it doesn't go off screen
+        y: Math.min(y, 85),
+        width: Math.min(width, 40), // Limit max width
+        height: Math.min(height, 35) // Limit max height
+      }
+    };
+  });
+
+  return {
+    width: 1920,
+    height: 1080,
+    imageUrl: null,
+    slideNumber: slideNumber,
+    objects: objects
+  };
 };
 
 // Default dummy data structure - easy to replace with real data
@@ -63,9 +106,17 @@ const defaultScreenData = {
   ]
 };
 
-const AttentionPlayer = ({ screenData = null }) => {
-  // Use provided data or fall back to default dummy data
-  const data = screenData || defaultScreenData;
+const AttentionPlayer = ({ screenData = null, objectAttention = null, slideNumber = null }) => {
+  // Convert objectAttention to screenData format if provided
+  let data;
+  if (objectAttention) {
+    const converted = convertObjectAttentionToScreenData(objectAttention, slideNumber);
+    data = converted || defaultScreenData;
+  } else {
+    // Use provided screenData or fall back to default dummy data
+    data = screenData || defaultScreenData;
+  }
+  
   const aspectRatio = data.width / data.height;
 
   return (
@@ -160,15 +211,15 @@ const AttentionPlayer = ({ screenData = null }) => {
           <div className="legend-title">Attention Levels</div>
           <div className="legend-items">
             <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: '#10b981' }} />
+              <div className="legend-color" style={{ backgroundColor: '#3b82f6' }} />
               <span>High (≥75%)</span>
             </div>
             <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: '#f59e0b' }} />
+              <div className="legend-color" style={{ backgroundColor: '#f97316' }} />
               <span>Medium (50-74%)</span>
             </div>
             <div className="legend-item">
-              <div className="legend-color" style={{ backgroundColor: '#ef4444' }} />
+              <div className="legend-color" style={{ backgroundColor: '#8b5cf6' }} />
               <span>Low (&lt;50%)</span>
             </div>
           </div>

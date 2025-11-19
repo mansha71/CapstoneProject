@@ -1,14 +1,38 @@
 import { useState } from 'react';
 
-import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, XCircle, BarChart3, Clock, TrendingUp, Activity, Mic, MicOff } from 'lucide-react';
+import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, XCircle, BarChart3, Clock, TrendingUp, TrendingDown, Activity, Mic, MicOff } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AttentionPlayer from './AttentionPlayer';
 import Heatmap from './Heatmap';
 
-// Utility functions
-const getFocusColor = (percentage) => {
-  if (percentage >= 75) return '#10b981'; // green
-  if (percentage >= 50) return '#f59e0b'; // amber
-  return '#ef4444'; // red
+// Utility functions for fractions
+const calculatePercentage = (value) => {
+  if (typeof value === 'number') return value; // Already a percentage
+  if (value && typeof value === 'object' && 'numerator' in value && 'denominator' in value) {
+    if (value.denominator === 0) return 0;
+    return (value.numerator / value.denominator) * 100;
+  }
+  return 0;
+};
+
+const formatFraction = (value) => {
+  if (typeof value === 'number') {
+    return `${value}%`;
+  }
+  if (value && typeof value === 'object' && 'numerator' in value && 'denominator' in value) {
+    if (value.denominator === 0) return 'N/A';
+    const percentage = calculatePercentage(value);
+    return `${value.numerator}/${value.denominator} (${Math.round(percentage)}%)`;
+  }
+  return 'N/A';
+};
+
+// Blue (#3b82f6) = High/Good (≥75%), Orange (#f97316) = Medium/Warning (50-74%), Purple (#8b5cf6) = Low/Bad (<50%)
+const getFocusColor = (value) => {
+  const percentage = typeof value === 'number' ? value : calculatePercentage(value);
+  if (percentage >= 75) return '#3b82f6'; // blue (high/good)
+  if (percentage >= 50) return '#f97316'; // orange (medium/warning)
+  return '#8b5cf6'; // purple (low/bad)
 };
 
 const getFocusLabel = (percentage) => {
@@ -17,24 +41,23 @@ const getFocusLabel = (percentage) => {
   return 'Low';
 };
 
-// Distinct colors for different objects
 const getObjectColor = (index) => {
   const colors = [
     '#3b82f6', // blue
     '#8b5cf6', // purple
     '#ec4899', // pink
-    '#f59e0b', // amber
-    '#10b981', // green
-    '#06b6d4', // cyan
     '#f97316', // orange
+    '#06b6d4', // cyan
     '#6366f1', // indigo
     '#14b8a6', // teal
-    '#ef4444', // red
+    '#f59e0b', // amber
+    '#a855f7', // violet
+    '#ef4444', // red (kept for non-status uses, but avoid for status indicators)
   ];
   return colors[index % colors.length];
 };
 
-// Mock data - replace with real data when backend is ready
+// Mock data
 const mockData = {
   // Core Metrics
   currentFocus: 76,
@@ -82,8 +105,8 @@ const mockData = {
   ],
   sessionHealth: {
     validDataPercent: 94,
-    avgActiveDevices: 26.4,
-    maxDropout: 4
+    avgActiveDevices: { numerator: 27, denominator: 30 }, // 27/30 = 90%
+    maxDropout: { numerator: 4, denominator: 30 } // 4/30 = 13%
   },
   audio: {
     talkingDuration: 18, // minutes
@@ -176,50 +199,87 @@ const LearningScoreCard = ({ data }) => (
 
 const FocusOverTimeCard = ({ data }) => {
   const sparklineData = data.focusOverTime.sparklineData || [];
-  const axisLabels = [100, 75, 50, 25, 0];
-  const SPARKLINE_HEIGHT = 300; // Match the axis height
+  
+  // Transform data for Recharts: convert array of numbers to array of objects with slide and focus
+  const chartData = sparklineData.map((value, index) => ({
+    slide: index + 1,
+    focus: value
+  }));
+  
+  // Custom bar shape to use colorblind-friendly colors
+  const CustomBar = (props) => {
+    const { payload, x, y, width, height } = props;
+    const color = getFocusColor(payload.focus);
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={color}
+        rx={2}
+        ry={2}
+      />
+    );
+  };
+  
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="chart-tooltip">
+          <p className="tooltip-label">Slide {data.slide}</p>
+          <p className="tooltip-value" style={{ color: getFocusColor(data.focus) }}>
+            Focus: {data.focus}%
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
   
   return (
     <MetricCard title="Focus Over Time" className="full-width">
       <div className="metrics-subgrid">
         <div>
+          <h4 className="sub-metric-title">Time Metrics</h4>
           <MetricRow label="Average Focus" value={`${data.focusOverTime.average}%`} />
           <MetricRow label="High Focus (>75%)" value={`${data.focusOverTime.highFocusDuration} min`} />
           <MetricRow label="Low Focus (<40%)" value={`${data.focusOverTime.lowFocusDuration} min`} />
         </div>
         <div>
           <h4 className="sub-metric-title">Focus Distribution</h4>
-          <MetricRow label="High" value={`${data.focusOverTime.distribution.high}%`} color="#10b981" />
-          <MetricRow label="Medium" value={`${data.focusOverTime.distribution.medium}%`} color="#f59e0b" />
-          <MetricRow label="Low" value={`${data.focusOverTime.distribution.low}%`} color="#ef4444" />
+          <MetricRow label="High" value={`${data.focusOverTime.distribution.high}%`} color="#3b82f6" />
+          <MetricRow label="Medium" value={`${data.focusOverTime.distribution.medium}%`} color="#f97316" />
+          <MetricRow label="Low" value={`${data.focusOverTime.distribution.low}%`} color="#8b5cf6" />
         </div>
       </div>
-      {sparklineData.length > 0 && (
-        <div className="focus-sparkline-container">
-          <div className="sparkline-wrapper">
-            <div className="sparkline-axis">
-              {axisLabels.map((label) => (
-                <div key={label} className="axis-label">{label}%</div>
-              ))}
-            </div>
-            <div 
-              className="focus-sparkline"
-              style={{ height: `${SPARKLINE_HEIGHT}px` }}
+      {chartData.length > 0 && (
+        <div className="focus-chart-container">
+          <h4 className="chart-title">Focus by Slide</h4>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
             >
-              {sparklineData.map((value, i) => (
-                <div 
-                  key={i} 
-                  className="focus-bar"
-                  style={{ 
-                    height: `${(value / 100) * SPARKLINE_HEIGHT}px`,
-                    backgroundColor: getFocusColor(value)
-                  }}
-                  title={`${value}%`}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="sparkline-label">Focus trend over session</div>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis
+                dataKey="slide"
+                label={{ value: 'Slides', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' } }}
+                tick={{ fill: '#64748b', fontSize: '0.7rem' }}
+                stroke="#e2e8f0"
+              />
+              <YAxis
+                domain={[0, 100]}
+                label={{ value: 'Focus (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' } }}
+                tick={{ fill: '#64748b', fontSize: '0.7rem' }}
+                stroke="#e2e8f0"
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="focus" shape={<CustomBar />} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
     </MetricCard>
@@ -231,7 +291,7 @@ const SlidePerformanceCard = ({ data }) => (
     <div className="metrics-subgrid">
       <div>
         <h4 className="sub-metric-title">Current Slide</h4>
-        <MetricRow label="Avg Attention" value={`${data.slidePerformance.currentSlide.avgAttention}%`} />
+        <MetricRow label="Avg Attention" value={`${data.slidePerformance.currentSlide.avgAttention}%`} icon={Eye} />
         <MetricRow 
           label="Time Spent" 
           value={data.slidePerformance.currentSlide.timeSpent}
@@ -247,72 +307,26 @@ const SlidePerformanceCard = ({ data }) => (
           label="Best Slide" 
           value={`Slide ${data.slidePerformance.bestSlide.number} — ${data.slidePerformance.bestSlide.score.toFixed(2)}`}
           icon={TrendingUp}
-          color="#10b981"
+          color="#3b82f6"
         />
         <MetricRow 
           label="Worst Slide" 
           value={`Slide ${data.slidePerformance.worstSlide.number} — ${data.slidePerformance.worstSlide.score.toFixed(2)}`}
-          color="#ef4444"
+          icon={TrendingDown}
+          color="#8b5cf6"
         />
       </div>
     </div>
   </MetricCard>
 );
 
-const PerObjectAttentionCard = ({ data }) => {
-  if (!data.objectAttention || data.objectAttention.length === 0) return null;
-  
-  // Calculate total for percentage normalization (in case it doesn't sum to 100)
-  const total = data.objectAttention.reduce((sum, obj) => sum + obj.attention, 0);
-  
-  return (
-    <MetricCard title="Per-Object Attention" className="full-width">
-      <div className="object-attention-stacked">
-        <div className="stacked-bar">
-          {data.objectAttention.map((obj, idx) => {
-            const widthPercent = total > 0 ? (obj.attention / total) * 100 : 0;
-            return (
-              <div
-                key={idx}
-                className="stacked-segment"
-                style={{
-                  width: `${widthPercent}%`,
-                  backgroundColor: getObjectColor(idx)
-                }}
-                title={`${obj.name}: ${obj.attention}%`}
-              >
-                {widthPercent > 10 && (
-                  <span className="stacked-label">{obj.attention}%</span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        <div className="stacked-legend">
-          {data.objectAttention.map((obj, idx) => {
-            return (
-              <div key={idx} className="legend-item">
-                <div 
-                  className="legend-color"
-                  style={{ backgroundColor: getObjectColor(idx) }}
-                />
-                <span className="legend-name">{obj.name}</span>
-                <span className="legend-percentage">{obj.attention}%</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </MetricCard>
-  );
-};
 
 const SessionHealthCard = ({ data }) => (
   <MetricCard title="Session Health / Data Quality" className="full-width">
     <div className="metrics-subgrid">
       <MetricRow label="Valid Data" value={`${data.sessionHealth.validDataPercent}%`} icon={Activity} />
-      <MetricRow label="Avg Active Devices" value={data.sessionHealth.avgActiveDevices.toFixed(1)} />
-      <MetricRow label="Max Dropout" value={`${data.sessionHealth.maxDropout} devices`} />
+      <MetricRow label="Avg Active Devices" value={formatFraction(data.sessionHealth.avgActiveDevices)} icon={Monitor} />
+      <MetricRow label="Max Dropout" value={formatFraction(data.sessionHealth.maxDropout)} icon={AlertCircle} />
     </div>
   </MetricCard>
 );
@@ -333,6 +347,7 @@ const AudioSegmentsCard = ({ data }) => (
       <MetricRow 
         label="Slides with Speech" 
         value={`${data.audio.slidesWithSpeech}%`}
+        icon={BarChart3}
       />
     </div>
   </MetricCard>
@@ -390,9 +405,11 @@ const Metrics = ({
             <div className="secondary-metrics-group">
               <h4 className="secondary-group-title">Slides</h4>
               <SlidePerformanceCard data={metrics} />
-              <PerObjectAttentionCard data={metrics} />
               <div className="attention-player-in-metrics">
-                <AttentionPlayer />
+                <AttentionPlayer 
+                  objectAttention={metrics.objectAttention}
+                  slideNumber={metrics.learningScore?.slideNumber}
+                />
               </div>
             </div>
             {/* Data Quality Section */}
