@@ -1021,6 +1021,59 @@ body.dark .focus-sparkline-container {
   border-top-color: #334155;
 }
 
+.focus-chart-container {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  width: 100%;
+}
+
+body.dark .focus-chart-container {
+  border-top-color: #334155;
+}
+
+.chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+body.dark .chart-title {
+  color: #e2e8f0;
+}
+
+.chart-tooltip {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.dark .chart-tooltip {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.tooltip-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+body.dark .tooltip-label {
+  color: #e2e8f0;
+}
+
+.tooltip-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'SF Mono', Monaco, monospace;
+}
+
 .sparkline-wrapper {
   display: flex;
   align-items: flex-end;

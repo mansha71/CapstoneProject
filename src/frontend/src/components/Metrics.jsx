@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, XCircle, BarChart3, Clock, TrendingUp, TrendingDown, Activity, Mic, MicOff } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AttentionPlayer from './AttentionPlayer';
 import Heatmap from './Heatmap';
 
@@ -178,8 +179,45 @@ const LearningScoreCard = ({ data }) => (
 
 const FocusOverTimeCard = ({ data }) => {
   const sparklineData = data.focusOverTime.sparklineData || [];
-  const axisLabels = [100, 75, 50, 25, 0];
-  const SPARKLINE_HEIGHT = 500;
+  
+  // Transform data for Recharts: convert array of numbers to array of objects with slide and focus
+  const chartData = sparklineData.map((value, index) => ({
+    slide: index + 1,
+    focus: value
+  }));
+  
+  // Custom bar shape to use colorblind-friendly colors
+  const CustomBar = (props) => {
+    const { payload, x, y, width, height } = props;
+    const color = getFocusColor(payload.focus);
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={color}
+        rx={2}
+        ry={2}
+      />
+    );
+  };
+  
+  // Custom tooltip
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="chart-tooltip">
+          <p className="tooltip-label">Slide {data.slide}</p>
+          <p className="tooltip-value" style={{ color: getFocusColor(data.focus) }}>
+            Focus: {data.focus}%
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
   
   return (
     <MetricCard title="Focus Over Time" className="full-width">
@@ -197,36 +235,31 @@ const FocusOverTimeCard = ({ data }) => {
           <MetricRow label="Low" value={`${data.focusOverTime.distribution.low}%`} color="#8b5cf6" />
         </div>
       </div>
-      {sparklineData.length > 0 && (
-        <div className="focus-sparkline-container">
-          <div className="sparkline-wrapper">
-            <div className="sparkline-axis" style={{ height: `${SPARKLINE_HEIGHT}px` }}>
-              {axisLabels.map((label) => (
-                <div key={label} className="axis-label">{label}%</div>
-              ))}
-            </div>
-            <div 
-              className="focus-sparkline"
-              style={{ height: `${SPARKLINE_HEIGHT}px` }}
+      {chartData.length > 0 && (
+        <div className="focus-chart-container">
+          <h4 className="chart-title">Focus by Slide</h4>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
             >
-              {sparklineData.map((value, i) => {
-                // Calculate bar height as percentage of SPARKLINE_HEIGHT
-                const barHeight = (value / 100) * SPARKLINE_HEIGHT;
-                return (
-                  <div 
-                    key={i} 
-                    className="focus-bar"
-                    style={{ 
-                      height: `${barHeight}px`,
-                      backgroundColor: getFocusColor(value)
-                    }}
-                    title={`${value}%`}
-                  />
-                );
-              })}
-            </div>
-          </div>
-          <div className="sparkline-label">Focus trend over session</div>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis
+                dataKey="slide"
+                label={{ value: 'Slides', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' } }}
+                tick={{ fill: '#64748b', fontSize: '0.7rem' }}
+                stroke="#e2e8f0"
+              />
+              <YAxis
+                domain={[0, 100]}
+                label={{ value: 'Focus (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#64748b', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' } }}
+                tick={{ fill: '#64748b', fontSize: '0.7rem' }}
+                stroke="#e2e8f0"
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="focus" shape={<CustomBar />} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       )}
     </MetricCard>
