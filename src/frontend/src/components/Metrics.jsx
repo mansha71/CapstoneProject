@@ -179,7 +179,7 @@ const LearningScoreCard = ({ data }) => (
 const FocusOverTimeCard = ({ data }) => {
   const sparklineData = data.focusOverTime.sparklineData || [];
   const axisLabels = [100, 75, 50, 25, 0];
-  const SPARKLINE_HEIGHT = 300; // Match the axis height
+  const SPARKLINE_HEIGHT = 500;
   
   return (
     <MetricCard title="Focus Over Time" className="full-width">
@@ -200,7 +200,7 @@ const FocusOverTimeCard = ({ data }) => {
       {sparklineData.length > 0 && (
         <div className="focus-sparkline-container">
           <div className="sparkline-wrapper">
-            <div className="sparkline-axis">
+            <div className="sparkline-axis" style={{ height: `${SPARKLINE_HEIGHT}px` }}>
               {axisLabels.map((label) => (
                 <div key={label} className="axis-label">{label}%</div>
               ))}
@@ -209,17 +209,21 @@ const FocusOverTimeCard = ({ data }) => {
               className="focus-sparkline"
               style={{ height: `${SPARKLINE_HEIGHT}px` }}
             >
-              {sparklineData.map((value, i) => (
-                <div 
-                  key={i} 
-                  className="focus-bar"
-                  style={{ 
-                    height: `${(value / 100) * SPARKLINE_HEIGHT}px`,
-                    backgroundColor: getFocusColor(value)
-                  }}
-                  title={`${value}%`}
-                />
-              ))}
+              {sparklineData.map((value, i) => {
+                // Calculate bar height as percentage of SPARKLINE_HEIGHT
+                const barHeight = (value / 100) * SPARKLINE_HEIGHT;
+                return (
+                  <div 
+                    key={i} 
+                    className="focus-bar"
+                    style={{ 
+                      height: `${barHeight}px`,
+                      backgroundColor: getFocusColor(value)
+                    }}
+                    title={`${value}%`}
+                  />
+                );
+              })}
             </div>
           </div>
           <div className="sparkline-label">Focus trend over session</div>

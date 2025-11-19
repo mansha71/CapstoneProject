@@ -1032,10 +1032,11 @@ body.dark .focus-sparkline-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 300px;
   padding-right: 0.5rem;
   border-right: 1px solid #e2e8f0;
   min-width: 40px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 body.dark .sparkline-axis {
@@ -1046,7 +1047,10 @@ body.dark .sparkline-axis {
   font-size: 0.7rem;
   color: #64748b;
   text-align: right;
-  line-height: 1;
+  line-height: 1.2;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
 }
 
 body.dark .axis-label {
@@ -1057,9 +1061,9 @@ body.dark .axis-label {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  height: 300px;
   flex: 1;
   gap: 4px;
+  box-sizing: border-box;
 }
 
 .focus-bar {
