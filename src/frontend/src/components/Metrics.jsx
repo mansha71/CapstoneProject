@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, Eye, Monitor, User, AlertCircle, CheckCircle, X
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AttentionPlayer from './AttentionPlayer';
 import Heatmap from './Heatmap';
+import { exampleSessionDetail } from '../types/analytics';
 
 // Utility functions for fractions
 const calculatePercentage = (value) => {
@@ -57,62 +58,183 @@ const getObjectColor = (index) => {
   return colors[index % colors.length];
 };
 
-// Mock data
-const mockData = {
-  // Core Metrics
-  currentFocus: 76,
-  focusDistribution: {
-    screen: 52,
-    instructor: 24,
-    offScreen: 24
-  },
-  learningScore: {
-    value: 0.78,
-    slideNumber: 5
-  },
-  deviceStatus: {
-    active: 27,
-    warning: 2,
-    offline: 1,
-    total: 30
-  },
-  // Secondary Metrics
-  focusOverTime: {
-    average: 68,
-    highFocusDuration: 12, // minutes
-    lowFocusDuration: 7, // minutes
-    distribution: {
-      high: 30,
-      medium: 45,
-      low: 25
-    },
-    // Sparkline data - array of focus percentages over time
-    sparklineData: [40, 60, 80, 55, 70, 65, 75, 68, 72, 58, 65, 70]
-  },
-  slidePerformance: {
-    currentSlide: {
-      avgAttention: 73,
-      timeSpent: '2m 15s',
-      sessionAvg: '1m 40s'
-    },
-    bestSlide: { number: 7, score: 0.89 },
-    worstSlide: { number: 3, score: 0.42 }
-  },
-  objectAttention: [
-    { name: 'Graph', attention: 45 },
-    { name: 'Text block', attention: 30 },
-    { name: 'Image', attention: 25 }
-  ],
-  sessionHealth: {
-    validDataPercent: 94,
-    avgActiveDevices: { numerator: 27, denominator: 30 }, // 27/30 = 90%
-    maxDropout: { numerator: 4, denominator: 30 } // 4/30 = 13%
-  },
-  audio: {
-    talkingDuration: 18, // minutes
-    silenceDuration: 5, // minutes
-    slidesWithSpeech: 85 // percentage
+// Helper function to format duration in milliseconds to "Xm Ys" format
+const formatDuration = (ms) => {
+  if (!ms || ms === 0) return '—';
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes > 0) {
+    return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
   }
+  return `${seconds}s`;
+};
+
+// Adapter to map a SessionDetail payload (from analytics.ts mocks or backend) into the
+// shape expected by the Metrics component. This lets us plug in exampleSessionDetail now
+// and swap to real API data later without rewriting the cards.
+const mapSessionDetailToMetrics = (detailPayload) => {
+  if (!detailPayload) {
+    // Return empty/default structure if no payload provided
+    // The component will handle fallback to exampleSessionDetail.payload
+    detailPayload = {};
+  }
+
+  const { attention = {}, participants = [], audio = {}, health = {}, slides = [], session = {} } = detailPayload;
+
+  const getDist = (label) =>
+    attention?.focusDistribution?.find((d) => d.label === label)?.value ?? 0;
+
+  const focusBySlide = attention?.focusBySlide ?? [];
+  const bestSlide =
+    slides.find((s) => s.best) ??
+    focusBySlide.reduce(
+      (max, curr) => (curr.focusPercent > (max?.focusPercent ?? -1) ? curr : max),
+      null
+    );
+  const worstSlide =
+    slides.find((s) => s.worst) ??
+    focusBySlide.reduce(
+      (min, curr) => (curr.focusPercent < (min?.focusPercent ?? 101) ? curr : min),
+      null
+    );
+
+  const focusValues = attention?.focusOverTime?.map((p) => p.value) ?? [];
+  const avgFocus =
+    focusValues.length > 0
+      ? Math.round(focusValues.reduce((sum, v) => sum + v, 0) / focusValues.length)
+      : 0;
+
+  // Calculate high/low focus duration from focusOverTime data
+  // Assuming each point represents a time interval (e.g., 5 minutes)
+  const timeIntervalMinutes = 5; // Default interval between focusOverTime points
+  let highFocusDuration = 0;
+  let lowFocusDuration = 0;
+  let highCount = 0;
+  let mediumCount = 0;
+  let lowCount = 0;
+
+  focusValues.forEach((value) => {
+    if (value >= 75) {
+      highFocusDuration += timeIntervalMinutes;
+      highCount++;
+    } else if (value < 40) {
+      lowFocusDuration += timeIntervalMinutes;
+      lowCount++;
+    } else {
+      mediumCount++;
+    }
+  });
+
+  const totalPoints = focusValues.length;
+  const distribution = {
+    high: totalPoints > 0 ? Math.round((highCount / totalPoints) * 100) : 0,
+    medium: totalPoints > 0 ? Math.round((mediumCount / totalPoints) * 100) : 0,
+    low: totalPoints > 0 ? Math.round((lowCount / totalPoints) * 100) : 0,
+  };
+
+  const slidesWithSpeechPct =
+    audio?.speechBySlide && audio.speechBySlide.length
+      ? Math.round(
+          (audio.speechBySlide.filter((s) => s.hasSpeech).length /
+            audio.speechBySlide.length) *
+            100
+        )
+      : 0;
+
+  // Calculate slide time metrics
+  const currentSlideData = slides.length > 0 ? slides[0] : (focusBySlide.length > 0 ? focusBySlide[0] : null);
+  const avgDwellMs = slides.length > 0
+    ? slides.reduce((sum, s) => sum + (s.dwellMs || 0), 0) / slides.length
+    : 0;
+
+  // Get participant counts - prefer actual participant data, fallback to session summary and health data
+  const participantCount = session?.participantsTotal ?? (participants.length > 0 ? participants.length : 0);
+  const sessionActiveCount = session?.activeParticipants ?? 0;
+  
+  // If we have a full participants array, use it; otherwise derive from session summary
+  let activeCount, warningCount, offlineCount;
+  
+  if (participants.length > 0 && participants.length >= (sessionActiveCount || participantCount) * 0.8) {
+    // Use participant array if it's reasonably complete (at least 80% of expected participants)
+    activeCount = participants.filter(p => p.status === 'present').length;
+    warningCount = participants.filter(p => p.status === 'dropped').length;
+    offlineCount = participants.filter(p => p.status === 'absent').length;
+  } else {
+    // Derive from session summary and health data
+    // activeParticipants represents currently active devices
+    activeCount = sessionActiveCount || 0;
+    
+    // maxDropout represents participants who dropped at some point (temporary disconnections)
+    // These are counted as "warning" status
+    if (health?.maxDropout && typeof health.maxDropout === 'object') {
+      warningCount = health.maxDropout.numerator || 0;
+    } else {
+      // Fallback: calculate warning as difference between active and avgActiveDevices
+      if (health?.avgActiveDevices && typeof health.avgActiveDevices === 'object') {
+        const avgActive = health.avgActiveDevices.numerator || 0;
+        warningCount = Math.max(0, activeCount - avgActive);
+      } else {
+        warningCount = 0;
+      }
+    }
+    
+    // Offline = total registered - currently active
+    // Note: warning (dropped) participants may have reconnected, so they're still counted in active
+    offlineCount = Math.max(0, participantCount - activeCount);
+  }
+
+  return {
+    currentFocus: attention?.currentFocusPercent ?? 0,
+    focusDistribution: {
+      screen: getDist('screen'),
+      instructor: getDist('instructor'),
+      offScreen: getDist('offScreen'),
+    },
+    learningScore: {
+      value: attention?.learningScore ?? 0,
+      slideNumber: focusBySlide[0]?.slide ?? slides.find((s) => s.best)?.slide ?? currentSlideData?.slide ?? 0,
+    },
+    deviceStatus: {
+      active: activeCount,
+      warning: warningCount,
+      offline: offlineCount,
+      total: participantCount,
+    },
+    focusOverTime: {
+      average: avgFocus,
+      highFocusDuration: highFocusDuration,
+      lowFocusDuration: lowFocusDuration,
+      distribution: distribution,
+      sparklineData: focusValues,
+    },
+    slidePerformance: {
+      currentSlide: {
+        avgAttention: currentSlideData?.attentionPercent ?? focusBySlide[0]?.focusPercent ?? 0,
+        timeSpent: formatDuration(currentSlideData?.dwellMs),
+        sessionAvg: formatDuration(avgDwellMs),
+      },
+      bestSlide: { 
+        number: bestSlide?.slide ?? 0, 
+        score: (bestSlide?.attentionPercent ?? bestSlide?.focusPercent ?? 0) / 100 
+      },
+      worstSlide: { 
+        number: worstSlide?.slide ?? 0, 
+        score: (worstSlide?.attentionPercent ?? worstSlide?.focusPercent ?? 0) / 100 
+      },
+    },
+    objectAttention: [], // Not available in current analytics format
+    sessionHealth: {
+      validDataPercent: health?.validDataPercent ?? 0,
+      avgActiveDevices: health?.avgActiveDevices ?? { numerator: 0, denominator: 0 },
+      maxDropout: health?.maxDropout ?? { numerator: 0, denominator: 0 },
+    },
+    audio: {
+      talkingDuration: (audio?.talkingMs ?? 0) / 60000,
+      silenceDuration: (audio?.silenceMs ?? 0) / 60000,
+      slidesWithSpeech: slidesWithSpeechPct,
+    },
+  };
 };
 
 // Subcomponents
@@ -356,7 +478,8 @@ const AudioSegmentsCard = ({ data }) => (
 const Metrics = ({ 
   isExpanded: externalExpanded = null,
   onToggleExpand: externalToggle = null,
-  data = null
+  data = null,
+  analyticsDetail = null
 }) => {
   // Use external state if provided, otherwise use internal state
   const [internalExpanded, setInternalExpanded] = useState(false);
@@ -365,8 +488,10 @@ const Metrics = ({
   const isExpanded = externalExpanded !== null ? externalExpanded : internalExpanded;
   const toggleExpand = externalToggle || (() => setInternalExpanded(!internalExpanded));
   
-  // Use provided data or fall back to mock data
-  const metrics = data || mockData;
+  // Use provided data or fall back to exampleSessionDetail from analytics.ts
+  const metrics = data ?? (analyticsDetail
+    ? mapSessionDetailToMetrics(analyticsDetail)
+    : mapSessionDetailToMetrics(exampleSessionDetail.payload));
   return (
     <div className="metrics-container">
       <Heatmap />
