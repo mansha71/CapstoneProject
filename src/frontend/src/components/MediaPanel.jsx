@@ -47,6 +47,7 @@ const DEFAULT_SLIDES = (
               ? 'worst'
               : undefined,
           timestamp: point.ts,
+          thumbnailUrl: `/media/${slideNumber}.png`,
         };
       })
     : exampleSlidesMeta.map((slide) => ({
@@ -56,6 +57,7 @@ const DEFAULT_SLIDES = (
         dwellMs: slide.dwellMs ?? null,
         highlight: slide.best ? 'best' : slide.worst ? 'worst' : undefined,
         timestamp: `Slide ${slide.slide}`,
+        thumbnailUrl: `/media/${slide.slide}.png`,
       }))
 ) ?? [];
 
@@ -147,8 +149,18 @@ const SlidesPanel = ({
             onClick={() => onSelectSlide(slide)}
           >
             <div className="slide-thumb">
-              <span className="slide-number">Slide {slide.id}</span>
-              <div className="slide-thumb-gradient" />
+              {slide.thumbnailUrl ? (
+                <img
+                  src={slide.thumbnailUrl}
+                  alt={slide.title}
+                  className="slide-thumb-image"
+                />
+              ) : (
+                <>
+                  <span className="slide-number">Slide {slide.id}</span>
+                  <div className="slide-thumb-gradient" />
+                </>
+              )}
             </div>
             <div className="slide-meta">
               <p className="slide-title">{slide.title}</p>
