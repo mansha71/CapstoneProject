@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Metrics from './Metrics';
 import SessionInfo from './SessionInfo';
+import MediaPanel from './MediaPanel';
 
 const InstructorDashboard = () => {
   const [metricsExpanded, setMetricsExpanded] = useState(false);
@@ -16,8 +17,8 @@ const InstructorDashboard = () => {
         <p className="dashboard-subtitle">Monitor student engagement and session analytics</p>
       </div>
       <div className="dashboard-content">
-        {/* Metrics component - can be used elsewhere too */}
-        <Metrics 
+        <MediaPanel />
+        <Metrics
           isExpanded={metricsExpanded}
           onToggleExpand={() => setMetricsExpanded(!metricsExpanded)}
         />
