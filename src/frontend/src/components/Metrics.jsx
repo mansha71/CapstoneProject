@@ -197,6 +197,37 @@ const LearningScoreCard = ({ data }) => (
   </MetricCard>
 );
 
+const DeviceStatusCard = ({ data }) => (
+  <MetricCard title="Device Status">
+    <div className="distribution-list">
+      <MetricRow 
+        label="Active" 
+        value={`${data.deviceStatus.active}`}
+        icon={CheckCircle}
+        color="#3b82f6"
+      />
+      <MetricRow 
+        label="Warning" 
+        value={`${data.deviceStatus.warning}`}
+        icon={AlertCircle}
+        color="#f97316"
+      />
+      <MetricRow 
+        label="Offline" 
+        value={`${data.deviceStatus.offline}`}
+        icon={XCircle}
+        color="#64748b"
+      />
+      <MetricRow 
+        label="Total" 
+        value={`${data.deviceStatus.total}`}
+        icon={Monitor}
+        color="#6366f1"
+      />
+    </div>
+  </MetricCard>
+);
+
 const FocusOverTimeCard = ({ data }) => {
   const sparklineData = data.focusOverTime.sparklineData || [];
   
@@ -391,6 +422,7 @@ const Metrics = ({
             <FocusSummaryCard data={metrics} />
             <FocusDistributionCard data={metrics} />
             <LearningScoreCard data={metrics} />
+            <DeviceStatusCard data={metrics} />
           </div>
         </div>
         {/* SECONDARY METRICS - Only when expanded */}
