@@ -146,8 +146,29 @@ export interface SessionDetail {
     best?: boolean;
     worst?: boolean;
   }[];
+  screenHighlights?: SlideScreenHighlight[];
   heatmapGridAggregated?: HeatmapGrid; // SocialEyes groupHeatmap
   groupMetrics?: GroupMetrics;
+}
+
+export interface SlideObjectRegion {
+  id: string;
+  name: string;
+  attention: number;
+  position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
+
+export interface SlideScreenHighlight {
+  slide: number;
+  imageUrl?: string;
+  width?: number;
+  height?: number;
+  objects: SlideObjectRegion[];
 }
 
 /** SocialEyes participant metrics (passthrough for richer detail). */
@@ -360,6 +381,92 @@ export const exampleSessionDetail: SessionDetailResponse = {
       { slide: 1, attentionPercent: 73, dwellMs: 135000, best: false },
       { slide: 2, attentionPercent: 89, dwellMs: 180000, best: true },
       { slide: 3, attentionPercent: 42, dwellMs: 90000, worst: true },
+    ],
+    screenHighlights: [
+      {
+        slide: 1,
+        imageUrl: '/media/1.png',
+        width: 1920,
+        height: 1080,
+        objects: [
+          {
+            id: 'instructor',
+            name: 'Instructor',
+            attention: 0,
+            position: { x: 90, y: 12, width: 10, height: 10 },
+          },
+          {
+            id: 'distracted',
+            name: 'Distracted',
+            attention: 0,
+            position: { x: 90, y: 50, width: 10, height: 10 },
+          },
+          {
+            id: 'text1',
+            name: 'Text 1',
+            attention: 52,
+            position: { x: 15, y: 30, width: 70, height: 50 },
+          },
+          {
+            id: 'image1',
+            name: 'Image 1',
+            attention: 32,
+            position: { x: 15, y: 75, width: 20, height: 25 },
+          },
+        ],
+      },
+      {
+        slide: 2,
+        imageUrl: '/media/2.png',
+        width: 1920,
+        height: 1080,
+        objects: [
+          {
+            id: 'cluster-visual',
+            name: 'Cluster Visualization',
+            attention: 83,
+            position: { x: 6, y: 20, width: 60, height: 55 },
+          },
+          {
+            id: 'callout-text',
+            name: 'Key Insight',
+            attention: 58,
+            position: { x: 70, y: 32, width: 24, height: 30 },
+          },
+          {
+            id: 'legend',
+            name: 'Legend',
+            attention: 41,
+            position: { x: 72, y: 70, width: 20, height: 18 },
+          },
+        ],
+      },
+      {
+        slide: 3,
+        imageUrl: '/media/3.png',
+        width: 1920,
+        height: 1080,
+        objects: [
+          {
+            id: 'low-focus-text',
+            name: 'Dense Paragraph',
+            attention: 28,
+            position: { x: 12, y: 18, width: 76, height: 32 },
+          },
+          {
+            id: 'side-image',
+            name: 'Reference Image',
+            attention: 35,
+            position: { x: 68, y: 25, width: 25, height: 40 },
+          },
+          {
+            id: 'summary',
+            name: 'Summary Points',
+            attention: 47,
+            position: { x: 15, y: 70, width: 70, height: 22 },
+          },
+        ],
+      },
     ],
   },
 };
