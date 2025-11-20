@@ -1978,6 +1978,13 @@ body.dark .slide-video-meta {
   background: #1e1b4b;
 }
 
+.slide-thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .slide-thumb-gradient {
   position: absolute;
   inset: 0;

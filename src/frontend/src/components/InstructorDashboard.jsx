@@ -17,7 +17,12 @@ const InstructorDashboard = () => {
         <p className="dashboard-subtitle">Monitor student engagement and session analytics</p>
       </div>
       <div className="dashboard-content">
-        <MediaPanel />
+        {/* Add url of the heatmap video, central cam video, and slide deck video here */}
+        <MediaPanel
+          heatmapVideoUrl="/media/visualize_centralonly_heatmap.mp4"
+          centralCamUrl="/media/output_video.mp4"
+          slideDeckUrl="/media/slides.mov"
+        />
         <Metrics
           isExpanded={metricsExpanded}
           onToggleExpand={() => setMetricsExpanded(!metricsExpanded)}
