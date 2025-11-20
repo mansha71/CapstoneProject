@@ -79,7 +79,15 @@ const mapSessionDetailToMetrics = (detailPayload) => {
     detailPayload = {};
   }
 
-  const { attention = {}, participants = [], audio = {}, health = {}, slides = [], session = {} } = detailPayload;
+  const {
+    attention = {},
+    participants = [],
+    audio = {},
+    health = {},
+    slides = [],
+    session = {},
+    screenHighlights = [],
+  } = detailPayload;
 
   const getDist = (label) =>
     attention?.focusDistribution?.find((d) => d.label === label)?.value ?? 0;
@@ -146,6 +154,17 @@ const mapSessionDetailToMetrics = (detailPayload) => {
   const avgDwellMs = slides.length > 0
     ? slides.reduce((sum, s) => sum + (s.dwellMs || 0), 0) / slides.length
     : 0;
+
+  const highlightedSlideNumber =
+    focusBySlide[0]?.slide ??
+    slides.find((s) => s.best)?.slide ??
+    slides.find((s) => s.attentionPercent)?.slide ??
+    currentSlideData?.slide ??
+    0;
+
+  const slideHighlight = screenHighlights?.find(
+    (highlight) => highlight.slide === highlightedSlideNumber
+  );
 
   // Get participant counts - prefer actual participant data, fallback to session summary and health data
   const participantCount = session?.participantsTotal ?? (participants.length > 0 ? participants.length : 0);
@@ -222,7 +241,19 @@ const mapSessionDetailToMetrics = (detailPayload) => {
         score: (worstSlide?.attentionPercent ?? worstSlide?.focusPercent ?? 0) / 100 
       },
     },
-    objectAttention: [], // Not available in current analytics format
+    objectAttention:
+      slideHighlight?.objects?.map((obj) => ({
+        name: obj.name,
+        attention: obj.attention,
+      })) ?? [],
+    screenData: slideHighlight
+      ? {
+          width: slideHighlight.width ?? 1920,
+          height: slideHighlight.height ?? 1080,
+          imageUrl: slideHighlight.imageUrl,
+          objects: slideHighlight.objects,
+        }
+      : null,
     sessionHealth: {
       validDataPercent: health?.validDataPercent ?? 0,
       avgActiveDevices: health?.avgActiveDevices ?? { numerator: 0, denominator: 0 },
@@ -530,6 +561,7 @@ const Metrics = ({
               <SlidePerformanceCard data={metrics} />
               <div className="attention-player-in-metrics">
                 <AttentionPlayer 
+                  screenData={metrics.screenData}
                   objectAttention={metrics.objectAttention}
                   slideNumber={metrics.learningScore?.slideNumber}
                 />

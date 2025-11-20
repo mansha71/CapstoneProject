@@ -66,7 +66,7 @@ const defaultScreenData = {
   width: 1920,
   height: 1080,
   // Current slide/screen image URL (can be replaced with actual image)
-  imageUrl: null, // null means use placeholder
+  imageUrl: '/media/current_slide.png',
   // Objects with their positions and attention data
   objects: [
     {
@@ -107,14 +107,19 @@ const defaultScreenData = {
 };
 
 const AttentionPlayer = ({ screenData = null, objectAttention = null, slideNumber = null }) => {
-  // Convert objectAttention to screenData format if provided
   let data;
-  if (objectAttention) {
+
+  if (screenData) {
+    data = {
+      ...defaultScreenData,
+      ...screenData,
+      objects: screenData.objects ?? defaultScreenData.objects,
+    };
+  } else if (objectAttention) {
     const converted = convertObjectAttentionToScreenData(objectAttention, slideNumber);
     data = converted || defaultScreenData;
   } else {
-    // Use provided screenData or fall back to default dummy data
-    data = screenData || defaultScreenData;
+    data = defaultScreenData;
   }
   
   const aspectRatio = data.width / data.height;
@@ -227,7 +232,7 @@ const AttentionPlayer = ({ screenData = null, objectAttention = null, slideNumbe
       </div>
 
       {/* Object list */}
-      <div className="attention-objects-list">
+      {/* <div className="attention-objects-list">
         <div className="objects-list-title">Objects on Screen</div>
         <div className="objects-list-items">
           {data.objects.map((obj) => (
@@ -241,7 +246,7 @@ const AttentionPlayer = ({ screenData = null, objectAttention = null, slideNumbe
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
