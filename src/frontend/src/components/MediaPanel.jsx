@@ -3,6 +3,8 @@ import { Flame, MonitorPlay, Layers, AlertCircle } from 'lucide-react';
 
 import Heatmap from './Heatmap';
 import { exampleSessionDetail } from '../types/analytics';
+import centralCamVideo from '../assets/output2.mp4';
+import slideDeckVideo from '../assets/screen.mov';
 
 const VIEW_TABS = [
   {
@@ -77,28 +79,16 @@ const MediaPanelSection = ({ title, children }) => (
   </div>
 );
 
-const CentralCamPanel = ({ videoUrl }) => (
+const CentralCamPanel = () => (
   <MediaPanelSection title="Central Cam">
     <div className="heatmap-player-wrapper">
       <div className="video-player">
-        {videoUrl ? (
-          <video
-            controls
-            className="heatmap-video"
-            src={videoUrl}
-            preload="metadata"
-          />
-        ) : (
-          <div className="video-placeholder">
-            <div className="placeholder-content">
-              <MonitorPlay size={48} />
-              <p>No central camera recording yet</p>
-              <span className="placeholder-note">
-                Upload output_video.mp4 to preview the classroom feed.
-              </span>
-            </div>
-          </div>
-        )}
+        <video
+          src={centralCamVideo}
+          className="heatmap-video"
+          controls
+          preload="metadata"
+        />
       </div>
     </div>
   </MediaPanelSection>
@@ -106,27 +96,18 @@ const CentralCamPanel = ({ videoUrl }) => (
 
 const SlidesPanel = ({
   slides,
-  slideDeckUrl,
   selectedSlideId,
   onSelectSlide,
 }) => (
   <MediaPanelSection title="Slides">
     <div className="slides-panel">
       <div className="slide-video-wrapper">
-        {slideDeckUrl ? (
-          <video
-            className="media-panel-video"
-            controls
-            src={slideDeckUrl}
-            preload="metadata"
-          />
-        ) : (
-          <div className="media-panel-empty slides-empty">
-            <Layers size={48} />
-            <p>Slide deck video not yet available</p>
-            <span>Upload screen recording to enable jump-to-slide controls.</span>
-          </div>
-        )}
+        <video
+          className="media-panel-video"
+          controls
+          src={slideDeckVideo}
+          preload="metadata"
+        />
         <div className="slide-video-meta">
           {selectedSlideId ? (
             <p>
@@ -201,12 +182,11 @@ const MediaPanel = ({
       case 'heatmap':
         return <Heatmap videoUrl={heatmapVideoUrl} />;
       case 'central':
-        return <CentralCamPanel videoUrl={centralCamUrl} />;
+        return <CentralCamPanel />;
       case 'slides':
         return slides.length ? (
           <SlidesPanel
             slides={slides}
-            slideDeckUrl={slideDeckUrl}
             selectedSlideId={selectedSlide?.id ?? null}
             onSelectSlide={handleSlideSelect}
           />

@@ -273,9 +273,9 @@ export const exampleSessionDetail: SessionDetailResponse = {
         { label: "offScreen", value: 24, percent: 24 },
       ],
       focusOverTime: [
-        { ts: "PT0M", value: 40 },
-        { ts: "PT5M", value: 60 },
-        { ts: "PT10M", value: 80 },
+        { ts: "PT0M", value: 60 },
+        { ts: "PT5M", value: 80 },
+        { ts: "PT10M", value: 40 },
       ],
       focusBySlide: [
         { slide: 1, focusPercent: 65 },
