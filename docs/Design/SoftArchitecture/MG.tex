@@ -642,6 +642,7 @@ At a high level, the use hierarchy for \progname{} is organized into layers:
 
 \begin{figure}[H]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
   node distance=1.2cm and 1.8cm,
   box/.style={draw, rounded corners, align=center, inner sep=6pt},
@@ -693,7 +694,8 @@ At a high level, the use hierarchy for \progname{} is organized into layers:
 \draw[arrow] (m7c) -- (m2);
 \draw[arrow] (m4) -- (m7d);
 \draw[arrow] (m7c) -- (m7a);
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Use hierarchy among modules (DAG)}
 \label{FigUH}
 \end{figure}
