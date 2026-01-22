@@ -469,7 +469,7 @@ interpolateMissingFrames(), alignTimestamps(), extractInstructorCoordinates(), c
 
 \subsection{Module}
 
-This module applies privacy filtering to sensitive identifiers before data is stored, streamed, or exported. The implemented anonymization is pseudonymous: device identifiers are replaced using a deterministic pseudonymization rule. Participant consent is assumed to be handled externally prior to system execution.
+This module applies privacy filtering to sensitive identifiers before data is stored, streamed, or exported. The implemented anonymization is pseudonymous: device identifiers are replaced using a deterministic pseudonymization rule. The module also tracks participant consent status and logs all privacy-related events (e.g., pseudonym generation, consent checks) to an internal audit log.
 
 \subsection{Uses}
 
@@ -492,6 +492,8 @@ None.
 \midrule
 generatePseudonym & deviceID: DeviceID & pseudonymID: PseudonymID & PrivacyError \\
 anonymizeParticipant & deviceID: DeviceID & anonymizedID: PseudonymID & PrivacyError \\
+verifyConsent & deviceID: DeviceID & isConsented: Boolean & None \\
+logPrivacyEvent & event: PrivacyEvent & status: Status & None \\
 \bottomrule
 \end{tabular}
 \caption{Exported Access Programs for Privacy Filtering Module}
@@ -505,36 +507,67 @@ anonymizeParticipant & deviceID: DeviceID & anonymizedID: PseudonymID & PrivacyE
 pseudonymMap: Map(DeviceID $\rightarrow$ PseudonymID) \\
 Stores the pseudonymous identifier associated with each device identifier for the current execution context.
 
+consentMap: Map(DeviceID $\rightarrow$ Boolean) \\
+Tracks whether a participant (identified by deviceID) has provided consent.
+
+privacyLog: Sequence(PrivacyEvent) \\
+Internal log of all privacy-critical actions (pseudonym generation, consent checks).
+
 \subsubsection{Environment Variables}
 
 None.
 
 \subsubsection{Assumptions}
 
-Participant consent is verified externally prior to system execution. \\
-Pseudonym mappings are accessible only within controlled internal contexts and are not exposed to external systems or users. \\
-This module does not implement irreversible anonymization or consent enforcement in code.
+Participant consent is initially handled externally, but tracked within this module for runtime verification. \\
+Pseudonym mappings and privacy logs are accessible only within controlled internal contexts and are not exposed to external systems or users. \\
+This module does not implement irreversible anonymization logic beyond pseudonymization.
 
 \subsubsection{Access Routine Semantics}
 
 \noindent generatePseudonym(deviceID: DeviceID):
 \begin{itemize}
-\item transition: If deviceID $\notin$ dom(pseudonymMap), then pseudonymMap[deviceID] := newPseudonym. Otherwise no state change.
+\item transition: 
+\begin{itemize}
+\item If deviceID $\notin$ dom(pseudonymMap), then pseudonymMap[deviceID] := newPseudonym.
+\item privacyLog := privacyLog $\cup$ \{createPrivacyEvent("PseudonymGenerated", deviceID)\}
+\end{itemize}
 \item output: pseudonymID := pseudonymMap[deviceID]
 \item exception: Raises PrivacyError if a pseudonym cannot be generated for the provided deviceID.
 \end{itemize}
 
 \noindent anonymizeParticipant(deviceID: DeviceID):
 \begin{itemize}
-\item transition: Ensures a pseudonym exists for deviceID by invoking generatePseudonym(deviceID) when needed.
+\item transition: 
+\begin{itemize}
+\item Ensures a pseudonym exists for deviceID by invoking generatePseudonym(deviceID) when needed.
+\item privacyLog := privacyLog $\cup$ \{createPrivacyEvent("AnonymizationRequested", deviceID)\}
+\end{itemize}
 \item output: anonymizedID := pseudonymMap[deviceID]
 \item exception: Raises PrivacyError if the deviceID cannot be mapped to a pseudonym.
+\end{itemize}
+
+\noindent verifyConsent(deviceID: DeviceID):
+\begin{itemize}
+\item transition: privacyLog := privacyLog $\cup$ \{createPrivacyEvent("ConsentChecked", deviceID)\}
+\item output: isConsented := consentMap[deviceID] (defaults to false if not present)
+\item exception: None
+\end{itemize}
+
+\noindent logPrivacyEvent(event: PrivacyEvent):
+\begin{itemize}
+\item transition: privacyLog := privacyLog $\cup$ \{event\}
+\item output: status := logged
+\item exception: None
 \end{itemize}
 
 \subsubsection{Local Functions}
 
 generateSecureID: DeviceID $\rightarrow$ PseudonymID \\
 \noindent \textit{Semantics:} Produces a pseudonymous identifier based on the provided DeviceID using a deterministic rule.
+
+createPrivacyEvent: (String, DeviceID) $\rightarrow$ PrivacyEvent \\
+\noindent \textit{Semantics:} Creates a structured event record for privacy logging.
 
 \newpage
 \section{MIS of Access Control Module} \label{AccessControlModule}
@@ -633,7 +666,7 @@ None.
 \toprule
 \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
 \midrule
-storeSessionData & sessionID: SessionID, data: DataBlob, retain: Boolean & status: Status & IOError \\
+storeSessionData & sessionID: SessionID, \newline data: DataBlob, \newline retain: Boolean & status: Status & IOError \\
 retrieveSessionData & sessionID: SessionID & data: DataBlob & IOError \\
 deleteSessionData & sessionID: SessionID & status: Status & IOError \\
 enforceRetentionPolicy & policy: RetentionPolicy & status: Status & None \\
