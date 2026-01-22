@@ -136,51 +136,161 @@
   RetentionPolicy & Tuple(maxAgeDays: $\mathbb{N}$, maxSessions: $\mathbb{N}$) & Rules for session data retention\\
   StorageRef & String & File path reference to stored session data\\
   StreamData & Sequence(VideoFrame) & Sequence of video frames for streaming\\
+  Role & String & Role label used for RBAC checks (e.g., instructor, researcher, admin)\\
+  ResourceID & String & Identifier for a protected resource (session, report, export, endpoint)\\
+  Status & String & Return status indicator (e.g., success, opened, closed, logged)\\
+  PrivacyEvent & Tuple(eventType: String, deviceID: DeviceID, timestamp: $\mathbb{R}$) & Privacy-related audit event\\
+  AccessEvent & Tuple(role: Role, resource: ResourceID, timestamp: $\mathbb{R}$) & Authorization/access audit event\\
+  SystemReport & Tuple(health: String, summary: String, timestamp: $\mathbb{R}$) & Summary view of recent metrics/logs\\
   \bottomrule
   \end{tabular} 
   \end{center}
+
+  \newpage
 
   \section{Module Decomposition}
 
   The following table is taken directly from the Module Guide document for this project.
 
-  \begin{table}[h!]
-  \centering
-  \begin{tabular}{p{0.3\textwidth} p{0.6\textwidth}}
-  \toprule
-  \textbf{Level 1} & \textbf{Level 2}\\
-  \midrule
+\begin{table}[h!]
+\centering
+\begin{tabular}{p{0.3\textwidth} p{0.6\textwidth}}
+\toprule
+\textbf{Level 1} & \textbf{Level 2}\\
+\midrule
 
-  {Hardware-Hiding} & Pupil Labs Neon Glasses, Central Camera, Instructor Laptop/Desktop \\
-  \midrule
+Hardware-Hiding Module 
+& Hardware-Hiding Module \\
 
-  \multirow{11}{0.3\textwidth}{Behaviour-Hiding} 
-  & Data Ingestion Module\\
-  & Real-Time Streaming Module\\
-  & Data Preprocessing Module\\
-  & Privacy Filtering Module\\
-  & Access Control Module\\
-  & Secure Storage \& Retention Module\\
-  & Observability Module\\
-  & Engagement Analytics Module\\
-  & Correlation \& Visual Analysis Module\\
-  & Dashboard Visualization Module\\
-  & Reporting Module\\
-  \midrule
+\midrule
+\multirow{4}{0.3\textwidth}{Behaviour-Hiding Modules} 
+& Data Ingestion Module\\
+& Real-Time Streaming Module\\
+& Dashboard Visualization Module\\
+& Reporting Module\\
 
-  \multirow{3}{0.3\textwidth}{Software Decision} 
-  & Data Storage and API Layer\\
-  & Authentication and Session Management\\
-  & Visualization Frameworks and Libraries\\
-  \bottomrule
+\midrule
+\multirow{7}{0.3\textwidth}{Software Decision Modules} 
+& Data Preprocessing Module\\
+& Privacy Filtering Module\\
+& Access Control Module\\
+& Secure Storage \& Retention Module\\
+& Observability Module\\
+& Engagement Analytics Module\\
+& Correlation \& Visual Analysis Module\\
 
-  \end{tabular}
-  \caption{Module Hierarchy for Visionaries System}
-  \label{TblMH}
-  \end{table}
+\bottomrule
+\end{tabular}
+\caption{Module Hierarchy for Visionaries System}
+\label{TblMH}
+\end{table}
 
-  \newpage
-  ~\newpage
+\newpage
+
+\section{MIS of Hardware-Hiding Module} \label{HardwareHidingModule}
+
+\subsection{Module}
+
+This module abstracts the physical sensing and I/O devices (eye-tracking glasses, cameras,
+microphones, storage interfaces, and network interfaces) behind a uniform virtual device
+interface. Downstream modules interact only with this interface and do not depend on vendor
+SDK calls, device driver details, or OS-specific mechanisms.
+
+\subsection{Uses}
+
+None.
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{4.2cm} p{5.2cm} p{3.0cm} p{2.2cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+openDevice & deviceID: DeviceID & status: Status & ConnectionError \\
+closeDevice & deviceID: DeviceID & status: Status & None \\
+readGazeFrame & deviceID: DeviceID & rawGazeData: DataBlob & ConnectionError \\
+readWorldFrame & deviceID: DeviceID & rawVideoData: VideoFrame & ConnectionError \\
+readAudioChunk & deviceID: DeviceID & rawAudioData: DataBlob & ConnectionError \\
+getDeviceMetadata & deviceID: DeviceID & metadata: DataBlob & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Hardware-Hiding Module}
+\label{tab:hardwareHidingAP}
+\end{table}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+openDevices: Set(DeviceID) \\
+Tracks currently opened/available devices.
+
+\subsubsection{Environment Variables}
+
+Vendor SDKs, OS device drivers, and hardware interfaces.
+
+\subsubsection{Assumptions}
+
+Devices are discoverable by the underlying OS/SDK and can be opened/closed by the process.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent openDevice(deviceID: DeviceID):
+\begin{itemize}
+\item transition: openDevices := openDevices $\cup$ \{deviceID\}
+\item output: status := opened
+\item exception: Raises ConnectionError if the device cannot be opened.
+\end{itemize}
+
+\noindent closeDevice(deviceID: DeviceID):
+\begin{itemize}
+\item transition: openDevices := openDevices $\setminus$ \{deviceID\}
+\item output: status := closed
+\item exception: None
+\end{itemize}
+
+\noindent readGazeFrame(deviceID: DeviceID):
+\begin{itemize}
+\item transition: None
+\item output: rawGazeData
+\item exception: Raises ConnectionError if the device is unavailable.
+\end{itemize}
+
+\noindent readWorldFrame(deviceID: DeviceID):
+\begin{itemize}
+\item transition: None
+\item output: rawVideoData
+\item exception: Raises ConnectionError if the device is unavailable.
+\end{itemize}
+
+\noindent readAudioChunk(deviceID: DeviceID):
+\begin{itemize}
+\item transition: None
+\item output: rawAudioData
+\item exception: Raises ConnectionError if the device is unavailable.
+\end{itemize}
+
+\noindent getDeviceMetadata(deviceID: DeviceID):
+\begin{itemize}
+\item transition: None
+\item output: metadata
+\item exception: None
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+sdkRead: DeviceID $\rightarrow$ DataBlob \\
+\noindent \textit{Semantics:} Reads a device-specific payload via vendor SDK/driver calls.
+
 
 \section{MIS of Data Ingestion Module} \label{DataIngestionModule}
 
@@ -190,7 +300,7 @@ This module entails collecting eye-tracking and video data from multiple eye-tra
 
 \subsection{Uses}
 
-Real-Time Streaming Module, Privacy Filtering Module, Secure Storage \& Retention Module
+Hardware-Hiding Module
 
 \subsection{Syntax}
 
@@ -286,7 +396,8 @@ verifySourceAvailability: String $\rightarrow$ Boolean
 
   \subsection{Uses}
 
-  Data Ingestion, Data Preprocessing, Privacy Filtering, Access Control, Observability
+  Data Ingestion Module, Data Preprocessing Module, Privacy Filtering Module,
+  Access Control Module, Secure Storage \& Retention Module, Observability Module
 
   \subsection{Syntax}
 
@@ -366,7 +477,7 @@ This module prepares the captured data for analysis by filtering noise, normaliz
 
 \subsection{Uses}
 
-Data Ingestion Module, Real-Time Streaming Module, Privacy Filtering Module
+Data Ingestion Module
 
 \subsection{Syntax}
 
@@ -473,7 +584,10 @@ computeVisualClasses: VideoFrame $\rightarrow$ VisualLabel
 
 \subsection{Module}
 
-This module applies privacy filtering to sensitive identifiers before data is stored, streamed, or exported. The implemented anonymization is pseudonymous: device identifiers are replaced using a deterministic pseudonymization rule. The module also tracks participant consent status and logs all privacy-related events (e.g., pseudonym generation, consent checks) to an internal audit log.
+This module applies privacy filtering to sensitive identifiers before data is stored,
+streamed, or exported. The implemented anonymization is pseudonymous: device identifiers
+are replaced using a deterministic pseudonymization rule. Consent collection is handled
+externally; this module may verify consent status if provided by the calling context.
 
 \subsection{Uses}
 
@@ -497,7 +611,6 @@ None.
 generatePseudonym & deviceID: DeviceID & pseudonymID: PseudonymID & PrivacyError \\
 anonymizeParticipant & deviceID: DeviceID & anonymizedID: PseudonymID & PrivacyError \\
 verifyConsent & deviceID: DeviceID & isConsented: Boolean & None \\
-logPrivacyEvent & event: PrivacyEvent & status: Status & None \\
 \bottomrule
 \end{tabular}
 \caption{Exported Access Programs for Privacy Filtering Module}
@@ -514,27 +627,25 @@ Stores the pseudonymous identifier associated with each device identifier for th
 consentMap: Map(DeviceID $\rightarrow$ Boolean) \\
 Tracks whether a participant (identified by deviceID) has provided consent.
 
-privacyLog: Sequence(PrivacyEvent) \\
-Internal log of all privacy-critical actions (pseudonym generation, consent checks).
-
 \subsubsection{Environment Variables}
 
 None.
 
 \subsubsection{Assumptions}
 
-Participant consent is initially handled externally, but tracked within this module for runtime verification. \\
-Pseudonym mappings and privacy logs are accessible only within controlled internal contexts and are not exposed to external systems or users. \\
-This module does not implement irreversible anonymization logic beyond pseudonymization.
+Participant consent is handled externally, but consent status may be provided and tracked
+within this module for runtime verification. \\
+Pseudonym mappings are accessible only within controlled internal contexts and are not
+exposed to external systems or users. \\
+This module does not implement irreversible anonymization beyond pseudonymization.
 
 \subsubsection{Access Routine Semantics}
 
 \noindent generatePseudonym(deviceID: DeviceID):
 \begin{itemize}
-\item transition: 
+\item transition:
 \begin{itemize}
 \item If deviceID $\notin$ dom(pseudonymMap), then pseudonymMap[deviceID] := newPseudonym.
-\item privacyLog := privacyLog $\cup$ \{createPrivacyEvent("PseudonymGenerated", deviceID)\}
 \end{itemize}
 \item output: pseudonymID := pseudonymMap[deviceID]
 \item exception: Raises PrivacyError if a pseudonym cannot be generated for the provided deviceID.
@@ -542,10 +653,9 @@ This module does not implement irreversible anonymization logic beyond pseudonym
 
 \noindent anonymizeParticipant(deviceID: DeviceID):
 \begin{itemize}
-\item transition: 
+\item transition:
 \begin{itemize}
 \item Ensures a pseudonym exists for deviceID by invoking generatePseudonym(deviceID) when needed.
-\item privacyLog := privacyLog $\cup$ \{createPrivacyEvent("AnonymizationRequested", deviceID)\}
 \end{itemize}
 \item output: anonymizedID := pseudonymMap[deviceID]
 \item exception: Raises PrivacyError if the deviceID cannot be mapped to a pseudonym.
@@ -553,15 +663,8 @@ This module does not implement irreversible anonymization logic beyond pseudonym
 
 \noindent verifyConsent(deviceID: DeviceID):
 \begin{itemize}
-\item transition: privacyLog := privacyLog $\cup$ \{createPrivacyEvent("ConsentChecked", deviceID)\}
+\item transition: None
 \item output: isConsented := consentMap[deviceID] (defaults to false if not present)
-\item exception: None
-\end{itemize}
-
-\noindent logPrivacyEvent(event: PrivacyEvent):
-\begin{itemize}
-\item transition: privacyLog := privacyLog $\cup$ \{event\}
-\item output: status := logged
 \item exception: None
 \end{itemize}
 
@@ -570,19 +673,21 @@ This module does not implement irreversible anonymization logic beyond pseudonym
 generateSecureID: DeviceID $\rightarrow$ PseudonymID \\
 \noindent \textit{Semantics:} Produces a pseudonymous identifier based on the provided DeviceID using a deterministic rule.
 
-createPrivacyEvent: (String, DeviceID) $\rightarrow$ PrivacyEvent \\
-\noindent \textit{Semantics:} Creates a structured event record for privacy logging.
-
 \newpage
 \section{MIS of Access Control Module} \label{AccessControlModule}
 
 \subsection{Module}
 
-This module performs authorization checks and records security-relevant access events. It does not implement consent collection in code; consent is assumed to be handled externally. This module is responsible for maintaining an audit-style access log for permission checks and explicit access events.
+This module enforces authorization decisions for system actions such as viewing dashboards,
+subscribing to streams, accessing stored sessions, and exporting reports. It encapsulates
+role-based access control (RBAC) policy and exposes authorization checks to other modules.
+This module does not implement privacy anonymization or consent collection. Security-relevant
+authorization events are emitted to the Observability Module, which owns audit logging policy
+and storage.
 
 \subsection{Uses}
 
-Privacy Filtering Module
+Observability Module
 
 \subsection{Syntax}
 
@@ -611,8 +716,8 @@ logAccess & event: AccessEvent & status: Status & None \\
 
 \subsubsection{State Variables}
 
-accessLog: Sequence(AccessEvent) \\
-Records access attempts and access-related actions.
+None. Authorization decisions are computed from provided role and resource inputs.
+Audit records are emitted to the Observability Module.
 
 \subsubsection{Environment Variables}
 
@@ -620,31 +725,40 @@ None.
 
 \subsubsection{Assumptions}
 
-Roles are provided by the calling context and are already authenticated outside this module. \\
-Authorization policy is simplified to role and resource checks; more granular RBAC rules may be introduced later.
+Roles are provided by the calling context and are already authenticated externally. \\
+Authorization policy is defined as role-to-resource permissions and may evolve
+independently of other system modules.
 
 \subsubsection{Access Routine Semantics}
 
 \noindent validateAccess(userRole: Role, resource: ResourceID):
 \begin{itemize}
-\item transition: accessLog := accessLog $\cup$ \{createAccessRecord(userRole, resource)\}
-\item output: permissionStatus := (userRole is permitted to access resource)
-\item exception: Raises AuthError if the userRole is invalid or the resource identifier is malformed.
+\item transition:
+\begin{itemize}
+  \item permissionStatus := (userRole is permitted to access resource)
+  \item Emit a SystemEvent describing the authorization decision to the Observability Module
+\end{itemize}
+\item output: permissionStatus
+\item exception: Raises AuthError if the userRole or resource identifier is invalid.
 \end{itemize}
 
 \noindent logAccess(event: AccessEvent):
 \begin{itemize}
-\item transition: accessLog := accessLog $\cup$ \{event\}
+\item transition: Convert the AccessEvent to a SystemEvent and emit it to the Observability Module
 \item output: status := logged
 \item exception: None
 \end{itemize}
 
 \subsubsection{Local Functions}
 
-createAccessRecord: (Role, ResourceID) $\rightarrow$ AccessEvent \\
-\noindent \textit{Semantics:} Creates an AccessEvent describing an attempted access by the given role to the given resource.
+createAuthEvent: (Role, ResourceID, Boolean) $\rightarrow$ SystemEvent \\
+\noindent \textit{Semantics:} Creates a structured authorization audit event describing an allow or deny decision.
+
+convertAccessEvent: AccessEvent $\rightarrow$ SystemEvent \\
+\noindent \textit{Semantics:} Transforms an AccessEvent into a SystemEvent suitable for logging by Observability.
 
 \newpage
+
 \section{MIS of Secure Storage \& Retention Module} \label{SecureStorageRetentionModule}
 
 \subsection{Module}
@@ -749,7 +863,7 @@ This module handles system metrics collection, stream health monitoring, and err
 
 \subsection{Uses}
 
-Real-Time Streaming Module, Secure Storage \& Retention Module, Access Control Module
+None.
 
 \subsection{Syntax}
 
@@ -970,7 +1084,8 @@ summarizeMetrics: Sequence(SystemMetrics) $\rightarrow$ SystemReport \\
 
   \subsection{Uses}
 
-  Real-Time Streaming Module, Correlation \& Visual Analysis Module, Engagement Analytics Module
+  Real-Time Streaming Module, Correlation \& Visual Analysis Module, Engagement Analytics Module,
+  Access Control Module, Observability Module
 
   \subsection{Syntax}
 
@@ -1056,7 +1171,8 @@ summarizeMetrics: Sequence(SystemMetrics) $\rightarrow$ SystemReport \\
 
   \subsection{Uses}
 
-  Engagement Analytics Module, Dashboard Visualization Module
+  Dashboard Visualization Module, Engagement Analytics Module, Correlation \& Visual Analysis Module,
+  Secure Storage \& Retention Module, Access Control Module
 
   \subsection{Syntax}
 
