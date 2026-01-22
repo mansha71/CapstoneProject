@@ -113,6 +113,33 @@
   are defined by the data types of their inputs and outputs. Local functions are
   described by giving their type signature followed by their specification.
 
+  \subsection{Derived Types}
+
+  The following derived types are used throughout the module specifications:
+
+  \begin{center}
+  \renewcommand{\arraystretch}{1.2}
+  \noindent 
+  \begin{tabular}{l l p{7.0cm}} 
+  \toprule 
+  \textbf{Type Name} & \textbf{Definition} & \textbf{Description}\\ 
+  \midrule
+  DeviceID & String & Unique identifier for a connected eye-tracking device\\
+  SessionID & String & Unique identifier for an active streaming session\\
+  PseudonymID & String & Pseudonymous identifier replacing a DeviceID\\
+  DataBlob & ByteArray & Raw binary data payload\\
+  StreamConfig & Tuple(host: String, port: $\mathbb{N}$, bufferSize: $\mathbb{N}$) & Configuration for initializing a stream\\
+  StreamSession & Tuple(sessionID: SessionID, lastFrame: VideoFrame, timestamp: $\mathbb{R}$) & Active session state per device\\
+  VideoFrame & ByteArray & Single frame of video data\\
+  SystemMetrics & Tuple(cpuUsage: $\mathbb{R}$, memoryUsage: $\mathbb{R}$, activeStreams: $\mathbb{N}$) & Runtime performance metrics\\
+  SystemEvent & Tuple(eventType: String, timestamp: $\mathbb{R}$, details: String) & Logged system event\\
+  RetentionPolicy & Tuple(maxAgeDays: $\mathbb{N}$, maxSessions: $\mathbb{N}$) & Rules for session data retention\\
+  StorageRef & String & File path reference to stored session data\\
+  StreamData & Sequence(VideoFrame) & Sequence of video frames for streaming\\
+  \bottomrule
+  \end{tabular} 
+  \end{center}
+
   \section{Module Decomposition}
 
   The following table is taken directly from the Module Guide document for this project.
@@ -127,11 +154,14 @@
   {Hardware-Hiding} & Pupil Labs Neon Glasses, Central Camera, Instructor Laptop/Desktop \\
   \midrule
 
-  \multirow{8}{0.3\textwidth}{Behaviour-Hiding} 
+  \multirow{11}{0.3\textwidth}{Behaviour-Hiding} 
   & Data Ingestion Module\\
   & Real-Time Streaming Module\\
   & Data Preprocessing Module\\
-  & Privacy \& Infrastructure Module\\
+  & Privacy Filtering Module\\
+  & Access Control Module\\
+  & Secure Storage \& Retention Module\\
+  & Observability Module\\
   & Engagement Analytics Module\\
   & Correlation \& Visual Analysis Module\\
   & Dashboard Visualization Module\\
@@ -152,105 +182,98 @@
   \newpage
   ~\newpage
 
-  \section{MIS of Data Ingestion Module} \label{DataIngestionModule}
+\section{MIS of Data Ingestion Module} \label{DataIngestionModule}
 
-  \subsection{Module}
+\subsection{Module}
 
-  This module is responsible for collecting eye-tracking and video data from multiple eye-tracking devices and also the central camera. It makes sure that the raw data streams are captured, synchronized, and stored in a structured format. Making it suitable for further processing. It also collects instructor audio recordings, slide content from the lecture, and pre-/post-lecture questionnaire responses.
+This module entails collecting eye-tracking and video data from multiple eye-tracking devices, video data from the central camera and screen recording, as well as instructor audio recordings and pre-/post-lecture questionnaire responses. It is responsible solely for the reliable capture and initial storage of all incoming raw data streams, without performing any preprocessing or filtering operations.
 
-  \subsection{Uses}
+\subsection{Uses}
 
-  Real-Time Streaming Module, Data Preprocessing Module, Privacy \& Infrastructure Module
+Real-Time Streaming Module, Privacy Filtering Module, Secure Storage \& Retention Module
 
-  \subsection{Syntax}
+\subsection{Syntax}
 
-  \subsubsection{Exported Constants}
+\subsubsection{Exported Constants}
 
-  None.
+None.
 
-  \subsubsection{Exported Access Programs}
+\subsubsection{Exported Access Programs}
 
-  \begin{table}[h!]
-  \centering
-  \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-  \toprule
-  \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-  \midrule
-  collectData & deviceID, streamConfig & rawData & ConnectionError \\
-  collectAudio & deviceID & audioData & ConnectionError \\
-  collectSlides & slideSource & slideData & IOError \\
-  collectQuestionnaire & formInput & questionnaireData & FormatError \\
-  syncTimestamps & dataStreams & syncedData & SyncError \\
-  storeRawData & syncedData & status & IOError \\
-  \bottomrule
-  \end{tabular}
-  \caption{Exported Access Programs for Data Ingestion Module}
-  \label{tab:dataIngestionAP}
-  \end{table}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.4cm} p{4.4cm} p{4.2cm} p{2.3cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+collectGazeData & deviceID, streamConfig & rawGazeData & ConnectionError \\
+collectVideoData & sourceID, streamConfig & rawVideoData & ConnectionError \\
+collectAudioData & deviceID & rawAudioData & ConnectionError \\
+collectQuestionnaire & formInput & questionnaireData & FormatError \\
+storeRawData & dataBundle & status & IOError \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Data Ingestion Module}
+\label{tab:dataIngestionAP}
+\end{table}
 
+\subsection{Semantics}
 
-  \subsection{Semantics}
+\subsubsection{State Variables}
 
-  \subsubsection{State Variables}
+storedData: list of captured raw data streams currently saved in local or cloud storage.
 
-  storedData: list of captured data streams currently saved in local or cloud storage.
+\subsubsection{Environment Variables}
 
-  \subsubsection{Environment Variables}
+Connections to Pupil Labs Neon devices, central camera, screen-recording source, audio input, and questionnaire input sources.
 
-  Connection to Pupil Labs Neon devices, the central camera feed, audio recording devices, slide file sources, and questionnaire input sources.
+\subsubsection{Assumptions}
 
-  \subsubsection{Assumptions}
+All recording devices are properly connected, network latency is within acceptable limits for real-time transfer, and the file system or storage backend is accessible.
 
-  The eye-tracking devices are properly connected and the network latency is within acceptable limits for real-time data transfer.
+\subsubsection{Access Routine Semantics}
 
-  \subsubsection{Access Routine Semantics}
+\noindent collectGazeData():
+\begin{itemize}
+\item transition: Initiates collection of gaze and world-view video data from connected eye-tracking devices.
+\item output: Returns raw gaze and eye-camera data.
+\item exception: Raises ConnectionError if device is unavailable.
+\end{itemize}
 
-  \noindent collectData():
-  \begin{itemize}
-  \item transition: Starts capturing data streams from connected devices.
-  \item output: Returns the raw data collected.
-  \item exception: Raises ConnectionError if device is unavailable.
-  \end{itemize}
+\noindent collectVideoData():
+\begin{itemize}
+\item transition: Records video data from the central camera and screen-capture feed.
+\item output: Returns raw video frames.
+\item exception: Raises ConnectionError if any video source is unavailable.
+\end{itemize}
 
-  \noindent collectAudio():
-  \begin{itemize}
-  \item transition: Captures raw instructor audio from the recording device.
-  \item output: Returns raw audio data.
-  \item exception: Raises ConnectionError if the audio device is unavailable.
-  \end{itemize}
+\noindent collectAudioData():
+\begin{itemize}
+\item transition: Captures instructor audio from connected microphone devices.
+\item output: Returns raw audio stream data.
+\item exception: Raises ConnectionError if the audio device is unavailable.
+\end{itemize}
 
-  \noindent collectSlides():
-  \begin{itemize}
-  \item transition: Retrieves slide files or slide metadata from the specified source.
-  \item output: Returns slide data.
-  \item exception: Raises IOError if slide files cannot be accessed.
-  \end{itemize}
+\noindent collectQuestionnaire():
+\begin{itemize}
+\item transition: Collects pre- or post-lecture questionnaire submissions.
+\item output: Returns questionnaire data.
+\item exception: Raises FormatError for incomplete or malformed responses.
+\end{itemize}
 
-  \noindent collectQuestionnaire():
-  \begin{itemize}
-  \item transition: Collects pre- or post-lecture questionnaire responses.
-  \item output: Returns questionnaire data.
-  \item exception: Raises FormatError for incomplete or malformed questionnaire submissions.
-  \end{itemize}
+\noindent storeRawData():
+\begin{itemize}
+\item transition: Saves all raw data streams to secure storage with metadata describing device, timestamp, and session.
+\item output: Returns success status.
+\item exception: Raises IOError if data cannot be written.
+\end{itemize}
 
-  \noindent syncTimestamps():
-  \begin{itemize}
-  \item transition: Aligns timestamps between multiple devices using NTP or local clock sync.
-  \item output: Returns synchronized data streams.
-  \item exception: Raises SyncError if timestamp alignment fails.
-  \end{itemize}
+\subsubsection{Local Functions}
 
-  \noindent storeRawData():
-  \begin{itemize}
-  \item transition: Saves synchronized gaze, video, audio, slide, and questionnaire data to secure storage.
-  \item output: Returns success status.
-  \item exception: Raises IOError if data cannot be written.
-  \end{itemize}
+validateConnection(deviceID), verifySourceAvailability(sourceID)
 
-  \subsubsection{Local Functions}
-
-  validateStream(deviceID), checkIntegrity(dataChunk)
+  \newpage
 
   \newpage
 
@@ -258,11 +281,11 @@
 
   \subsection{Module}
 
-  This module handles the continuous transmission of eye-tracking and video data to the dashboard for the live visualization. It ensures low-latency data flow and manages temporary buffering to keep the stream stable.
+  This module manages real-time transmission of gaze and video frames from multiple capture devices to a single dashboard client. It supports concurrent device streams and ensures low-latency delivery for live visualization.
 
   \subsection{Uses}
 
-  Data Ingestion Module, Data Preprocessing Module, Dashboard Visualization Module
+  Data Ingestion, Data Preprocessing, Privacy Filtering, Access Control, Observability
 
   \subsection{Syntax}
 
@@ -275,233 +298,514 @@
   \begin{table}[h!]
   \centering
   \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+  \begin{tabular}{p{3.5cm} p{4.8cm} p{3.8cm} p{2.2cm}}
   \toprule
   \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
   \midrule
-  initializeStream & configSettings & streamSession & ConnectionError \\
-  transmitData & processedData & status & StreamError \\
-  terminateStream & sessionID & status & None \\
+  initializeStream & config: StreamConfig & sessionID & ConnectionError \\
+  transmitData & deviceID: DeviceID, frame: VideoFrame & status & StreamError \\
+  terminateStream & sessionID: SessionID & status & None \\
   \bottomrule
   \end{tabular}
   \caption{Exported Access Programs for Real-Time Streaming Module}
   \label{tab:realTimeStreamingAP}
   \end{table}
 
-
   \subsection{Semantics}
 
   \subsubsection{State Variables}
 
-  activeStream: maintains the current streaming session status.
+  activeSessions: Map(DeviceID $\rightarrow$ StreamSession) \\
+  Stores the active streaming session information for each connected device.
 
   \subsubsection{Environment Variables}
 
-  Network socket for dashboard communication and connected video devices.
+  Network socket interface for dashboard communication.
 
   \subsubsection{Assumptions}
 
-  Stable network connection and active dashboard session are available.
+  A stable network connection exists and the dashboard client is available to receive data. \\
+  Only live streaming is supported; no persistent buffering, recording, or replay functionality is implemented by this module.
 
   \subsubsection{Access Routine Semantics}
 
-  \noindent initializeStream():
+  \noindent initializeStream(config: StreamConfig):
   \begin{itemize}
-  \item transition: Opens a new connection to the dashboard and starts transmitting.
-  \item output: Returns a session object.
-  \item exception: Raises ConnectionError if the network fails.
+  \item transition: Initializes an empty session map and prepares network communication resources.
+  \item output: sessionID
+  \item exception: ConnectionError
   \end{itemize}
 
-  \noindent transmitData():
+  \noindent transmitData(deviceID: DeviceID, frame: VideoFrame):
   \begin{itemize}
-  \item transition: Sends processed gaze and video frames in real time.
-  \item output: Returns success confirmation.
-  \item exception: Raises StreamError if data loss occurs.
+  \item transition: activeSessions[deviceID].lastFrame := frame
+  \item output: status := success
+  \item exception: StreamError
   \end{itemize}
 
-  \noindent terminateStream():
+  \noindent terminateStream(sessionID: SessionID):
   \begin{itemize}
-  \item transition: Ends the streaming session and clears buffers.
-  \item output: Returns final session status.
-  \item exception: None.
+  \item transition: activeSessions := $\emptyset$
+  \item output: status := terminated
+  \item exception: None
   \end{itemize}
 
   \subsubsection{Local Functions}
 
-  bufferData(), reconnectStream()
+  validateFrame: VideoFrame $\rightarrow$ Boolean \\
+  openSocket: StreamConfig $\rightarrow$ NetworkHandle
 
   \newpage
 
-  \section{MIS of Data Preprocessing Module} \label{DataPreprocessingModule}
+ \section{MIS of Data Preprocessing Module} \label{DataPreprocessingModule}
 
-  \subsection{Module}
+\subsection{Module}
 
-  This module prepares the captured data for analysis by filtering noise, normalizing the coordinates, and structuring the gaze and video data into useable formats. It also cleans questionnaire responses by removing empty, duplicate, or invalid entries before analysis.
+This module prepares the captured data for analysis by filtering noise, normalizing coordinates, and structuring the gaze and video data into usable formats. The recording inputs from the eye-tracking devices, central camera, and screen-recording coordinates are synchronized for homography, and instructor coordinates are generated throughout the recording. The screen-recording input is categorized based on visual item classes (e.g., text, diagram, image regions), and the audio stream is denoised, segmented, and temporally aligned with the synchronized video data. Questionnaire responses are cleaned by removing empty, duplicate, or invalid entries. This ensures all data sources are aligned, validated, and ready for analysis in downstream modules.
 
-  \subsection{Uses}
+\subsection{Uses}
 
-  Data Ingestion Module, Real-Time Streaming Module, Privacy \& Infrastructure Module
+Data Ingestion Module, Real-Time Streaming Module, Privacy Filtering Module
 
-  \subsection{Syntax}
+\subsection{Syntax}
 
-  \subsubsection{Exported Constants}
+\subsubsection{Exported Constants}
 
-  None.
+None.
 
-  \subsubsection{Exported Access Programs}
+\subsubsection{Exported Access Programs}
 
-  \begin{table}[h!]
-  \centering
-  \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-  \toprule
-  \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-  \midrule
-  filterNoise & rawData & cleanData & DataError \\
-  normalizeCoordinates & cleanData & normalizedData & MathError \\
-  formatForAnalysis & normalizedData & structuredData & FormatError \\
-  \bottomrule
-  \end{tabular}
-  \caption{Exported Access Programs for Data Preprocessing Module}
-  \label{tab:dataPreprocessingAP}
-  \end{table}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{4.0cm} p{4.2cm} p{4.2cm} p{2.3cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+filterNoise & rawData & cleanData & DataError \\
+synchronizeStreams & cleanDataBundle & syncedData & SyncError \\
+computeHomography & syncedVideoData & alignedData & MathError \\
+categorizeVisualItems & screenRecording & categorizedSegments & FormatError \\
+cleanAudioStream & rawAudioData & processedAudio & AudioError \\
+cleanQuestionnaireResponses & rawQuestionnaireData & validatedQuestionnaire & DataError \\
+formatForAnalysis & alignedData & structuredData & FormatError \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Data Preprocessing Module}
+\label{tab:dataPreprocessingAP}
+\end{table}
 
+\subsection{Semantics}
 
-  \subsection{Semantics}
+\subsubsection{State Variables}
 
-  \subsubsection{State Variables}
+None. Operates statelessly on provided input data.
 
-  None. Operates statelessly on provided input data.
+\subsubsection{Environment Variables}
 
-  \subsubsection{Environment Variables}
+None.
 
-  None.
+\subsubsection{Assumptions}
 
-  \subsubsection{Assumptions}
+Input data follows the expected format, timestamps are available for all streams, and synchronization metadata is provided from the ingestion stage.
 
-  Input data follows the expected format and has valid timestamps.
+\subsubsection{Access Routine Semantics}
 
-  \subsubsection{Access Routine Semantics}
+\noindent filterNoise():
+\begin{itemize}
+\item transition: Applies filters (e.g., smoothing, low-pass, temporal averaging) to remove noise and stabilize gaze, video, and audio streams.
+\item output: Returns denoised data streams.
+\item exception: Raises DataError for corrupted or incomplete data.
+\end{itemize}
 
-  \noindent filterNoise():
-  \begin{itemize}
-  \item transition: Applies smoothing or low-pass filters to reduce jitter.
-  \item output: Returns cleaned gaze and video data.
-  \item exception: Raises DataError for corrupted or incomplete data.
-  \end{itemize}
+\noindent synchronizeStreams():
+\begin{itemize}
+\item transition: Aligns gaze, video, screen recording, and audio streams using timestamps or synchronization cues.
+\item output: Returns synchronized multi-stream data bundle.
+\item exception: Raises SyncError if synchronization fails.
+\end{itemize}
 
-  \noindent normalizeCoordinates():
-  \begin{itemize}
-  \item transition: Converts device-specific gaze coordinates to a shared reference frame.
-  \item output: Returns normalized gaze data.
-  \item exception: Raises MathError if coordinate mapping fails.
-  \end{itemize}
+\noindent computeHomography():
+\begin{itemize}
+\item transition: Computes spatial mapping between gaze coordinates and screen coordinates via homography transformations.
+\item output: Returns spatially aligned gaze data.
+\item exception: Raises MathError if homography computation fails.
+\end{itemize}
 
-  \noindent formatForAnalysis():
-  \begin{itemize}
-  \item transition: Structures data into a consistent schema for downstream analytics.
-  \item output: Returns data in the standardized format.
-  \item exception: Raises FormatError for invalid schema generation.
-  \end{itemize}
+\noindent categorizeVisualItems():
+\begin{itemize}
+\item transition: Segments the screen recording into distinct visual item classes (text, diagram, etc.) using frame analysis.
+\item output: Returns categorized video segments.
+\item exception: Raises FormatError if visual item parsing fails.
+\end{itemize}
 
-  \noindent cleanQuestionnaireResponses():
-  \begin{itemize}
-  \item transition: Removes empty responses, malformed entries, and invalid questionnaire submissions.
-  \item output: Returns cleaned questionnaire data ready for engagement analytics.
-  \item exception: Raises DataError if response data cannot be validated.
-  \end{itemize}
+\noindent cleanAudioStream():
+\begin{itemize}
+\item transition: Removes background noise, segments silence, and aligns cleaned audio with video frames.
+\item output: Returns processed audio synchronized with visual data.
+\item exception: Raises AudioError if audio cleaning fails.
+\end{itemize}
 
-  \subsubsection{Local Functions}
+\noindent cleanQuestionnaireResponses():
+\begin{itemize}
+\item transition: Removes incomplete, duplicate, or malformed questionnaire responses.
+\item output: Returns validated questionnaire dataset.
+\item exception: Raises DataError if questionnaire data cannot be validated.
+\end{itemize}
 
-  interpolateMissingFrames(), alignStreams(), cleanQuestionnaireResponses()
+\noindent formatForAnalysis():
+\begin{itemize}
+\item transition: Structures synchronized and aligned data into a standardized schema suitable for analytics and visualization modules.
+\item output: Returns fully formatted data ready for downstream analysis.
+\item exception: Raises FormatError for invalid schema generation.
+\end{itemize}
 
-  \newpage
+\subsubsection{Local Functions}
 
-  \section{MIS of Privacy and Infrastructure Module} \label{PrivacyInfrastructureModule}
+interpolateMissingFrames(), alignTimestamps(), extractInstructorCoordinates(), computeVisualClasses()
 
-  \subsection{Module}
+\newpage
+\section{MIS of Privacy Filtering Module} \label{PrivacyFilteringModule}
 
-  This module ensures secure data handling and stability of the system. It manages anonymization, encryption, and access control. It also handles maintaining infrastructure-level configurations and compliance with privacy policies. This includes securing instructor audio recordings and questionnaire response data through encryption and anonymization.
+\subsection{Module}
 
-  \subsection{Uses}
+This module applies privacy filtering to sensitive identifiers before data is stored, streamed, or exported. The implemented anonymization is pseudonymous: device identifiers are replaced using a deterministic pseudonymization rule. The module also tracks participant consent status and logs all privacy-related events (e.g., pseudonym generation, consent checks) to an internal audit log.
 
-  Data Ingestion Module, Data Preprocessing Module, Real-Time Streaming Module
+\subsection{Uses}
 
-  \subsection{Syntax}
+Data Ingestion Module, Data Preprocessing Module
 
-  \subsubsection{Exported Constants}
+\subsection{Syntax}
 
-  None.
+\subsubsection{Exported Constants}
 
-  \subsubsection{Exported Access Programs}
+None.
 
-  \begin{table}[h!]
-  \centering
-  \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-  \toprule
-  \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-  \midrule
-  encryptData & plainData & encryptedData & EncryptionError \\
-  anonymizeParticipant & userData & anonymizedData & PrivacyError \\
-  validateAccess & userRole, resource & permissionStatus & AuthError \\
-  monitorInfrastructure & metrics & systemReport & None \\
-  \bottomrule
-  \end{tabular}
-  \caption{Exported Access Programs for Privacy and Infrastructure Module}
-  \label{tab:privacyInfrastructureAP}
-  \end{table}
+\subsubsection{Exported Access Programs}
 
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{4.0cm} p{5.6cm} p{3.0cm} p{2.2cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+generatePseudonym & deviceID: DeviceID & pseudonymID: PseudonymID & PrivacyError \\
+anonymizeParticipant & deviceID: DeviceID & anonymizedID: PseudonymID & PrivacyError \\
+verifyConsent & deviceID: DeviceID & isConsented: Boolean & None \\
+logPrivacyEvent & event: PrivacyEvent & status: Status & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Privacy Filtering Module}
+\label{tab:privacyFilteringAP}
+\end{table}
 
-  \subsection{Semantics}
+\subsection{Semantics}
 
-  \subsubsection{State Variables}
+\subsubsection{State Variables}
 
-  accessLog: records of authenticated access attempts and actions performed.
+pseudonymMap: Map(DeviceID $\rightarrow$ PseudonymID) \\
+Stores the pseudonymous identifier associated with each device identifier for the current execution context.
 
-  \subsubsection{Environment Variables}
+consentMap: Map(DeviceID $\rightarrow$ Boolean) \\
+Tracks whether a participant (identified by deviceID) has provided consent.
 
-  System environment variables for encryption keys, network configurations, and role-based access rules.
+privacyLog: Sequence(PrivacyEvent) \\
+Internal log of all privacy-critical actions (pseudonym generation, consent checks).
 
-  \subsubsection{Assumptions}
+\subsubsection{Environment Variables}
 
-  All data passing through this module adheres to encryption and anonymization standards under PIPEDA.
+None.
 
-  Audio data and questionnaire responses must also follow the system's encryption and anonymization requirements.
+\subsubsection{Assumptions}
 
-  \subsubsection{Access Routine Semantics}
+Participant consent is initially handled externally, but tracked within this module for runtime verification. \\
+Pseudonym mappings and privacy logs are accessible only within controlled internal contexts and are not exposed to external systems or users. \\
+This module does not implement irreversible anonymization logic beyond pseudonymization.
 
-  \noindent encryptData():
-  \begin{itemize}
-  \item transition: Applies encryption to sensitive data before storage or transmission.
-  \item output: Returns encrypted data.
-  \item exception: Raises EncryptionError if encryption fails.
-  \end{itemize}
+\subsubsection{Access Routine Semantics}
 
-  \noindent anonymizeParticipant():
-  \begin{itemize}
-  \item transition: Removes personally identifiable information from datasets.
-  \item output: Returns anonymized data.
-  \item exception: Raises PrivacyError if anonymization is incomplete.
-  \end{itemize}
+\noindent generatePseudonym(deviceID: DeviceID):
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+\item If deviceID $\notin$ dom(pseudonymMap), then pseudonymMap[deviceID] := newPseudonym.
+\item privacyLog := privacyLog $\cup$ \{createPrivacyEvent("PseudonymGenerated", deviceID)\}
+\end{itemize}
+\item output: pseudonymID := pseudonymMap[deviceID]
+\item exception: Raises PrivacyError if a pseudonym cannot be generated for the provided deviceID.
+\end{itemize}
 
-  \noindent validateAccess():
-  \begin{itemize}
-  \item transition: Checks user permissions based on their assigned role.
-  \item output: Returns access approval or denial.
-  \item exception: Raises AuthError for invalid credentials.
-  \end{itemize}
+\noindent anonymizeParticipant(deviceID: DeviceID):
+\begin{itemize}
+\item transition: 
+\begin{itemize}
+\item Ensures a pseudonym exists for deviceID by invoking generatePseudonym(deviceID) when needed.
+\item privacyLog := privacyLog $\cup$ \{createPrivacyEvent("AnonymizationRequested", deviceID)\}
+\end{itemize}
+\item output: anonymizedID := pseudonymMap[deviceID]
+\item exception: Raises PrivacyError if the deviceID cannot be mapped to a pseudonym.
+\end{itemize}
 
-  \noindent monitorInfrastructure():
-  \begin{itemize}
-  \item transition: Tracks system metrics and logs anomalies for administrative review.
-  \item output: Returns current system status.
-  \item exception: None.
-  \end{itemize}
+\noindent verifyConsent(deviceID: DeviceID):
+\begin{itemize}
+\item transition: privacyLog := privacyLog $\cup$ \{createPrivacyEvent("ConsentChecked", deviceID)\}
+\item output: isConsented := consentMap[deviceID] (defaults to false if not present)
+\item exception: None
+\end{itemize}
 
-  \subsubsection{Local Functions}
+\noindent logPrivacyEvent(event: PrivacyEvent):
+\begin{itemize}
+\item transition: privacyLog := privacyLog $\cup$ \{event\}
+\item output: status := logged
+\item exception: None
+\end{itemize}
 
-  generateKey(), rotateLogs(), alertAdmin()
+\subsubsection{Local Functions}
+
+generateSecureID: DeviceID $\rightarrow$ PseudonymID \\
+\noindent \textit{Semantics:} Produces a pseudonymous identifier based on the provided DeviceID using a deterministic rule.
+
+createPrivacyEvent: (String, DeviceID) $\rightarrow$ PrivacyEvent \\
+\noindent \textit{Semantics:} Creates a structured event record for privacy logging.
+
+\newpage
+\section{MIS of Access Control Module} \label{AccessControlModule}
+
+\subsection{Module}
+
+This module performs authorization checks and records security-relevant access events. It does not implement consent collection in code; consent is assumed to be handled externally. This module is responsible for maintaining an audit-style access log for permission checks and explicit access events.
+
+\subsection{Uses}
+
+Privacy Filtering Module
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.8cm} p{6.0cm} p{2.8cm} p{2.2cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+validateAccess & userRole: Role, resource: ResourceID & permissionStatus: Boolean & AuthError \\
+logAccess & event: AccessEvent & status: Status & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Access Control Module}
+\label{tab:accessControlAP}
+\end{table}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+accessLog: Sequence(AccessEvent) \\
+Records access attempts and access-related actions.
+
+\subsubsection{Environment Variables}
+
+None.
+
+\subsubsection{Assumptions}
+
+Roles are provided by the calling context and are already authenticated outside this module. \\
+Authorization policy is simplified to role and resource checks; more granular RBAC rules may be introduced later.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent validateAccess(userRole: Role, resource: ResourceID):
+\begin{itemize}
+\item transition: accessLog := accessLog $\cup$ \{createAccessRecord(userRole, resource)\}
+\item output: permissionStatus := (userRole is permitted to access resource)
+\item exception: Raises AuthError if the userRole is invalid or the resource identifier is malformed.
+\end{itemize}
+
+\noindent logAccess(event: AccessEvent):
+\begin{itemize}
+\item transition: accessLog := accessLog $\cup$ \{event\}
+\item output: status := logged
+\item exception: None
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+createAccessRecord: (Role, ResourceID) $\rightarrow$ AccessEvent \\
+\noindent \textit{Semantics:} Creates an AccessEvent describing an attempted access by the given role to the given resource.
+
+\newpage
+\section{MIS of Secure Storage \& Retention Module} \label{SecureStorageRetentionModule}
+
+\subsection{Module}
+
+This module is responsible for storing and retrieving session artifacts and enforcing retention and deletion policies. Data is stored locally as files and may be accessed later. When retain=true, session data is persisted to disk; when retain=false, data is used for live processing only and no disk persistence occurs.
+
+\subsection{Uses}
+
+Data Ingestion Module, Data Preprocessing Module, Privacy Filtering Module
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{4.2cm} p{5.4cm} p{2.8cm} p{2.2cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+storeSessionData & sessionID: SessionID, \newline data: DataBlob, \newline retain: Boolean & status: Status & IOError \\
+retrieveSessionData & sessionID: SessionID & data: DataBlob & IOError \\
+deleteSessionData & sessionID: SessionID & status: Status & IOError \\
+enforceRetentionPolicy & policy: RetentionPolicy & status: Status & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Secure Storage \& Retention Module}
+\label{tab:secureStorageRetentionAP}
+\end{table}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+storedSessions: Map(SessionID $\rightarrow$ StorageRef) \\
+Maps each stored session to a storage reference (for example, a file path).
+
+\subsubsection{Environment Variables}
+
+Local file system access for reading and writing session artifacts.
+
+\subsubsection{Assumptions}
+
+Data retention is controlled by a boolean retain flag supplied by the caller. \\
+Storage is local-only (no cloud backend assumed). \\
+If retain = false, data may be used live but is not persisted by this module.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent storeSessionData(sessionID: SessionID, data: DataBlob, retain: Boolean):
+\begin{itemize}
+\item transition:
+\begin{itemize}
+\item If retain = true, write data to local storage and set storedSessions[sessionID] := storageRef.
+\item If retain = false, data is used for live processing only; no disk persistence occurs and storedSessions is unchanged.
+\end{itemize}
+\item output: status := success if retain = false or if the write succeeds; otherwise raises an exception
+\item exception: Raises IOError if retain = true and data cannot be written.
+\end{itemize}
+
+\noindent retrieveSessionData(sessionID: SessionID):
+\begin{itemize}
+\item transition: None
+\item output: data := read data from storedSessions[sessionID]
+\item exception: Raises IOError if sessionID is not found in storedSessions or the storage reference cannot be read.
+\end{itemize}
+
+\noindent deleteSessionData(sessionID: SessionID):
+\begin{itemize}
+\item transition:
+\begin{itemize}
+\item Remove persisted artifacts for sessionID from storage (if present).
+\item Remove sessionID from storedSessions if it exists.
+\end{itemize}
+\item output: status := deleted
+\item exception: Raises IOError if deletion fails due to file system errors.
+\end{itemize}
+
+\noindent enforceRetentionPolicy(policy: RetentionPolicy):
+\begin{itemize}
+\item transition: Deletes stored sessions that violate the provided retention policy.
+\item output: status := applied
+\item exception: None
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+resolveStorageRef: SessionID $\rightarrow$ StorageRef \\
+\noindent \textit{Semantics:} Determines the storage reference used for a given session.
+
+\newpage
+\section{MIS of Observability Module} \label{ObservabilityModule}
+
+\subsection{Module}
+
+This module handles system metrics collection, stream health monitoring, and error/event logging for runtime observability. It is responsible for reporting basic health information about the system execution and recording significant runtime events.
+
+\subsection{Uses}
+
+Real-Time Streaming Module, Secure Storage \& Retention Module, Access Control Module
+
+\subsection{Syntax}
+
+\subsubsection{Exported Constants}
+
+None.
+
+\subsubsection{Exported Access Programs}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{4.0cm} p{5.6cm} p{2.8cm} p{2.2cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+monitorInfrastructure & metrics: SystemMetrics & systemReport: SystemReport & None \\
+logSystemEvent & event: SystemEvent & status: Status & None \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Observability Module}
+\label{tab:observabilityAP}
+\end{table}
+
+\subsection{Semantics}
+
+\subsubsection{State Variables}
+
+systemEventLog: Sequence(SystemEvent) \\
+systemMetricsLog: Sequence(SystemMetrics)
+
+\subsubsection{Environment Variables}
+
+System monitoring interfaces available to the runtime environment.
+
+\subsubsection{Assumptions}
+
+Metrics are best-effort: missing metrics do not crash the system. \\
+This module does not enforce alerting or external monitoring integrations unless added later.
+
+\subsubsection{Access Routine Semantics}
+
+\noindent monitorInfrastructure(metrics: SystemMetrics):
+\begin{itemize}
+\item transition: systemMetricsLog := systemMetricsLog $\cup$ \{metrics\}
+\item output: systemReport := summary of current metrics (for example, recent values and basic health status)
+\item exception: None
+\end{itemize}
+
+\noindent logSystemEvent(event: SystemEvent):
+\begin{itemize}
+\item transition: systemEventLog := systemEventLog $\cup$ \{event\}
+\item output: status := logged
+\item exception: None
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+summarizeMetrics: Sequence(SystemMetrics) $\rightarrow$ SystemReport \\
+\noindent \textit{Semantics:} Produces a SystemReport summarizing recent system metrics.
 
   \newpage
 
@@ -509,11 +813,11 @@
 
   \subsection{Module}
 
-  This module analyzes student engagement by combining attention metrics with pre- and post-lecture questionnaire results. Questionnaire data is collected through the Data Ingestion Module, anonymized by the Privacy \& Infrastructure Module and preprocessed before reaching this module. Each question is associated with the content of a specific slide, helping compute slide-level learning scores. With pre- and post-lecture questionnaires, changes in student understanding can be identified and correlated with gaze-data. These analytics quantify the effectiveness of each slide, object type, instructor-directed attention, and instructor audio trends.
+  This module analyzes student engagement by combining attention metrics with pre- and post-lecture questionnaire results. Questionnaire data is collected through the Data Ingestion Module, anonymized by the Privacy Filtering Module and preprocessed before reaching this module. Each question is associated with the content of a specific slide, helping compute slide-level learning scores. With pre- and post-lecture questionnaires, changes in student understanding can be identified and correlated with gaze-data. These analytics quantify the effectiveness of each slide, object type, instructor-directed attention, and instructor audio trends.
 
   \subsection{Uses}
 
-  Data Preprocessing Module, Privacy \& Infrastructure Module
+  Data Preprocessing Module, Privacy Filtering Module
 
   \subsection{Syntax}
 
@@ -571,7 +875,7 @@
 
   \subsection{Module}
 
-  This module maps world-view gaze coordinates into screen-space coordinates and instructor-region coordinates. It identifies slide transitions, classifies gaze targets, and labels all gaze data with object-level or instructor-region tags. It also aligns learning scores from the Engagement Analytics Module with each slide for downstream visualization and reporting.
+  This module maps gaze data into pixel-based scene coordinates, detects slide transitions from live video frames, classifies gaze targets, and aligns learning analytics with visual content.
 
   \subsection{Uses}
 
@@ -588,13 +892,13 @@
   \begin{table}[h!]
   \centering
   \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+  \begin{tabular}{p{3.6cm} p{5.0cm} p{3.6cm} p{2.0cm}}
   \toprule
   \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
   \midrule
-  mapCoordinatesToScene & worldViewData, sceneModel & mappedData & MappingError \\
-  detectSlideTransitions & videoStream & slideTimeline & VideoError \\
-  classifyGazeTarget & mappedData, slideObjects, instructorCoords & labeledGazeData & ClassificationError \\
+  mapCoordinatesToScene & worldViewData, sceneModel & pixelMappedData & MappingError \\
+  detectSlideTransitions & liveVideoFrames & slideTimeline & VideoError \\
+  classifyGazeTarget & pixelMappedData, slideObjects, instructorRegions & labeledGazeData & ClassificationError \\
   alignLearningScores & learningScores, slideTimeline & slideLearningMap & None \\
   \bottomrule
   \end{tabular}
@@ -614,42 +918,43 @@
 
   \subsubsection{Assumptions}
 
-  Instructor coordinates and slide-object metadata are available.  
-  Learning scores reference valid slide identifiers.
+  Live video frames are synchronized with gaze streams.  
+  Slide identifiers referenced in learning scores are valid.
 
   \subsubsection{Access Routine Semantics}
 
-  \noindent mapCoordinatesToScene():
+  \noindent mapCoordinatesToScene(worldViewData, sceneModel):
   \begin{itemize}
-  \item transition: Converts world-view gaze vectors into screen-plane or instructor-region coordinates.
-  \item output: Returns mapped gaze data relative to the scene.
-  \item exception: Raises MappingError if projection fails.
+  \item transition: Projects gaze vectors into pixel coordinate space.
+  \item output: pixelMappedData
+  \item exception: MappingError
   \end{itemize}
 
-  \noindent detectSlideTransitions():
+  \noindent detectSlideTransitions(liveVideoFrames):
   \begin{itemize}
-  \item transition: Detects slide changes from video or metadata.
-  \item output: Returns a timeline of slide transitions.
-  \item exception: Raises VideoError for detection failures.
+  \item transition: Identifies slide boundaries from incoming video frames.
+  \item output: slideTimeline
+  \item exception: VideoError
   \end{itemize}
 
-  \noindent classifyGazeTarget():
+  \noindent classifyGazeTarget(pixelMappedData, slideObjects, instructorRegions):
   \begin{itemize}
-  \item transition: Classifies each gaze point as directed at a screen object, the instructor region, or off-screen.
-  \item output: Returns labeled gaze data.
-  \item exception: Raises ClassificationError for ambiguous or invalid mappings.
+  \item transition: Assigns semantic labels to gaze points.
+  \item output: labeledGazeData
+  \item exception: ClassificationError
   \end{itemize}
 
-  \noindent alignLearningScores():
+  \noindent alignLearningScores(learningScores, slideTimeline):
   \begin{itemize}
-  \item transition: Associates each slide with its corresponding learning outcome scores.
-  \item output: Returns a mapping of slide IDs to learning metrics.
-  \item exception: None.
+  \item transition: Associates learning metrics with slide intervals.
+  \item output: slideLearningMap
+  \item exception: None
   \end{itemize}
 
   \subsubsection{Local Functions}
 
-  projectToPlane(), identifyObjects(), mergeWithLearningData()
+  projectPixel: GazeVector $\rightarrow$ PixelCoordinate \\
+  matchSlideRegion: PixelCoordinate $\rightarrow$ SlideRegion
 
   \newpage
 
@@ -657,7 +962,7 @@
 
   \subsection{Module}
 
-  This module visualizes gaze, focus, instructor-region attention, object-level attention, and learning outcome scores. It provides a synchronized playback interface that overlays heatmaps, slide boundaries, object segments, and learning scores. The dashboard supports multiple viewing modes, including world-view playback, symbolic screen view, and object-specific focus reconstruction.
+  This module renders real-time visualization of incoming gaze and video streams for live monitoring. It displays device video feeds and derived analytics overlays when available.
 
   \subsection{Uses}
 
@@ -674,15 +979,14 @@
   \begin{table}[h!]
   \centering
   \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+  \begin{tabular}{p{3.6cm} p{4.8cm} p{3.8cm} p{2.2cm}}
   \toprule
   \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
   \midrule
-  renderPlayer & playbackData & playerUI & RenderError \\
-  generateHeatmap & gazeData, mode & heatmap & VisualizationError \\
-  displayObjectStats & labeledGazeData & statsView & None \\
+  renderPlayer & liveFrameStream: StreamData & uiHandle & RenderError \\
+  updateDeviceView & deviceID: DeviceID, frame: VideoFrame & status & None \\
+  displayObjectStats & labeledGazeData & statsPanel & None \\
   showLearningScores & slideLearningMap & learningPanel & None \\
-  segmentPlayback & segmentationRules & segmentedTimeline & None \\
   \bottomrule
   \end{tabular}
   \caption{Exported Access Programs for Dashboard Visualization Module}
@@ -693,56 +997,50 @@
 
   \subsubsection{State Variables}
 
-  activeView: currently selected visualization mode.
+  None.
 
   \subsubsection{Environment Variables}
 
-  Rendering and graphical libraries within the dashboard environment.
+  Web rendering framework and browser graphics context.
 
   \subsubsection{Assumptions}
 
-  All gaze, slide, instructor, and learning score metadata is synchronized.
+  Incoming data streams are synchronized and valid.
 
   \subsubsection{Access Routine Semantics}
 
-  \noindent renderPlayer():
+  \noindent renderPlayer(liveFrameStream: StreamData):
   \begin{itemize}
-  \item transition: Displays synchronized playback with audio, heatmaps, symbolic overlays, and slide markers.
-  \item output: Returns a player UI instance.
-  \item exception: Raises RenderError if visual components fail to load.
+  \item transition: Initializes live rendering pipeline.
+  \item output: uiHandle
+  \item exception: RenderError
   \end{itemize}
 
-  \noindent generateHeatmap():
+  \noindent updateDeviceView(deviceID: DeviceID, frame: VideoFrame):
   \begin{itemize}
-  \item transition: Produces continuous or object-discrete heatmaps.
-  \item output: Returns a heatmap image or overlay.
-  \item exception: Raises VisualizationError if heatmap creation fails.
+  \item transition: Updates displayed frame for the specified device.
+  \item output: status := updated
+  \item exception: None
   \end{itemize}
 
-  \noindent displayObjectStats():
+  \noindent displayObjectStats(labeledGazeData):
   \begin{itemize}
-  \item transition: Displays percentage of gaze directed at each object and the instructor region.
-  \item output: Returns a statistical summary panel.
-  \item exception: None.
+  \item transition: Updates object-level attention statistics display.
+  \item output: statsPanel
+  \item exception: None
   \end{itemize}
 
-  \noindent showLearningScores():
+  \noindent showLearningScores(slideLearningMap):
   \begin{itemize}
-  \item transition: Displays slide-level learning outcome scores alongside the playback timeline.
-  \item output: Returns a learning score panel or overlay.
-  \item exception: None.
-  \end{itemize}
-
-  \noindent segmentPlayback():
-  \begin{itemize}
-  \item transition: Splits playback based on audio cues, slide boundaries, or focus patterns.
-  \item output: Segmented playback timeline.
-  \item exception: None.
+  \item transition: Displays slide-level learning metrics.
+  \item output: learningPanel
+  \item exception: None
   \end{itemize}
 
   \subsubsection{Local Functions}
 
-  buildSlidePanels(), computeDiscreteFocus(), overlayLearningIndicators()
+  renderFrame: VideoFrame $\rightarrow$ DOMElement \\
+  updateOverlay: LabeledData $\rightarrow$ OverlayLayer
 
   \newpage
 
