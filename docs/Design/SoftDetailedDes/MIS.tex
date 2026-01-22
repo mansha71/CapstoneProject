@@ -271,7 +271,8 @@ All recording devices are properly connected, network latency is within acceptab
 
 \subsubsection{Local Functions}
 
-validateConnection(deviceID), verifySourceAvailability(sourceID)
+validateConnection: DeviceID $\rightarrow$ Boolean \\
+verifySourceAvailability: String $\rightarrow$ Boolean
 
   \newpage
 
@@ -411,58 +412,61 @@ Input data follows the expected format, timestamps are available for all streams
 
 \subsubsection{Access Routine Semantics}
 
-\noindent filterNoise():
+\noindent filterNoise(rawData):
 \begin{itemize}
-\item transition: Applies filters (e.g., smoothing, low-pass, temporal averaging) to remove noise and stabilize gaze, video, and audio streams.
-\item output: Returns denoised data streams.
+\item transition: Applies filters (e.g., smoothing, low-pass, temporal averaging) to remove noise from gaze, video, and audio streams.
+\item output: cleanData
 \item exception: Raises DataError for corrupted or incomplete data.
 \end{itemize}
 
-\noindent synchronizeStreams():
+\noindent synchronizeStreams(cleanDataBundle):
 \begin{itemize}
 \item transition: Aligns gaze, video, screen recording, and audio streams using timestamps or synchronization cues.
-\item output: Returns synchronized multi-stream data bundle.
+\item output: syncedData
 \item exception: Raises SyncError if synchronization fails.
 \end{itemize}
 
-\noindent computeHomography():
+\noindent computeHomography(syncedVideoData):
 \begin{itemize}
-\item transition: Computes spatial mapping between gaze coordinates and screen coordinates via homography transformations.
-\item output: Returns spatially aligned gaze data.
+\item transition: Computes spatial mappings between gaze coordinates and screen coordinates.
+\item output: alignedData
 \item exception: Raises MathError if homography computation fails.
 \end{itemize}
 
-\noindent categorizeVisualItems():
+\noindent categorizeVisualItems(screenRecording):
 \begin{itemize}
-\item transition: Segments the screen recording into distinct visual item classes (text, diagram, etc.) using frame analysis.
-\item output: Returns categorized video segments.
-\item exception: Raises FormatError if visual item parsing fails.
+\item transition: Segments screen recordings into visual item classes such as text, diagrams, and images.
+\item output: categorizedSegments
+\item exception: Raises FormatError if segmentation fails.
 \end{itemize}
 
-\noindent cleanAudioStream():
+\noindent cleanAudioStream(rawAudioData):
 \begin{itemize}
-\item transition: Removes background noise, segments silence, and aligns cleaned audio with video frames.
-\item output: Returns processed audio synchronized with visual data.
-\item exception: Raises AudioError if audio cleaning fails.
+\item transition: Removes background noise and aligns audio with synchronized video streams.
+\item output: processedAudio
+\item exception: Raises AudioError if audio processing fails.
 \end{itemize}
 
-\noindent cleanQuestionnaireResponses():
+\noindent cleanQuestionnaireResponses(rawQuestionnaireData):
 \begin{itemize}
-\item transition: Removes incomplete, duplicate, or malformed questionnaire responses.
-\item output: Returns validated questionnaire dataset.
-\item exception: Raises DataError if questionnaire data cannot be validated.
+\item transition: Removes empty, duplicate, or malformed questionnaire responses.
+\item output: validatedQuestionnaire
+\item exception: Raises DataError if validation fails.
 \end{itemize}
 
-\noindent formatForAnalysis():
+\noindent formatForAnalysis(alignedData):
 \begin{itemize}
-\item transition: Structures synchronized and aligned data into a standardized schema suitable for analytics and visualization modules.
-\item output: Returns fully formatted data ready for downstream analysis.
+\item transition: Structures synchronized and aligned data into a standardized schema.
+\item output: structuredData
 \item exception: Raises FormatError for invalid schema generation.
 \end{itemize}
 
 \subsubsection{Local Functions}
 
-interpolateMissingFrames(), alignTimestamps(), extractInstructorCoordinates(), computeVisualClasses()
+interpolateMissingFrames: StreamData $\rightarrow$ StreamData \\
+alignTimestamps: Sequence(DataBlob) $\rightarrow$ Sequence(DataBlob) \\
+extractInstructorCoordinates: VideoFrame $\rightarrow$ CoordinateStream \\
+computeVisualClasses: VideoFrame $\rightarrow$ VisualLabel
 
 \newpage
 \section{MIS of Privacy Filtering Module} \label{PrivacyFilteringModule}
@@ -858,12 +862,12 @@ summarizeMetrics: Sequence(SystemMetrics) $\rightarrow$ SystemReport \\
 
   \subsubsection{Access Routine Semantics}
 
-  \noindent computeLearningScores():
-  \begin{itemize}
-  \item transition: Computes pre/post learning gains per slide using questionnaire data linked to slide identifiers. Aggregates multiple questions associated with the same slide.
-  \item output: Returns learning scores per slide and overall session learning outcome scores.
-  \item exception: Raises DataError for missing, malformed, or improperly mapped questionnaire items.
-  \end{itemize}
+\noindent computeLearningScores(anonymizedQuestionnaireData, slideMap):
+\begin{itemize}
+\item transition: Computes pre/post learning gains per slide using questionnaire data linked to slide identifiers. Aggregates multiple questions associated with the same slide.
+\item output: learningScores
+\item exception: Raises DataError for missing, malformed, or improperly mapped questionnaire items.
+\end{itemize}
 
   \subsubsection{Local Functions}
 
@@ -1094,30 +1098,32 @@ summarizeMetrics: Sequence(SystemMetrics) $\rightarrow$ SystemReport \\
 
   \subsubsection{Access Routine Semantics}
 
-  \noindent generateAutoReport():
-  \begin{itemize}
-  \item transition: Produces a full report with aggregated attention graphs, instructor-region attention, slide-object attention, and learning outcome scores.
-  \item output: Returns a comprehensive report document.
-  \item exception: Raises ReportError if report generation fails.
-  \end{itemize}
+\noindent generateAutoReport(analyticsData, slideLearningMap):
+\begin{itemize}
+\item transition: Produces a complete report containing aggregated attention metrics, slide timelines, and learning outcome scores.
+\item output: reportDocument
+\item exception: Raises ReportError if report generation fails.
+\end{itemize}
 
-  \noindent customizeReport():
-  \begin{itemize}
-  \item transition: Creates a report for selected slides, objects, audio portions, or instructor-region attention metrics.
-  \item output: Returns a customized report document.
-  \item exception: None.
-  \end{itemize}
+\noindent customizeReport(selectionCriteria, analyticsData, slideLearningMap):
+\begin{itemize}
+\item transition: Generates a report restricted to selected slides, objects, or time intervals.
+\item output: customReport
+\item exception: None.
+\end{itemize}
 
-  \noindent exportReport():
-  \begin{itemize}
-  \item transition: Converts the report to the specified format (PDF, HTML, etc.) and writes it to storage.
-  \item output: Returns the exported file.
-  \item exception: Raises FileError if export fails.
-  \end{itemize}
+\noindent exportReport(reportDocument, format):
+\begin{itemize}
+\item transition: Converts the report into the specified output format and writes it to storage.
+\item output: fileOutput
+\item exception: Raises FileError if export fails.
+\end{itemize}
 
-  \subsubsection{Local Functions}
+\subsubsection{Local Functions}
 
-  plotLearningVsAttention(), compileSlideSections(), exportFile()
+plotLearningVsAttention: AnalyticsData $\rightarrow$ Figure \\
+compileSlideSections: SlideLearningMap $\rightarrow$ ReportSection \\
+exportFile: ReportDocument $\times$ Format $\rightarrow$ File
 
   \newpage
 
