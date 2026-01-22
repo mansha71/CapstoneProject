@@ -168,7 +168,7 @@ change.
 \item[\refstepcounter{acnum} \actheacnum \label{acDashboard}:] The design and presentation of output data may evolve as we introduce a dashboard for post-session and real-time analytics. Visualizations and their underlying implementations are expected to change based on usability feedback and new instructor needs.
 \item[\refstepcounter{acnum} \actheacnum \label{acHomography}:] The current homography module is anticipated to be updated with lighter-weight or more efficient algorithms. These changes aim to improve alignment accuracy and reduce latency for real-time gaze projection.
 \item[\refstepcounter{acnum} \actheacnum \label{acAnalytics}:] Additional analytics such as engagement metrics or anomaly detection may be added as part of the dashboard.
-\item[\refstepcounter{acnum} \actheacnum \label{acPrivacy}:] Privacy, access-control, storage/retention, and monitoring policies may evolve (or be introduced) as we harden the system for classroom deployment and research compliance (e.g., redaction rules, RBAC roles, retention windows, audit logging).
+\item[\refstepcounter{acnum} \actheacnum \label{acPrivacy}:] Privacy-related requirements—including anonymization rules, access-control policies, data retention constraints, and audit logging—may evolve independently as the system is hardened for classroom deployment and research compliance (e.g., redaction rules, RBAC roles, retention windows).
 \end{description}
 
 \subsection{Unlikely Changes} \label{SecUchange}
@@ -247,8 +247,8 @@ Hardware-Hiding Module & Hardware-Hiding Module (\mref{mHH}) \\
 \section{Connection Between Requirements and Design} \label{SecConnection}
 
 The design of the system is intended to satisfy the requirements developed in
-the SRS. In this stage, the system is decomposed into modules. The connection
-between requirements and modules is listed in Table~\ref{TblRT}.
+the SRS. In this stage, the system is decomposed into modules. The connection between requirements and modules is summarized in the traceability
+matrices in Section~\ref{SecTM} (Tables~\ref{TblRT_FR_full} and~\ref{TblRT_NFR_full}).
 
 \begin{itemize}
 
@@ -322,12 +322,12 @@ hardware - affect only the module that hides the corresponding decision.
 
 Modules are decomposed according to the principle of ``information hiding''
 proposed by \citet{ParnasEtAl1984}. The \emph{Secrets} field in a module
-decomposition is a brief statement of the design decision hidden by the
+decomposition is a brief statement of the single design decision hidden by the
 module. The \emph{Services} field specifies \emph{what} the module will do
 without documenting \emph{how} to do it. For each module, a suggestion for the
 implementing software is given under the \emph{Implemented By} title. If the
 entry is \emph{OS}, this means that the module is provided by the operating
-system or by standard programming language libraries.  \emph{\progname{}} means the
+system or by standard programming language libraries. \emph{\progname{}} means the
 module will be implemented by the \progname{} software.
 
 Only the leaf modules in the hierarchy have to be implemented. If a dash
@@ -337,16 +337,16 @@ to be implemented.
 \subsection{Hardware Hiding Module (\mref{mHH})}
 
 \begin{description}
-\item[Secrets:] The device-specific interfaces, drivers, and low-level OS
-mechanisms used to access eye-tracking glasses (Neon), world camera
-input, microphones, GPU acceleration, file system APIs, local and cloud
-storage backends, network sockets, and system time synchronization (e.g.,
-NTP services).
-\item[Services:] Provides a virtualized hardware interface for capturing gaze
-streams, world camera frames, audio signals, timestamps, and device metadata,
-and for reading/writing data to persistent storage. Exposes uniform APIs so
-downstream modules do not depend on specific device models, storage engines,
-or operating systems.
+\item[Secrets:] The virtual device interface that abstracts physical sensing and I/O
+(eye-tracking glasses, cameras, microphones, storage, network) away from vendor SDKs
+and operating-system specifics.
+\item[Services:] Provides uniform access routines for:
+\begin{itemize}
+  \item acquiring gaze streams, world camera frames, audio signals, timestamps, and device metadata; and
+  \item reading/writing recorded artifacts to persistent storage.
+\end{itemize}
+Downstream modules depend only on this virtual interface, not on specific device models,
+drivers, SDK calls, or OS mechanisms.
 \item[Implemented By:] OS, vendor SDKs, device drivers
 \item[Type of Module:] Library
 \end{description}
@@ -354,30 +354,24 @@ or operating systems.
 \subsection{Behaviour-Hiding Modules}
 
 \begin{description}
-\item[Secrets:] The externally visible behaviours of the system, including
-session playback, dashboard display logic, ingestion behaviour, and reporting
-rules as defined in the SRS.
-\item[Services:] Provides all user-facing behaviours, connecting virtualized
-hardware to internal algorithms. These modules must change if the SRS behaviour
-changes.
+\item[Secrets:] The mapping from SRS-visible system behaviour to externally observable module services.
+\item[Services:] Provides user-facing system behaviour by coordinating hardware access and internal
+computations. These modules change when SRS-observable behaviour changes, but should not change when
+internal algorithms or infrastructure choices change.
 \item[Implemented By:] --
 \end{description}
 
 \subsubsection{Data Ingestion Module (\mref{mDIM})}
 
 \begin{description}
-\item[Secrets:] The method of connecting to and receiving data from multiple
-hardware sources (glasses, cameras, microphones), including device protocols,
-buffering policy, timestamp alignment strategy (including use of system/NTP
-time), and fault-recovery behaviour for dropped connections or device failures.
+\item[Secrets:] The session assembly policy that combines multi-device raw streams into a single,
+time-indexed recording timeline.
 \item[Services:]
 \begin{itemize}
-  \item Accepts raw gaze, video, audio, and metadata streams from all devices.
-  \item Performs initial timestamping and session indexing using a common time
-        base.
-  \item Manages session start/stop hooks that allow backend services to create
-        sessions, register participants, and mark completed recordings.
-  \item Outputs unified raw data packets for preprocessing and optional storage.
+  \item Accepts raw gaze, video, audio, and metadata streams (via \mref{mHH}).
+  \item Establishes a common time base and produces time-indexed raw packets/events.
+  \item Manages session start/stop boundaries and emits session lifecycle events for downstream use.
+  \item Outputs unified raw data for preprocessing and optional persistence.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Object
@@ -386,14 +380,14 @@ time), and fault-recovery behaviour for dropped connections or device failures.
 \subsubsection{Real-Time Streaming Module (\mref{mRTS})}
 
 \begin{description}
-\item[Secrets:] The design decisions for real-time transport, encrypted communication,
-latency buffering, session lifecycle APIs, and authenticated endpoint access.
+\item[Secrets:] The real-time delivery semantics for session data (latency/ordering guarantees,
+update granularity, and stream lifecycle).
 \item[Services:]
 \begin{itemize}
-  \item Exposes programmatic APIs for session creation, control, and analytics retrieval.
-  \item Streams live and replay data using encrypted protocols.
-  \item Enforces RBAC-protected access to all streaming and analytics endpoints.
-  \item Maintains session state and reports health metrics to observability infrastructure.
+  \item Exposes programmatic endpoints for session control and data subscription (live and replay).
+  \item Streams data to clients over encrypted channels.
+  \item Requires authorization checks via \mref{mACM} before serving streams or analytics endpoints.
+  \item Publishes health and performance signals to \mref{mOM}.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Object
@@ -402,15 +396,13 @@ latency buffering, session lifecycle APIs, and authenticated endpoint access.
 \subsubsection{Dashboard Visualization Module (\mref{mDVM})}
 
 \begin{description}
-\item[Secrets:] The visualization grammar, UI layout, interaction rules,
-role-based presentation logic, and display of system status indicators.
+\item[Secrets:] The user-interface presentation and interaction design for displaying analytics and session state.
 \item[Services:]
 \begin{itemize}
-  \item Presents real-time and historical analytics.
-  \item Renders heatmaps, fixation charts, engagement timelines, and gaze-alignment plots.
-  \item Displays system status indicators (latency, stream health, sync drift).
-  \item Supports role-based views (e.g., instructor vs.\ researcher).
-  \item Provides playback and filtering over recorded sessions.
+  \item Presents real-time and historical analytics and playback views.
+  \item Renders visualizations (heatmaps, fixation charts, timelines, alignment plots) from analytics outputs.
+  \item Displays status indicators using metrics provided by \mref{mOM}.
+  \item Adapts visible features by role by querying \mref{mACM} (without embedding auth policy).
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Object
@@ -419,13 +411,13 @@ role-based presentation logic, and display of system status indicators.
 \subsubsection{Reporting Module (\mref{mRM})}
 
 \begin{description}
-\item[Secrets:] The structure and formatting of summaries, metrics, annotations,
-and export formats (CSV, JSON, PNG) and the rules for instructor reflection and research reporting.
+\item[Secrets:] The report composition rules that transform stored and computed session results into exportable summaries.
 \item[Services:]
 \begin{itemize}
   \item Generates post-session summaries and aggregated attention metrics.
-  \item Exports analytics and visualizations in CSV, JSON, and PNG formats.
-  \item Supports annotation, note-taking, and timeline cropping for instructional review.
+  \item Exports results in supported formats (e.g., CSV/JSON/PNG) as specified by system requirements.
+  \item Supports annotation and timeline slicing to aid instructor review.
+  \item Requires authorization checks via \mref{mACM} and retrieves persisted artifacts via \mref{mSRM}.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Library
@@ -434,26 +426,22 @@ and export formats (CSV, JSON, PNG) and the rules for instructor reflection and 
 \subsection{Software Decision Modules}
 
 \begin{description}
-\item[Secrets:] Internal algorithms, mathematical models, data structures, and
-analytic methods that are not externally visible. These change primarily due to
-performance or research-driven improvements, not due to changes in behaviour.
-\item[Services:] Provides internal data processing, analytics, correlations, and
-privacy enforcement services for behaviour-hiding modules.
+\item[Secrets:] The internal design decisions (algorithms/data structures/models) whose changes should not alter
+SRS-visible behaviour.
+\item[Services:] Provides internal processing, analytics, and governance services used by behaviour-hiding modules.
 \item[Implemented By:] --
 \end{description}
 
 \subsubsection{Data Preprocessing Module (\mref{mDPM})}
 
 \begin{description}
-\item[Secrets:] Filtering algorithms (smoothing, denoising), calibration
-transformations, gaze-to-screen homography methods, fixation detection rules,
-and temporal alignment techniques.
+\item[Secrets:] The preprocessing transformation pipeline that converts raw gaze signals into normalized,
+analysis-ready representations.
 \item[Services:]
 \begin{itemize}
-  \item Converts raw gaze vectors into screen/world-space coordinates.
-  \item Denoises and filters gaze data.
-  \item Identifies fixations, saccades, attention windows.
-  \item Standardizes multimodal streams for analytics.
+  \item Converts raw gaze vectors into consistent coordinate representations suitable for analytics.
+  \item Applies filtering/denoising and detects gaze events (e.g., fixations/saccades) as required.
+  \item Produces standardized time-aligned outputs for analytics and visualization modules.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Data Type
@@ -462,28 +450,25 @@ and temporal alignment techniques.
 \subsubsection{Privacy Filtering Module (\mref{mPFM})}
 
 \begin{description}
-\item[Secrets:] The anonymization and redaction policy applied to video, gaze data,
-stored artifacts, and exported outputs.
+\item[Secrets:] The anonymization/redaction policy applied to session artifacts and derived outputs.
 \item[Services:]
 \begin{itemize}
-  \item Applies redaction and masking rules to raw and derived data.
-  \item Ensures masked regions are excluded prior to storage and export.
-  \item Removes or obfuscates identifiers from analytics and reports.
+  \item Applies masking/redaction rules to raw and derived data prior to storage, streaming, or export.
+  \item Removes or obfuscates identifiers from analytics results and reports as required.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Library
 \end{description}
 
-
 \subsubsection{Access Control Module (\mref{mACM})}
 
 \begin{description}
-\item[Secrets:] Authentication strategy and RBAC policy for dashboards, analytics,
-streaming APIs, and data exports.
+\item[Secrets:] The authorization policy (roles/permissions) that governs access to sessions, analytics, and exports.
 \item[Services:]
 \begin{itemize}
-  \item Authenticates users and services.
-  \item Authorizes access to dashboards, analytics APIs, and exports based on role.
+  \item Authenticates users/services as needed by the system.
+  \item Authorizes actions (view, export, administer) based on role and policy.
+  \item Exposes authorization checks to \mref{mRTS}, \mref{mDVM}, and \mref{mRM} without leaking policy details.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Library
@@ -492,14 +477,13 @@ streaming APIs, and data exports.
 \subsubsection{Secure Storage \& Retention Module (\mref{mSRM})}
 
 \begin{description}
-\item[Secrets:] Storage backend selection, encryption-at-rest strategy,
-session metadata schema, retention windows, and traceability linkage rules.
+\item[Secrets:] The data retention and retrieval policy for session artifacts (what is stored, for how long,
+and under what deletion rules).
 \item[Services:]
 \begin{itemize}
-  \item Stores raw, anonymized, and processed session artifacts.
-  \item Stores session metadata (session ID, timestamps, participant mappings).
-  \item Maintains traceability links between raw data, analytics, and reports.
-  \item Enforces retention and deletion policies.
+  \item Stores raw, privacy-filtered, and processed session artifacts and metadata.
+  \item Retrieves artifacts for replay, reporting, and analysis; callers must be authorized via \mref{mACM}.
+  \item Enforces retention/deletion rules and maintains links between raw data, derived analytics, and reports.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Data Type
@@ -508,12 +492,11 @@ session metadata schema, retention windows, and traceability linkage rules.
 \subsubsection{Observability Module (\mref{mOM})}
 
 \begin{description}
-\item[Secrets:] Audit logging policy and performance metric definitions.
+\item[Secrets:] The audit and metrics policy defining what is logged/measured and how operational health is reported.
 \item[Services:]
 \begin{itemize}
-  \item Records audit logs for access and export actions.
-  \item Collects runtime metrics (latency, dropped frames, sync drift).
-  \item Exposes metrics used by dashboard status indicators.
+  \item Records audit-relevant events (e.g., access and export actions) as required.
+  \item Collects runtime metrics (latency, dropped frames, sync drift) and exposes them for dashboards/alerts.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Library
@@ -522,14 +505,12 @@ session metadata schema, retention windows, and traceability linkage rules.
 \subsubsection{Engagement Analytics Module (\mref{mEAM})}
 
 \begin{description}
-\item[Secrets:] The mathematical models used to compute engagement metrics,
-moving averages, attention peaks/troughs, activity-phase detection, and time-on-task calculations.
+\item[Secrets:] The engagement metric model used to compute attention/engagement indicators from preprocessed gaze data.
 \item[Services:]
 \begin{itemize}
   \item Computes engagement over time for individuals and aggregates.
-  \item Detects disengagement periods and high-attention intervals.
-  \item Classifies lecture activities (discussion, slides, group work).
-  \item Generates metrics for reporting and dashboard visualization.
+  \item Detects attention peaks/troughs and segments activity phases as required by analytics outputs.
+  \item Produces metrics consumable by \mref{mDVM} and \mref{mRM}.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Data Type
@@ -538,15 +519,13 @@ moving averages, attention peaks/troughs, activity-phase detection, and time-on-
 \subsubsection{Correlation \& Visual Analysis Module (\mref{mCVAM})}
 
 \begin{description}
-\item[Secrets:] The gaze-correlation model, instructor–student alignment formulas,
-visual material detection (text block, image region), and methods for transforming
-heatmaps into interpretable coordinate-space analytics.
+\item[Secrets:] The correlation and spatial analysis model used to relate instructor and student gaze and
+produce interpretable visual summaries (e.g., heatmaps/ROI mappings).
 \item[Services:]
 \begin{itemize}
-  \item Computes correlations between instructor gaze and class gaze.
-  \item Maps class attention onto slide regions or world-camera space.
-  \item Identifies which visual elements students focus on, and how this changes over time.
-  \item Supports seat-map and spatial-zone based metrics and filters.
+  \item Computes gaze correlations and alignment measures from preprocessed data (and engagement outputs when needed).
+  \item Generates spatial summaries (heatmaps, ROI focus distributions) for visualization and reporting.
+  \item Provides derived analytic structures for filters such as seat-map or spatial-zone metrics.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Data Type
@@ -559,43 +538,120 @@ requirements and between the modules and the anticipated changes.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.72\textwidth}}
 \toprule
-\textbf{Req.} & \textbf{Modules}\\
+\textbf{Requirement} & \textbf{Modules (MG)} \\
 \midrule
-FR-10 & \mref{mEAM}, \mref{mCVAM}, \mref{mRM}, \mref{mDVM} \\
-FR-11 & \mref{mSRM} \\
+FR-1  & \mref{mDIM}, \mref{mRTS}, \mref{mDVM}, \mref{mSRM}, \mref{mRM} \\
+FR-2  & \mref{mDVM}, \mref{mDIM}, \mref{mRTS}, \mref{mACM}, \mref{mOM} \\
+FR-3  & \mref{mHH}, \mref{mDIM} \\
+FR-4 (Stretch) & \mref{mHH}, \mref{mDIM}, \mref{mDPM}, \mref{mCVAM} \\
+FR-5  & \mref{mHH}, \mref{mDIM}, \mref{mRTS} \\
+FR-6  & \mref{mDIM}, \mref{mRTS}, \mref{mOM} \\
+FR-7  & \mref{mDPM} \\
+FR-8  & \mref{mDPM}, \mref{mCVAM} \\
+FR-9  & \mref{mEAM}, \mref{mRTS}, \mref{mDVM} \\
+FR-10 & \mref{mEAM}, \mref{mCVAM}, \mref{mRM}, \mref{mDVM}, \mref{mSRM} \\
+FR-11 & \mref{mSRM}, \mref{mPFM}, \mref{mACM} \\
 FR-12 & \mref{mDIM}, \mref{mSRM} \\
 FR-13 & \mref{mRTS}, \mref{mACM} \\
-FR-14 & \mref{mACM} \\
+FR-14 & \mref{mACM}, \mref{mDVM}, \mref{mRTS} \\
+FR-15 & \mref{mDVM}, \mref{mRTS}, \mref{mEAM}, \mref{mCVAM} \\
+FR-16 & \mref{mRM}, \mref{mACM}, \mref{mSRM}, \mref{mDVM} \\
 FR-17 & \mref{mDVM}, \mref{mACM} \\
-FR-18 & \mref{mOM} \\
-FR-21 & \mref{mPFM}, \mref{mRTS}, \mref{mSRM} \\
+FR-18 & \mref{mOM}, \mref{mRTS}, \mref{mSRM} \\
+FR-19 & \mref{mHH}, \mref{mDIM}, \mref{mDPM} \\
+FR-20 & \mref{mDPM}, \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM} \\
+FR-21 & \mref{mPFM}, \mref{mRM}, \mref{mDVM} \\
 FR-22 & \mref{mSRM}, \mref{mRM} \\
+FR-23 & \mref{mDVM}, \mref{mRTS}, \mref{mDIM}, \mref{mSRM} \\
+FR-24 & \mref{mDVM}, \mref{mRM}, \mref{mSRM}, \mref{mDPM} \\
+FR-25 & \mref{mHH}, \mref{mDIM}, \mref{mRTS}, \mref{mDPM} \\
 FR-26 & \mref{mDVM}, \mref{mOM}, \mref{mRTS} \\
-FR-27 & \mref{mPFM}, \mref{mSRM}, \mref{mRM} \\
-NFR-9 & \mref{mRTS}, \mref{mSRM} \\
-NFR-10 & \mref{mACM}, \mref{mRTS}, \mref{mDVM} \\
-NFR-11 & \mref{mPFM}, \mref{mSRM} \\
+FR-27 & \mref{mPFM}, \mref{mDVM}, \mref{mSRM}, \mref{mDPM} \\
 \bottomrule
 \end{tabular}
-\caption{Trace Between Requirements and Modules}
-\label{TblRT}
+\caption{Trace Between SRS Functional Requirements and Modules}
+\label{TblRT_FR_full}
 \end{table}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.72\textwidth}}
 \toprule
-\textbf{AC} & \textbf{Modules}\\
+\textbf{Requirement} & \textbf{Modules (MG)} \\
 \midrule
-\acref{acDashboard} & \mref{mDVM}, \mref{mRM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
-\acref{acHomography} & \mref{mRTS}, \mref{mDPM} \\
-\acref{acAnalytics} & \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM} \\
-\acref{acPrivacy} & \mref{mPFM}, \mref{mACM}, \mref{mSRM}, \mref{mOM} \\
+NFR-1  & \mref{mRTS}, \mref{mDVM}, \mref{mDIM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
+NFR-2  & \mref{mRTS}, \mref{mDVM} \\
+NFR-3  & \mref{mHH}, \mref{mDIM}, \mref{mRTS} \\
+NFR-4  & \mref{mRTS} \\
+NFR-5  & \mref{mDIM}, \mref{mRTS}, \mref{mSRM}, \mref{mOM} \\
+NFR-6  & \mref{mRTS}, \mref{mSRM}, \mref{mOM} \\
+NFR-7  & \mref{mDVM} \\
+NFR-8  & \mref{mDVM} \\
+NFR-9  & \mref{mRTS}, \mref{mSRM} \\
+NFR-10 & \mref{mACM}, \mref{mRTS}, \mref{mDVM} \\
+NFR-11 & \mref{mPFM}, \mref{mSRM} \\
+NFR-12 & \mref{mRTS}, \mref{mDVM}, \mref{mSRM} \\
+NFR-13 & All modules (project-wide coding standards) \\
+NFR-14 & All modules (project-wide CI/build/test enforcement) \\
+NFR-15 & \mref{mDIM}, \mref{mRTS}, \mref{mDVM}, \mref{mSRM} \\
+NFR-16 & \mref{mHH}, \mref{mDIM}, \mref{mRTS} \\
+NFR-17 & \mref{mSRM}, \mref{mDIM} \\
+NFR-18 & \mref{mSRM}, \mref{mRTS} \\
+NFR-19 & All modules (license compliance) \\
+NFR-20 & All modules (non-commercial research restriction) \\
+NFR-21 & \mref{mDVM} (plus evaluation process) \\
+NFR-22 & \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
+NFR-23 & \mref{mHH}, \mref{mDIM}, \mref{mDPM} \\
+NFR-24 & \mref{mDVM}, \mref{mACM} \\
+NFR-25 & \mref{mHH}, \mref{mDVM} \\
+NFR-26 & \mref{mSRM}, \mref{mOM} \\
 \bottomrule
 \end{tabular}
-\caption{Trace Between Anticipated Changes and Modules}
+\caption{Trace Between SRS Non-Functional Requirements and Modules}
+\label{TblRT_NFR_full}
+\end{table}
+
+The following table traces anticipated changes to the modules whose hidden
+design decisions would be impacted. Some anticipated changes intentionally
+map to multiple modules when a single requirement evolution affects several
+independent secrets (e.g., analytics computation versus visualization).
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.40\textwidth} p{0.32\textwidth}}
+\toprule
+\textbf{AC} & \textbf{Modules} & \textbf{Justification} \\
+\midrule
+
+\acref{acDashboard}
+& \mref{mDVM}, \mref{mRM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM}
+& Dashboard evolution may require changes to analytics exposure, preprocessing
+outputs, and visualization/report formatting, which are hidden by independent
+modules. \\
+
+\acref{acHomography}
+& \mref{mDPM}
+& Projection and homography algorithms are hidden within preprocessing and may
+change independently of data transport or visualization logic. \\
+
+\acref{acAnalytics}
+& \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM}
+& New or modified analytics affect metric computation and how results are
+presented or exported, but not data acquisition or storage. \\
+
+\acref{acPrivacy}
+& \mref{mPFM}, \mref{mACM}, \mref{mSRM}, \mref{mOM}
+& Privacy policy changes independently impact anonymization, authorization,
+storage/retention rules, and audit logging, each hidden by a separate module. \\
+
+\bottomrule
+\end{tabular}
+\caption{Trace Between Anticipated Changes and Modules with Justification}
 \label{TblACT}
 \end{table}
 
@@ -626,7 +682,7 @@ At a high level, the use hierarchy for \progname{} is organized into layers:
   Privacy Filtering (\mref{mPFM}) uses \mref{mDIM} and \mref{mDPM} to enforce redaction rules.
   Access Control (\mref{mACM}) provides authorization checks to protect API and session actions.
   Secure Storage \& Retention (\mref{mSRM}) uses \mref{mDIM}, \mref{mDPM}, and \mref{mPFM} to store and retrieve privacy-compliant artifacts and enforce retention policies.
-  Observability (\mref{mOM}) collects logs and runtime metrics from other modules.
+  Observability (\mref{mOM}) receives logs/metrics emitted by modules; the dashboard/streaming modules depend on OM for status/health reporting.
 
   \item \textbf{Level 3 – Analytics and streaming}: 
   Real-Time Streaming (\mref{mRTS}) uses \mref{mDIM}, \mref{mDPM}, and governance modules to serve compliant streams.
