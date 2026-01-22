@@ -154,103 +154,94 @@
 
   \section{MIS of Data Ingestion Module} \label{DataIngestionModule}
 
-  \subsection{Module}
+\subsection{Module}
 
-  This module is responsible for collecting eye-tracking and video data from multiple eye-tracking devices and also the central camera. It makes sure that the raw data streams are captured, synchronized, and stored in a structured format. Making it suitable for further processing. It also collects instructor audio recordings, slide content from the lecture, and pre-/post-lecture questionnaire responses.
+This module entails collecting eye-tracking and video data from multiple eye-tracking devices, video data from the central camera and screen recording, as well as instructor audio recordings and pre-/post-lecture questionnaire responses. It is responsible solely for the reliable capture and initial storage of all incoming raw data streams, without performing any preprocessing or filtering operations.
 
-  \subsection{Uses}
+\subsection{Uses}
 
-  Real-Time Streaming Module, Data Preprocessing Module, Privacy \& Infrastructure Module
+Real-Time Streaming Module, Privacy \& Infrastructure Module
 
-  \subsection{Syntax}
+\subsection{Syntax}
 
-  \subsubsection{Exported Constants}
+\subsubsection{Exported Constants}
 
-  None.
+None.
 
-  \subsubsection{Exported Access Programs}
+\subsubsection{Exported Access Programs}
 
-  \begin{table}[h!]
-  \centering
-  \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-  \toprule
-  \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-  \midrule
-  collectData & deviceID, streamConfig & rawData & ConnectionError \\
-  collectAudio & deviceID & audioData & ConnectionError \\
-  collectSlides & slideSource & slideData & IOError \\
-  collectQuestionnaire & formInput & questionnaireData & FormatError \\
-  syncTimestamps & dataStreams & syncedData & SyncError \\
-  storeRawData & syncedData & status & IOError \\
-  \bottomrule
-  \end{tabular}
-  \caption{Exported Access Programs for Data Ingestion Module}
-  \label{tab:dataIngestionAP}
-  \end{table}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.2cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+collectGazeData & deviceID, streamConfig & rawGazeData & ConnectionError \\
+collectVideoData & sourceID, streamConfig & rawVideoData & ConnectionError \\
+collectAudioData & deviceID & rawAudioData & ConnectionError \\
+collectQuestionnaire & formInput & questionnaireData & FormatError \\
+storeRawData & dataBundle & status & IOError \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Data Ingestion Module}
+\label{tab:dataIngestionAP}
+\end{table}
 
+\subsection{Semantics}
 
-  \subsection{Semantics}
+\subsubsection{State Variables}
 
-  \subsubsection{State Variables}
+storedData: list of captured raw data streams currently saved in local or cloud storage.
 
-  storedData: list of captured data streams currently saved in local or cloud storage.
+\subsubsection{Environment Variables}
 
-  \subsubsection{Environment Variables}
+Connections to Pupil Labs Neon devices, the central camera, screen-recording source, audio devices, and questionnaire input sources.
 
-  Connection to Pupil Labs Neon devices, the central camera feed, audio recording devices, slide file sources, and questionnaire input sources.
+\subsubsection{Assumptions}
 
-  \subsubsection{Assumptions}
+All recording devices are properly connected, network latency is within acceptable limits for real-time transfer, and the file system or storage backend is accessible.
 
-  The eye-tracking devices are properly connected and the network latency is within acceptable limits for real-time data transfer.
+\subsubsection{Access Routine Semantics}
 
-  \subsubsection{Access Routine Semantics}
+\noindent collectGazeData():
+\begin{itemize}
+\item transition: Initiates collection of gaze and world-view video data from the connected eye-tracking devices.
+\item output: Returns raw gaze and eye-camera data.
+\item exception: Raises ConnectionError if device is unavailable.
+\end{itemize}
 
-  \noindent collectData():
-  \begin{itemize}
-  \item transition: Starts capturing data streams from connected devices.
-  \item output: Returns the raw data collected.
-  \item exception: Raises ConnectionError if device is unavailable.
-  \end{itemize}
+\noindent collectVideoData():
+\begin{itemize}
+\item transition: Records video data from the central camera and screen-capture feed.
+\item output: Returns raw video frames.
+\item exception: Raises ConnectionError if any video source is unavailable.
+\end{itemize}
 
-  \noindent collectAudio():
-  \begin{itemize}
-  \item transition: Captures raw instructor audio from the recording device.
-  \item output: Returns raw audio data.
-  \item exception: Raises ConnectionError if the audio device is unavailable.
-  \end{itemize}
+\noindent collectAudioData():
+\begin{itemize}
+\item transition: Captures instructor audio from connected microphone devices.
+\item output: Returns raw audio stream data.
+\item exception: Raises ConnectionError if the audio device is unavailable.
+\end{itemize}
 
-  \noindent collectSlides():
-  \begin{itemize}
-  \item transition: Retrieves slide files or slide metadata from the specified source.
-  \item output: Returns slide data.
-  \item exception: Raises IOError if slide files cannot be accessed.
-  \end{itemize}
+\noindent collectQuestionnaire():
+\begin{itemize}
+\item transition: Collects pre- or post-lecture questionnaire submissions.
+\item output: Returns questionnaire data.
+\item exception: Raises FormatError for incomplete or malformed responses.
+\end{itemize}
 
-  \noindent collectQuestionnaire():
-  \begin{itemize}
-  \item transition: Collects pre- or post-lecture questionnaire responses.
-  \item output: Returns questionnaire data.
-  \item exception: Raises FormatError for incomplete or malformed questionnaire submissions.
-  \end{itemize}
+\noindent storeRawData():
+\begin{itemize}
+\item transition: Saves all raw data streams to secure storage with metadata describing device, timestamp, and session.
+\item output: Returns success status.
+\item exception: Raises IOError if data cannot be written.
+\end{itemize}
 
-  \noindent syncTimestamps():
-  \begin{itemize}
-  \item transition: Aligns timestamps between multiple devices using NTP or local clock sync.
-  \item output: Returns synchronized data streams.
-  \item exception: Raises SyncError if timestamp alignment fails.
-  \end{itemize}
+\subsubsection{Local Functions}
 
-  \noindent storeRawData():
-  \begin{itemize}
-  \item transition: Saves synchronized gaze, video, audio, slide, and questionnaire data to secure storage.
-  \item output: Returns success status.
-  \item exception: Raises IOError if data cannot be written.
-  \end{itemize}
-
-  \subsubsection{Local Functions}
-
-  validateStream(deviceID), checkIntegrity(dataChunk)
+validateConnection(deviceID), verifySourceAvailability(sourceID)
 
   \newpage
 
@@ -332,88 +323,112 @@
 
   \newpage
 
-  \section{MIS of Data Preprocessing Module} \label{DataPreprocessingModule}
+ \section{MIS of Data Preprocessing Module} \label{DataPreprocessingModule}
 
-  \subsection{Module}
+\subsection{Module}
 
-  This module prepares the captured data for analysis by filtering noise, normalizing the coordinates, and structuring the gaze and video data into useable formats. It also cleans questionnaire responses by removing empty, duplicate, or invalid entries before analysis.
+This module prepares the captured data for analysis by filtering noise, normalizing coordinates, and structuring the gaze and video data into usable formats. The recording inputs from the eye-tracking devices, central camera, and screen-recording coordinates are synchronized for homography, and instructor coordinates are generated throughout the recording. The screen-recording input is categorized based on visual item classes (e.g., text, diagram, image regions), and the audio stream is denoised, segmented, and temporally aligned with the synchronized video data. Questionnaire responses are cleaned by removing empty, duplicate, or invalid entries. This ensures all data sources are aligned, validated, and ready for analysis in downstream modules.
 
-  \subsection{Uses}
+\subsection{Uses}
 
-  Data Ingestion Module, Real-Time Streaming Module, Privacy \& Infrastructure Module
+Data Ingestion Module, Real-Time Streaming Module, Privacy \& Infrastructure Module
 
-  \subsection{Syntax}
+\subsection{Syntax}
 
-  \subsubsection{Exported Constants}
+\subsubsection{Exported Constants}
 
-  None.
+None.
 
-  \subsubsection{Exported Access Programs}
+\subsubsection{Exported Access Programs}
 
-  \begin{table}[h!]
-  \centering
-  \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
-  \toprule
-  \textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
-  \midrule
-  filterNoise & rawData & cleanData & DataError \\
-  normalizeCoordinates & cleanData & normalizedData & MathError \\
-  formatForAnalysis & normalizedData & structuredData & FormatError \\
-  \bottomrule
-  \end{tabular}
-  \caption{Exported Access Programs for Data Preprocessing Module}
-  \label{tab:dataPreprocessingAP}
-  \end{table}
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{3.8cm} p{4.2cm} p{4.2cm} p{2.5cm}}
+\toprule
+\textbf{Name} & \textbf{Input} & \textbf{Output} & \textbf{Exceptions} \\
+\midrule
+filterNoise & rawData & cleanData & DataError \\
+synchronizeStreams & cleanDataBundle & syncedData & SyncError \\
+computeHomography & syncedVideoData & alignedData & MathError \\
+categorizeVisualItems & screenRecording & categorizedSegments & FormatError \\
+cleanAudioStream & rawAudioData & processedAudio & AudioError \\
+cleanQuestionnaireResponses & rawQuestionnaireData & validatedQuestionnaire & DataError \\
+formatForAnalysis & alignedData & structuredData & FormatError \\
+\bottomrule
+\end{tabular}
+\caption{Exported Access Programs for Data Preprocessing Module}
+\label{tab:dataPreprocessingAP}
+\end{table}
 
+\subsection{Semantics}
 
-  \subsection{Semantics}
+\subsubsection{State Variables}
 
-  \subsubsection{State Variables}
+None. Operates statelessly on provided input data.
 
-  None. Operates statelessly on provided input data.
+\subsubsection{Environment Variables}
 
-  \subsubsection{Environment Variables}
+None.
 
-  None.
+\subsubsection{Assumptions}
 
-  \subsubsection{Assumptions}
+Input data follows the expected format, timestamps are available for all streams, and synchronization metadata is provided from the ingestion stage.
 
-  Input data follows the expected format and has valid timestamps.
+\subsubsection{Access Routine Semantics}
 
-  \subsubsection{Access Routine Semantics}
+\noindent filterNoise():
+\begin{itemize}
+\item transition: Applies filters (e.g., smoothing, low-pass, temporal averaging) to remove noise and stabilize gaze, video, and audio streams.
+\item output: Returns denoised data streams.
+\item exception: Raises DataError for corrupted or incomplete data.
+\end{itemize}
 
-  \noindent filterNoise():
-  \begin{itemize}
-  \item transition: Applies smoothing or low-pass filters to reduce jitter.
-  \item output: Returns cleaned gaze and video data.
-  \item exception: Raises DataError for corrupted or incomplete data.
-  \end{itemize}
+\noindent synchronizeStreams():
+\begin{itemize}
+\item transition: Aligns gaze, video, screen recording, and audio streams using timestamps or synchronization cues.
+\item output: Returns synchronized multi-stream data bundle.
+\item exception: Raises SyncError if synchronization fails.
+\end{itemize}
 
-  \noindent normalizeCoordinates():
-  \begin{itemize}
-  \item transition: Converts device-specific gaze coordinates to a shared reference frame.
-  \item output: Returns normalized gaze data.
-  \item exception: Raises MathError if coordinate mapping fails.
-  \end{itemize}
+\noindent computeHomography():
+\begin{itemize}
+\item transition: Computes the spatial mapping between gaze coordinates and screen coordinates via homography transformations.
+\item output: Returns spatially aligned gaze data.
+\item exception: Raises MathError if homography computation fails.
+\end{itemize}
 
-  \noindent formatForAnalysis():
-  \begin{itemize}
-  \item transition: Structures data into a consistent schema for downstream analytics.
-  \item output: Returns data in the standardized format.
-  \item exception: Raises FormatError for invalid schema generation.
-  \end{itemize}
+\noindent categorizeVisualItems():
+\begin{itemize}
+\item transition: Segments the screen recording into distinct visual item classes (text, diagram, etc.) using frame analysis.
+\item output: Returns categorized video segments.
+\item exception: Raises FormatError if visual item parsing fails.
+\end{itemize}
 
-  \noindent cleanQuestionnaireResponses():
-  \begin{itemize}
-  \item transition: Removes empty responses, malformed entries, and invalid questionnaire submissions.
-  \item output: Returns cleaned questionnaire data ready for engagement analytics.
-  \item exception: Raises DataError if response data cannot be validated.
-  \end{itemize}
+\noindent cleanAudioStream():
+\begin{itemize}
+\item transition: Removes background noise, segments silence, and aligns cleaned audio with video frames.
+\item output: Returns processed audio synchronized with visual data.
+\item exception: Raises AudioError if audio cleaning fails.
+\end{itemize}
 
-  \subsubsection{Local Functions}
+\noindent cleanQuestionnaireResponses():
+\begin{itemize}
+\item transition: Removes incomplete, duplicate, or malformed questionnaire responses.
+\item output: Returns validated questionnaire dataset.
+\item exception: Raises DataError if questionnaire data cannot be validated.
+\end{itemize}
 
-  interpolateMissingFrames(), alignStreams(), cleanQuestionnaireResponses()
+\noindent formatForAnalysis():
+\begin{itemize}
+\item transition: Structures synchronized and aligned data into a standardized schema suitable for analytics and visualization modules.
+\item output: Returns fully formatted data ready for downstream analysis.
+\item exception: Raises FormatError for invalid schema generation.
+\end{itemize}
+
+\subsubsection{Local Functions}
+
+interpolateMissingFrames(), alignTimestamps(), extractInstructorCoordinates(), computeVisualClasses()
 
   \newpage
 
