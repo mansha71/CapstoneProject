@@ -559,43 +559,120 @@ requirements and between the modules and the anticipated changes.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.72\textwidth}}
 \toprule
-\textbf{Req.} & \textbf{Modules}\\
+\textbf{Requirement} & \textbf{Modules (MG)} \\
 \midrule
-FR-10 & \mref{mEAM}, \mref{mCVAM}, \mref{mRM}, \mref{mDVM} \\
-FR-11 & \mref{mSRM} \\
+FR-1  & \mref{mDIM}, \mref{mRTS}, \mref{mDVM}, \mref{mSRM}, \mref{mRM} \\
+FR-2  & \mref{mDVM}, \mref{mDIM}, \mref{mRTS}, \mref{mACM}, \mref{mOM} \\
+FR-3  & \mref{mHH}, \mref{mDIM} \\
+FR-4 (Stretch) & \mref{mHH}, \mref{mDIM}, \mref{mDPM}, \mref{mCVAM} \\
+FR-5  & \mref{mHH}, \mref{mDIM}, \mref{mRTS} \\
+FR-6  & \mref{mDIM}, \mref{mRTS}, \mref{mOM} \\
+FR-7  & \mref{mDPM} \\
+FR-8  & \mref{mDPM}, \mref{mCVAM} \\
+FR-9  & \mref{mEAM}, \mref{mRTS}, \mref{mDVM} \\
+FR-10 & \mref{mEAM}, \mref{mCVAM}, \mref{mRM}, \mref{mDVM}, \mref{mSRM} \\
+FR-11 & \mref{mSRM}, \mref{mPFM}, \mref{mACM} \\
 FR-12 & \mref{mDIM}, \mref{mSRM} \\
 FR-13 & \mref{mRTS}, \mref{mACM} \\
-FR-14 & \mref{mACM} \\
+FR-14 & \mref{mACM}, \mref{mDVM}, \mref{mRTS} \\
+FR-15 & \mref{mDVM}, \mref{mRTS}, \mref{mEAM}, \mref{mCVAM} \\
+FR-16 & \mref{mRM}, \mref{mACM}, \mref{mSRM}, \mref{mDVM} \\
 FR-17 & \mref{mDVM}, \mref{mACM} \\
-FR-18 & \mref{mOM} \\
-FR-21 & \mref{mPFM}, \mref{mRTS}, \mref{mSRM} \\
+FR-18 & \mref{mOM}, \mref{mRTS}, \mref{mSRM} \\
+FR-19 & \mref{mHH}, \mref{mDIM}, \mref{mDPM} \\
+FR-20 & \mref{mDPM}, \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM} \\
+FR-21 & \mref{mPFM}, \mref{mRM}, \mref{mDVM} \\
 FR-22 & \mref{mSRM}, \mref{mRM} \\
+FR-23 & \mref{mDVM}, \mref{mRTS}, \mref{mDIM}, \mref{mSRM} \\
+FR-24 & \mref{mDVM}, \mref{mRM}, \mref{mSRM}, \mref{mDPM} \\
+FR-25 & \mref{mHH}, \mref{mDIM}, \mref{mRTS}, \mref{mDPM} \\
 FR-26 & \mref{mDVM}, \mref{mOM}, \mref{mRTS} \\
-FR-27 & \mref{mPFM}, \mref{mSRM}, \mref{mRM} \\
-NFR-9 & \mref{mRTS}, \mref{mSRM} \\
-NFR-10 & \mref{mACM}, \mref{mRTS}, \mref{mDVM} \\
-NFR-11 & \mref{mPFM}, \mref{mSRM} \\
+FR-27 & \mref{mPFM}, \mref{mDVM}, \mref{mSRM}, \mref{mDPM} \\
 \bottomrule
 \end{tabular}
-\caption{Trace Between Requirements and Modules}
-\label{TblRT}
+\caption{Trace Between SRS Functional Requirements and Modules}
+\label{TblRT_FR_full}
 \end{table}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.72\textwidth}}
 \toprule
-\textbf{AC} & \textbf{Modules}\\
+\textbf{Requirement} & \textbf{Modules (MG)} \\
 \midrule
-\acref{acDashboard} & \mref{mDVM}, \mref{mRM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
-\acref{acHomography} & \mref{mRTS}, \mref{mDPM} \\
-\acref{acAnalytics} & \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM} \\
-\acref{acPrivacy} & \mref{mPFM}, \mref{mACM}, \mref{mSRM}, \mref{mOM} \\
+NFR-1  & \mref{mRTS}, \mref{mDVM}, \mref{mDIM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
+NFR-2  & \mref{mRTS}, \mref{mDVM} \\
+NFR-3  & \mref{mHH}, \mref{mDIM}, \mref{mRTS} \\
+NFR-4  & \mref{mRTS} \\
+NFR-5  & \mref{mDIM}, \mref{mRTS}, \mref{mSRM}, \mref{mOM} \\
+NFR-6  & \mref{mRTS}, \mref{mSRM}, \mref{mOM} \\
+NFR-7  & \mref{mDVM} \\
+NFR-8  & \mref{mDVM} \\
+NFR-9  & \mref{mRTS}, \mref{mSRM} \\
+NFR-10 & \mref{mACM}, \mref{mRTS}, \mref{mDVM} \\
+NFR-11 & \mref{mPFM}, \mref{mSRM} \\
+NFR-12 & \mref{mRTS}, \mref{mDVM}, \mref{mSRM} \\
+NFR-13 & All modules (project-wide coding standards) \\
+NFR-14 & All modules (project-wide CI/build/test enforcement) \\
+NFR-15 & \mref{mDIM}, \mref{mRTS}, \mref{mDVM}, \mref{mSRM} \\
+NFR-16 & \mref{mHH}, \mref{mDIM}, \mref{mRTS} \\
+NFR-17 & \mref{mSRM}, \mref{mDIM} \\
+NFR-18 & \mref{mSRM}, \mref{mRTS} \\
+NFR-19 & All modules (license compliance) \\
+NFR-20 & All modules (non-commercial research restriction) \\
+NFR-21 & \mref{mDVM} (plus evaluation process) \\
+NFR-22 & \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
+NFR-23 & \mref{mHH}, \mref{mDIM}, \mref{mDPM} \\
+NFR-24 & \mref{mDVM}, \mref{mACM} \\
+NFR-25 & \mref{mHH}, \mref{mDVM} \\
+NFR-26 & \mref{mSRM}, \mref{mOM} \\
 \bottomrule
 \end{tabular}
-\caption{Trace Between Anticipated Changes and Modules}
+\caption{Trace Between SRS Non-Functional Requirements and Modules}
+\label{TblRT_NFR_full}
+\end{table}
+
+The following table traces anticipated changes to the modules whose hidden
+design decisions would be impacted. Some anticipated changes intentionally
+map to multiple modules when a single requirement evolution affects several
+independent secrets (e.g., analytics computation versus visualization).
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{p{0.18\textwidth} p{0.40\textwidth} p{0.32\textwidth}}
+\toprule
+\textbf{AC} & \textbf{Modules} & \textbf{Justification} \\
+\midrule
+
+\acref{acDashboard}
+& \mref{mDVM}, \mref{mRM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM}
+& Dashboard evolution may require changes to analytics exposure, preprocessing
+outputs, and visualization/report formatting, which are hidden by independent
+modules. \\
+
+\acref{acHomography}
+& \mref{mDPM}
+& Projection and homography algorithms are hidden within preprocessing and may
+change independently of data transport or visualization logic. \\
+
+\acref{acAnalytics}
+& \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM}
+& New or modified analytics affect metric computation and how results are
+presented or exported, but not data acquisition or storage. \\
+
+\acref{acPrivacy}
+& \mref{mPFM}, \mref{mACM}, \mref{mSRM}, \mref{mOM}
+& Privacy policy changes independently impact anonymization, authorization,
+storage/retention rules, and audit logging, each hidden by a separate module. \\
+
+\bottomrule
+\end{tabular}
+\caption{Trace Between Anticipated Changes and Modules with Justification}
 \label{TblACT}
 \end{table}
 
