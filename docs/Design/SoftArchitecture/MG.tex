@@ -16,6 +16,9 @@
     urlcolor=blue
 }
 
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
 \input{../../Comments}
 \input{../../Common}
 
@@ -47,6 +50,7 @@
 \toprule {\bf Date} & {\bf Version} & {\bf Notes}\\
 \midrule
 Nov. 13, 2025 & 1.0 & First revision of MG Document \\
+Jan. 19, 2026 & 1.1 & Split privacy/infrastructure into single-secret modules; added uses DAG \\
 \bottomrule
 \end{tabularx}
 
@@ -79,7 +83,6 @@ This section records information for easy reference.
   API & Application Programming Interface \\
   RBAC & Role-based Access Control \\
   POC & Proof-of-Concept \\
-
   \bottomrule
 \end{tabular}\\
 
@@ -164,11 +167,8 @@ change.
 \begin{description}
 \item[\refstepcounter{acnum} \actheacnum \label{acDashboard}:] The design and presentation of output data may evolve as we introduce a dashboard for post-session and real-time analytics. Visualizations and their underlying implementations are expected to change based on usability feedback and new instructor needs.
 \item[\refstepcounter{acnum} \actheacnum \label{acHomography}:] The current homography module is anticipated to be updated with lighter-weight or more efficient algorithms. These changes aim to improve alignment accuracy and reduce latency for real-time gaze projection.
-
 \item[\refstepcounter{acnum} \actheacnum \label{acAnalytics}:] Additional analytics such as engagement metrics or anomaly detection may be added as part of the dashboard.
-
-\item[\refstepcounter{acnum} \actheacnum \label{acPrivacy}:] A privacy module may be added to the SocialEyes framework used to censor sensitive information that may be captured in gaze data (e.g: phone screen, laptop screen, human faces) if time permits. 
-
+\item[\refstepcounter{acnum} \actheacnum \label{acPrivacy}:] Privacy, access-control, storage/retention, and monitoring policies may evolve (or be introduced) as we harden the system for classroom deployment and research compliance (e.g., redaction rules, RBAC roles, retention windows, audit logging).
 \end{description}
 
 \subsection{Unlikely Changes} \label{SecUchange}
@@ -182,19 +182,10 @@ decisions will be changed.
 
 \begin{description}
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucHardware}:] The existing system relies on fixed hardware (Pupil Labs Neon Eye Tracking Glasses, Android smartphone, network webcam), and changing these devices would require extensive redesign. 
-
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucAPIs}:] The pipeline depends heavily on Pupil Labs’ APIs for data access and synchronization. Modifying or replacing these APIs would impact multiple system components, making such changes unlikely.
-
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucInput}:] The system assumes specific input data formats. Altering these formats would require large-scale changes to parsing and processing modules.
-
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucCLI}:] The existing CLI supports essential homography, visualization, and analysis functions. Its role in offline processing makes major changes unlikely.
-
 \item[\refstepcounter{ucnum} \uctheucnum \label{ucGlassesRecordModule}:] The existing GlassesRecord module handles multi-glasses recording and synchronization through a custom terminal interface will most likely not be changed. 
-
-
-
-
-
 \end{description}
 
 \section{Module Hierarchy} \label{SecMH}
@@ -206,24 +197,20 @@ actually be implemented.
 
 \begin{description}
   \item[\refstepcounter{mnum} \mthemnum \label{mHH}:] Hardware-Hiding Module
-
   \item[\refstepcounter{mnum} \mthemnum \label{mDIM}:] Data Ingestion Module
-
   \item[\refstepcounter{mnum} \mthemnum \label{mRTS}:] Real-Time Streaming Module
-
   \item[\refstepcounter{mnum} \mthemnum \label{mDVM}:] Dashboard Visualization Module
-
   \item[\refstepcounter{mnum} \mthemnum \label{mRM}:] Reporting Module
-
   \item[\refstepcounter{mnum} \mthemnum \label{mDPM}:] Data Preprocessing Module
 
-  \item[\refstepcounter{mnum} \mthemnum \label{mPIM}:] Privacy \& Infrastructure Module
+  \item[\refstepcounter{mnum} \mthemnum \label{mPFM}:] Privacy Filtering Module
+  \item[\refstepcounter{mnum} \mthemnum \label{mACM}:] Access Control Module
+  \item[\refstepcounter{mnum} \mthemnum \label{mSRM}:] Secure Storage \& Retention Module
+  \item[\refstepcounter{mnum} \mthemnum \label{mOM}:] Observability Module
 
   \item[\refstepcounter{mnum} \mthemnum \label{mEAM}:] Engagement Analytics Module
-
   \item[\refstepcounter{mnum} \mthemnum \label{mCVAM}:] Correlation \& Visual Analysis Module
 \end{description}
-
 
 \begin{table}[h!]
 \centering
@@ -242,9 +229,12 @@ Hardware-Hiding Module & Hardware-Hiding Module (\mref{mHH}) \\
   & Reporting Module (\mref{mRM})\\
 \midrule
 
-\multirow{4}{0.3\textwidth}{Software Decision Module} 
+\multirow{7}{0.3\textwidth}{Software Decision Module} 
   & Data Preprocessing Module (\mref{mDPM})\\
-  & Privacy \& Infrastructure Module (\mref{mPIM})\\
+  & Privacy Filtering Module (\mref{mPFM})\\
+  & Access Control Module (\mref{mACM})\\
+  & Secure Storage \& Retention Module (\mref{mSRM})\\
+  & Observability Module (\mref{mOM})\\
   & Engagement Analytics Module (\mref{mEAM})\\
   & Correlation \& Visual Analysis Module (\mref{mCVAM})\\
 \bottomrule
@@ -254,15 +244,13 @@ Hardware-Hiding Module & Hardware-Hiding Module (\mref{mHH}) \\
 \label{TblMH}
 \end{table}
 
-
 \section{Connection Between Requirements and Design} \label{SecConnection}
 
 The design of the system is intended to satisfy the requirements developed in
 the SRS. In this stage, the system is decomposed into modules. The connection
 between requirements and modules is listed in Table~\ref{TblRT}.
 
-
-  \begin{itemize}
+\begin{itemize}
 
   \item \textbf{Separation of data ingestion from preprocessing:}
   Requirements relating to multi-device input, raw data capture, timing
@@ -290,14 +278,18 @@ between requirements and modules is listed in Table~\ref{TblRT}.
   the \emph{Dashboard Visualization Module}. This follows the SRS distinction
   between analytic computation and user-facing presentation.
 
-  \item \textbf{Privacy and anonymization as a first-class design concern:}
-  The SRS explicitly lists privacy, anonymization, secure handling of raw video,
-  and compliance with data retention constraints. These requirements cannot be
-  embedded inside ingestion, analytics, or dashboard logic without creating
-  strong coupling. They therefore motivate the independent
-  \emph{Privacy \& Infrastructure Module}, which encapsulates the design
-  decisions related to face blurring, spatial masking, secure storage,
-  authorization, and logging.
+  \item \textbf{Privacy as a first-class design concern (split into independent secrets):}
+  The SRS includes privacy/anonymization, RBAC access control, secure storage/retention,
+  and logging/monitoring requirements. These concerns change independently and
+  should not be embedded inside ingestion, analytics, or dashboard logic without
+  creating strong coupling. Therefore, the former monolithic ``Privacy \& Infrastructure''
+  responsibility is decomposed into:
+  \begin{itemize}
+    \item \emph{Privacy Filtering Module} for redaction/anonymization rules,
+    \item \emph{Access Control Module} for RBAC/authz policy,
+    \item \emph{Secure Storage \& Retention Module} for storage schema/retention strategy,
+    \item \emph{Observability Module} for audit logging/monitoring configuration.
+  \end{itemize}
 
   \item \textbf{Support for offline summaries and instructor reporting:}
   Requirements calling for post-session summaries, exportable metrics, and
@@ -310,27 +302,13 @@ between requirements and modules is listed in Table~\ref{TblRT}.
   The SRS assumes multiple hardware sources (eye-tracking glasses, central
   camera, audio, file storage, and network interfaces). To prevent downstream
   modules from depending on specific device drivers or OS-level behaviour, a
-  general \emph{Hardware-Hiding Module} is included. This encapsulates the
-  design decision to virtualize camera and sensor access, a key anticipated
-  change identified in the hazards and SRS (e.g., replacing Neon with another
-  device).
+  general \emph{Hardware-Hiding Module} is included.
 
   \item \textbf{Backend service and session-lifecycle requirements:}
   The SRS specifies requirements for creating, managing, and retrieving recorded
-  sessions, as well as backend API access for live or historical data (SRS:
-  Service \& API requirements; Session Lifecycle Requirements). These behaviours
-  are not purely real-time streaming nor visualization concerns. This motivated
-  folding backend session-control logic into the \emph{Real-Time Streaming
-  Module}, which now encapsulates API endpoints for session creation, playback
-  control, and client subscriptions.
-
-  \item \textbf{Secure storage, retention, and access-control requirements:}
-  The SRS defines requirements for data retention policies, authenticated access,
-  role-based controls (e.g., instructor vs.\ researcher), and logging of data
-  access. Embedding these into ingestion or analytics would create tight coupling,
-  so these decisions are isolated in the \emph{Privacy \& Infrastructure Module}.
-  This module therefore owns secure storage, retention strategy, authorization,
-  and audit logging as design decisions hidden from the rest of the system.
+  sessions, as well as backend API access for live or historical data. These behaviours
+  are encapsulated in the \emph{Real-Time Streaming Module}, which provides client
+  subscription and session-control interfaces.
 
 \end{itemize}
 
@@ -408,21 +386,14 @@ time), and fault-recovery behaviour for dropped connections or device failures.
 \subsubsection{Real-Time Streaming Module (\mref{mRTS})}
 
 \begin{description}
-\item[Secrets:] The design decisions for real-time transport (Kafka, WebSockets),
-latency buffering, stream synchronization, retry/timeout strategies, throttling,
-and the external API endpoints through which clients subscribe to streams and
-control session state (e.g., REST/GraphQL/WebSocket interfaces).
+\item[Secrets:] The design decisions for real-time transport, encrypted communication,
+latency buffering, session lifecycle APIs, and authenticated endpoint access.
 \item[Services:]
 \begin{itemize}
-  \item Exposes backend APIs for creating, listing, and controlling live or
-        replay sessions (start, pause, stop) used by the dashboard and other
-        clients.
-  \item Delivers live preprocessed data and analytics to the dashboard and other
-        authorized consumers with bounded latency.
-  \item Maintains real-time session state (live/offline toggle, paused state,
-        health status) and reports it to monitoring/logging infrastructure.
-  \item Ensures smooth playback for recorded sessions by streaming stored data
-        through the same interfaces used for live sessions.
+  \item Exposes programmatic APIs for session creation, control, and analytics retrieval.
+  \item Streams live and replay data using encrypted protocols.
+  \item Enforces RBAC-protected access to all streaming and analytics endpoints.
+  \item Maintains session state and reports health metrics to observability infrastructure.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Object
@@ -432,14 +403,14 @@ control session state (e.g., REST/GraphQL/WebSocket interfaces).
 
 \begin{description}
 \item[Secrets:] The visualization grammar, UI layout, interaction rules,
-playback controls, and display logic for heatmaps, timelines, seat maps,
-and instructor–student alignment graphs.
+role-based presentation logic, and display of system status indicators.
 \item[Services:]
 \begin{itemize}
   \item Presents real-time and historical analytics.
-  \item Renders heatmaps, fixation charts, engagement over time, and gaze-alignment plots.
-  \item Supports filters (student, seat zone, activity type, time window).
-  \item Provides playback and zoom-in on individual student streams.
+  \item Renders heatmaps, fixation charts, engagement timelines, and gaze-alignment plots.
+  \item Displays system status indicators (latency, stream health, sync drift).
+  \item Supports role-based views (e.g., instructor vs.\ researcher).
+  \item Provides playback and filtering over recorded sessions.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Object
@@ -449,12 +420,12 @@ and instructor–student alignment graphs.
 
 \begin{description}
 \item[Secrets:] The structure and formatting of summaries, metrics, annotations,
-and export formats (PDF/HTML) and the rules for instructor reflection.
+and export formats (CSV, JSON, PNG) and the rules for instructor reflection and research reporting.
 \item[Services:]
 \begin{itemize}
-  \item Generates session summaries, attention-duration metrics, and engagement timelines.
-  \item Produces exportable reports for instructors and teaching portfolios.
-  \item Supports annotation, note-taking, screengrabs, and timeline cropping.
+  \item Generates post-session summaries and aggregated attention metrics.
+  \item Exports analytics and visualizations in CSV, JSON, and PNG formats.
+  \item Supports annotation, note-taking, and timeline cropping for instructional review.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Library
@@ -488,24 +459,61 @@ and temporal alignment techniques.
 \item[Type of Module:] Abstract Data Type
 \end{description}
 
-\subsubsection{Privacy \& Infrastructure Module (\mref{mPIM})}
+\subsubsection{Privacy Filtering Module (\mref{mPFM})}
 
 \begin{description}
-\item[Secrets:] The anonymization pipeline, face-blurring method, device
-obfuscation, consent rules, access-control and role-based authorization
-policies, logging and monitoring configuration, database schema and storage
-layout for raw and processed data, and data retention and deletion strategy.
+\item[Secrets:] The anonymization and redaction policy applied to video, gaze data,
+stored artifacts, and exported outputs.
 \item[Services:]
 \begin{itemize}
-  \item Performs face blurring, device masking, and area-of-interest redaction
-        on video and gaze data before it is exposed to user-facing modules.
-  \item Ensures audio and video privacy filtering before data reaches the dashboard.
-  \item Manages authentication and authorization for backend APIs and the
-        dashboard (e.g., instructor vs.\ researcher roles).
-  \item Provides secure storage and retrieval of raw and processed data in the
-        underlying database or file system according to defined retention rules.
-  \item Provides logging and monitoring hooks (e.g., audit logs, API access
-        logs, health checks) used by other modules.
+  \item Applies redaction and masking rules to raw and derived data.
+  \item Ensures masked regions are excluded prior to storage and export.
+  \item Removes or obfuscates identifiers from analytics and reports.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Library
+\end{description}
+
+
+\subsubsection{Access Control Module (\mref{mACM})}
+
+\begin{description}
+\item[Secrets:] Authentication strategy and RBAC policy for dashboards, analytics,
+streaming APIs, and data exports.
+\item[Services:]
+\begin{itemize}
+  \item Authenticates users and services.
+  \item Authorizes access to dashboards, analytics APIs, and exports based on role.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Library
+\end{description}
+
+\subsubsection{Secure Storage \& Retention Module (\mref{mSRM})}
+
+\begin{description}
+\item[Secrets:] Storage backend selection, encryption-at-rest strategy,
+session metadata schema, retention windows, and traceability linkage rules.
+\item[Services:]
+\begin{itemize}
+  \item Stores raw, anonymized, and processed session artifacts.
+  \item Stores session metadata (session ID, timestamps, participant mappings).
+  \item Maintains traceability links between raw data, analytics, and reports.
+  \item Enforces retention and deletion policies.
+\end{itemize}
+\item[Implemented By:] \progname{}
+\item[Type of Module:] Abstract Data Type
+\end{description}
+
+\subsubsection{Observability Module (\mref{mOM})}
+
+\begin{description}
+\item[Secrets:] Audit logging policy and performance metric definitions.
+\item[Services:]
+\begin{itemize}
+  \item Records audit logs for access and export actions.
+  \item Collects runtime metrics (latency, dropped frames, sync drift).
+  \item Exposes metrics used by dashboard status indicators.
 \end{itemize}
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Library
@@ -549,24 +557,26 @@ heatmaps into interpretable coordinate-space analytics.
 This section shows two traceability matrices: between the modules and the
 requirements and between the modules and the anticipated changes.
 
-% the table should use mref, the requirements should be named, use something
-% like fref
 \begin{table}[H]
 \centering
 \begin{tabular}{p{0.2\textwidth} p{0.6\textwidth}}
 \toprule
 \textbf{Req.} & \textbf{Modules}\\
 \midrule
-FR-3 & \mref{mHH}, \mref{mDIM} \\
-FR-7 & \mref{mDPM} \\
-FR-8 & \mref{mDPM} \\
-FR-9 & \mref{mEAM} \\
-FR-15 & \mref{mDVM}, \mref{mRTS} \\
-FR-16 & \mref{mRM} \\
-FR-21 & \mref{mPIM} \\
-NFR-1 & \mref{mDPM}, \mref{mDVM} \\
-NFR-3 & \mref{mHH}, \mref{mDIM} \\
-NFR-11 & \mref{mPIM} \\
+FR-10 & \mref{mEAM}, \mref{mCVAM}, \mref{mRM}, \mref{mDVM} \\
+FR-11 & \mref{mSRM} \\
+FR-12 & \mref{mDIM}, \mref{mSRM} \\
+FR-13 & \mref{mRTS}, \mref{mACM} \\
+FR-14 & \mref{mACM} \\
+FR-17 & \mref{mDVM}, \mref{mACM} \\
+FR-18 & \mref{mOM} \\
+FR-21 & \mref{mPFM}, \mref{mRTS}, \mref{mSRM} \\
+FR-22 & \mref{mSRM}, \mref{mRM} \\
+FR-26 & \mref{mDVM}, \mref{mOM}, \mref{mRTS} \\
+FR-27 & \mref{mPFM}, \mref{mSRM}, \mref{mRM} \\
+NFR-9 & \mref{mRTS}, \mref{mSRM} \\
+NFR-10 & \mref{mACM}, \mref{mRTS}, \mref{mDVM} \\
+NFR-11 & \mref{mPFM}, \mref{mSRM} \\
 \bottomrule
 \end{tabular}
 \caption{Trace Between Requirements and Modules}
@@ -579,10 +589,10 @@ NFR-11 & \mref{mPIM} \\
 \toprule
 \textbf{AC} & \textbf{Modules}\\
 \midrule
-\acref{acDashboard} & \mref{mDVM}, \mref{mRM}, \mref{mDPM} \mref{mEAM}, \mref{mCVAM} \\
+\acref{acDashboard} & \mref{mDVM}, \mref{mRM}, \mref{mDPM}, \mref{mEAM}, \mref{mCVAM} \\
 \acref{acHomography} & \mref{mRTS}, \mref{mDPM} \\
-\acref{acAnalytics} & \mref{mDPM}, \\
-\acref{acPrivacy} & \mref{mPIM}\\
+\acref{acAnalytics} & \mref{mEAM}, \mref{mCVAM}, \mref{mDVM}, \mref{mRM} \\
+\acref{acPrivacy} & \mref{mPFM}, \mref{mACM}, \mref{mSRM}, \mref{mOM} \\
 \bottomrule
 \end{tabular}
 \caption{Trace Between Anticipated Changes and Modules}
@@ -596,69 +606,113 @@ provided. \citet{Parnas1978} said of two programs A and B that A {\em uses} B if
 correct execution of B may be necessary for A to complete the task described in
 its specification. That is, A {\em uses} B if there exist situations in which
 the correct functioning of A depends upon the availability of a correct
-implementation of B.  Figure \ref{FigUH} illustrates the use relation between
-the modules. It can be seen that the graph is a directed acyclic graph
-(DAG). Each level of the hierarchy offers a testable and usable subset of the
-system, and modules in the higher level of the hierarchy are essentially simpler
-because they use modules from the lower levels.
+implementation of B. Figure \ref{FigUH} summarizes the use relation between the
+modules as a directed acyclic graph (DAG). The edge list below is a readable
+restatement of the same relations.
 
 At a high level, the use hierarchy for \progname{} is organized into layers:
 
 \begin{itemize}
   \item \textbf{Level 0 – Hardware layer}: 
-  Hardware-Hiding Module (M1) encapsulates the details of the Pupil Labs Neon
-  glasses, central camera, and instructor workstation. No other module is used
-  by M1.
+  Hardware-Hiding Module (\mref{mHH}) encapsulates device/OS access. No other module is used by \mref{mHH}.
 
   \item \textbf{Level 1 – Data acquisition}: 
-  Data Ingestion Module (M2) uses M1 to collect raw gaze and video streams from
-  the eye-tracking hardware and central camera.
+  Data Ingestion Module (\mref{mDIM}) uses \mref{mHH} to collect raw gaze and video streams.
 
-  \item \textbf{Level 2 – Preparation and infrastructure}: 
-  Data Preprocessing Module (M6) uses M2 to filter, normalize, and structure
-  the captured data.  
-  Privacy \& Infrastructure Module (M7) uses M1, M2, and M6 to apply
-  anonymization, access control, and secure storage over the ingested and
-  preprocessed data.
+  \item \textbf{Level 2 – Preparation}: 
+  Data Preprocessing Module (\mref{mDPM}) uses \mref{mDIM} to filter, normalize, and structure captured data.
+
+  \item \textbf{Level 2 – Cross-cutting governance}: 
+  Privacy Filtering (\mref{mPFM}) uses \mref{mDIM} and \mref{mDPM} to enforce redaction rules.
+  Access Control (\mref{mACM}) provides authorization checks to protect API and session actions.
+  Secure Storage \& Retention (\mref{mSRM}) uses \mref{mDIM}, \mref{mDPM}, and \mref{mPFM} to store and retrieve privacy-compliant artifacts and enforce retention policies.
+  Observability (\mref{mOM}) collects logs and runtime metrics from other modules.
 
   \item \textbf{Level 3 – Analytics and streaming}: 
-  Real-Time Streaming Module (M3) uses M2, M6, and M7 to serve live, privacy-
-  compliant streams to the dashboard.  
-  Engagement Analytics Module (M8) uses M6 to compute engagement metrics over
-  preprocessed data.  
-  Correlation \& Visual Analysis Module (M9) uses M6 and M8 to compute
-  gaze-correlation and spatial visual analytics.
+  Real-Time Streaming (\mref{mRTS}) uses \mref{mDIM}, \mref{mDPM}, and governance modules to serve compliant streams.
+  Engagement Analytics (\mref{mEAM}) uses \mref{mDPM}.
+  Correlation \& Visual Analysis (\mref{mCVAM}) uses \mref{mDPM} and \mref{mEAM}.
 
   \item \textbf{Level 4 – User-facing visualization}: 
-  Dashboard Visualization Module (M4) uses M3, M7, M8, and M9 to display
-  real-time and historical analytics while respecting privacy constraints.
+  Dashboard Visualization (\mref{mDVM}) uses \mref{mRTS}, \mref{mEAM}, \mref{mCVAM}, \mref{mACM}, and \mref{mOM}.
 
   \item \textbf{Level 5 – Reporting and exports}: 
-  Reporting Module (M5) uses M4, M8, and M9 to generate summaries and exported
-  reports based on the visualizations and analytics.
-\end{itemize}
-
-The main uses relations can be summarized as:
-
-\begin{itemize}
-  \item M2 uses M1.
-  \item M6 uses M2.
-  \item M7 uses M1, M2, and M6.
-  \item M3 uses M2, M6, and M7.
-  \item M8 uses M6.
-  \item M9 uses M6 and M8.
-  \item M4 uses M3, M7, M8, and M9.
-  \item M5 uses M4, M8, and M9.
+  Reporting (\mref{mRM}) uses \mref{mDVM}, \mref{mEAM}, \mref{mCVAM}, \mref{mSRM}, and \mref{mACM}.
 \end{itemize}
 
 \begin{figure}[H]
 \centering
-%\includegraphics[width=0.7\textwidth]{UsesHierarchy.png}
-\caption{Use hierarchy among modules}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=1.2cm and 1.8cm,
+  box/.style={draw, rounded corners, align=center, inner sep=6pt},
+  arrow/.style={-Latex}
+]
+\node[box] (m1) {(\mref{mHH})\\Hardware-Hiding};
+\node[box, right=of m1] (m2) {(\mref{mDIM})\\Data Ingestion};
+\node[box, right=of m2] (m6) {(\mref{mDPM})\\Preprocessing};
+
+\node[box, above=of m6] (m7a) {(\mref{mPFM})\\Privacy Filtering};
+\node[box, above=of m7a] (m7b) {(\mref{mACM})\\Access Control};
+\node[box, below=of m6] (m7c) {(\mref{mSRM})\\Storage \& Retention};
+\node[box, below=of m7c] (m7d) {(\mref{mOM})\\Observability};
+
+\node[box, right=of m6] (m3) {(\mref{mRTS})\\Real-Time Streaming};
+\node[box, above=of m3] (m8) {(\mref{mEAM})\\Engagement Analytics};
+\node[box, below=of m3] (m9) {(\mref{mCVAM})\\Correlation \& Visual};
+
+\node[box, right=of m3] (m4) {(\mref{mDVM})\\Dashboard};
+\node[box, right=of m4] (m5) {(\mref{mRM})\\Reporting};
+
+\draw[arrow] (m2) -- (m1);
+\draw[arrow] (m6) -- (m2);
+
+\draw[arrow] (m7a) -- (m6);
+\draw[arrow] (m7c) -- (m6);
+
+\draw[arrow] (m3) -- (m6);
+\draw[arrow] (m3) -- (m7a);
+\draw[arrow] (m3) -- (m7b);
+\draw[arrow] (m3) -- (m7c);
+\draw[arrow] (m3) -- (m7d);
+
+\draw[arrow] (m8) -- (m6);
+\draw[arrow] (m9) -- (m6);
+\draw[arrow] (m9) -- (m8);
+
+\draw[arrow] (m4) -- (m3);
+\draw[arrow] (m4) -- (m8);
+\draw[arrow] (m4) -- (m9);
+\draw[arrow] (m4) -- (m7b);
+
+\draw[arrow] (m5) -- (m4);
+\draw[arrow] (m5) -- (m8);
+\draw[arrow] (m5) -- (m9);
+\draw[arrow] (m5) -- (m7c);
+\draw[arrow] (m5) -- (m7b);
+\draw[arrow] (m7a) -- (m2);
+\draw[arrow] (m7c) -- (m2);
+\draw[arrow] (m4) -- (m7d);
+\draw[arrow] (m7c) -- (m7a);
+\end{tikzpicture}%
+}
+\caption{Use hierarchy among modules (DAG)}
 \label{FigUH}
 \end{figure}
 
-%\section*{References}
+The main uses relations can be summarized as:
+
+\begin{itemize}
+  \item \mref{mDIM} uses \mref{mHH}.
+  \item \mref{mDPM} uses \mref{mDIM}.
+  \item \mref{mPFM} uses \mref{mDIM} and \mref{mDPM}.
+  \item \mref{mSRM} uses \mref{mDIM}, \mref{mDPM}, and \mref{mPFM}.
+  \item \mref{mRTS} uses \mref{mDIM}, \mref{mDPM}, \mref{mPFM}, \mref{mACM}, \mref{mSRM}, and \mref{mOM}.
+  \item \mref{mEAM} uses \mref{mDPM}.
+  \item \mref{mCVAM} uses \mref{mDPM} and \mref{mEAM}.
+  \item \mref{mDVM} uses \mref{mRTS}, \mref{mACM}, \mref{mOM}, \mref{mEAM}, and \mref{mCVAM}.
+  \item \mref{mRM} uses \mref{mDVM}, \mref{mACM}, \mref{mSRM}, \mref{mEAM}, and \mref{mCVAM}.
+\end{itemize}
 
 \section{User Interfaces}
 
@@ -777,17 +831,18 @@ modules as shown in the uses hierarchy.
 System communication is organized around three main channels:
 
 \begin{itemize}
-  \item \textbf{Real-Time Data Delivery:} Raw gaze streams and aggregated 
-  attention metrics are transmitted from the Data Ingestion and Real-Time 
-  Streaming modules to the Dashboard Visualization module.
+  \item \textbf{Real-Time Data Delivery:} Raw and preprocessed gaze streams and aggregated 
+  attention metrics are transmitted from Data Ingestion / Preprocessing through Real-Time 
+  Streaming to the Dashboard Visualization module.
   
   \item \textbf{Asynchronous Analytics Pipeline:} Preprocessed gaze data is 
   passed from the Data Preprocessing module to the Engagement Analytics and 
   Correlation \& Visual Analysis modules for metric generation.
 
-  \item \textbf{Secure Storage and Retrieval:} Privacy \& Infrastructure 
-  manages anonymized storage of both raw and processed data, making it 
-  accessible to authorized modules such as Reporting.
+  \item \textbf{Secure Storage and Retrieval:} Secure Storage \& Retention manages
+  storage of raw, anonymized, and processed artifacts. Privacy Filtering enforces
+  redaction policy prior to exposure. Access Control governs who can request
+  stored artifacts or exports.
 \end{itemize}
 
 All communication follows structured data formats, with components interacting 
@@ -801,15 +856,13 @@ Communication follows two major patterns:
 
 \begin{itemize}
   \item \textbf{Push-Based Real-Time Streaming:} The Real-Time Streaming module 
-  (M3) pushes processed gaze data and attention indicators to the Dashboard 
-  Visualization module (M4). This enables instructors to view attention trends 
+  pushes compliant (privacy-filtered and authorized) gaze data and attention indicators
+  to the Dashboard Visualization module, enabling instructors to view attention trends 
   with minimal latency.
 
-  \item \textbf{Pull-Based Analysis and Reporting:} The Engagement Analytics 
-  module (M8), Correlation \& Visual Analysis module (M9), and Reporting module 
-  (M5) request preprocessed or stored data from the Privacy \& Infrastructure 
-  module (M7) and Data Preprocessing module (M6) as needed to compute summary 
-  statistics or generate class reports.
+  \item \textbf{Pull-Based Analysis and Reporting:} The Engagement Analytics, Correlation \& Visual Analysis,
+  and Reporting modules request preprocessed or stored data from Preprocessing and Secure Storage \& Retention
+  as needed, subject to Access Control checks.
 \end{itemize}
 
 \subsubsection*{Temporal Characteristics}
@@ -835,15 +888,11 @@ Modules exchange data using structured message formats. Typical messages include
   Visual Analysis module describing gaze distribution heatmaps.
 
   \item \textbf{SessionRecord:} Metadata describing a class session, stored and 
-  retrieved through the Privacy \& Infrastructure module.
+  retrieved through Secure Storage \& Retention.
 
   \item \textbf{ReportBundle:} Final compiled data provided to the Reporting 
   module for output formatting.
 \end{itemize}
-
-These message formats allow the system to maintain a separation of concerns: 
-modules only require knowledge of the structure of the data they consume, 
-not how it was generated.
 
 \subsection{11.4 Privacy and Security Constraints}
 
@@ -851,14 +900,10 @@ All communication adheres to the privacy and security requirements outlined in
 the Hazard Analysis. Key protections include:
 
 \begin{itemize}
-  \item \textbf{Anonymization:} No personal identifiers are stored or transmitted 
-  with gaze data.
-  \item \textbf{Access Control:} Only authorized modules may request stored 
-  data from M7 (Privacy \& Infrastructure).
-  \item \textbf{Data Minimization:} Real-time streaming transmits only 
-  aggregated or anonymized indicators rather than raw identifying visual data.
-  \item \textbf{Integrity Checks:} Modules using stored datasets perform 
-  checksum or timestamp validation to avoid stale or corrupted data.
+  \item \textbf{Privacy Filtering:} Sensitive regions and identifiers are redacted by Privacy Filtering before exposure to user-facing modules.
+  \item \textbf{Access Control:} Only authorized roles may request stored data or exports (enforced by Access Control).
+  \item \textbf{Data Minimization:} Real-time streaming transmits only aggregated or anonymized indicators rather than raw identifying visual data.
+  \item \textbf{Integrity Checks:} Modules using stored datasets validate checksums or timestamps to avoid stale or corrupted data.
 \end{itemize}
 
 \subsection{11.5 Design Considerations}
@@ -866,15 +911,10 @@ the Hazard Analysis. Key protections include:
 The communication protocol design prioritizes:
 
 \begin{itemize}
-  \item \textbf{Low Latency:} Real-time streaming ensures timely updates for 
-  instructors during live sessions.
-  \item \textbf{Scalability:} Analytics modules operate independently of the 
-  real-time pipeline, allowing more complex computations without slowing down 
-  the dashboard.
-  \item \textbf{Modularity:} Modules communicate through stable abstractions 
-  defined in the MIS, reducing interdependencies.
-  \item \textbf{Reliability:} Data retrieval and reporting do not depend on 
-  the continuous availability of real-time processes, enabling fault tolerance.
+  \item \textbf{Low Latency:} Real-time streaming ensures timely updates for instructors during live sessions.
+  \item \textbf{Scalability:} Analytics modules operate independently of the real-time pipeline, allowing more complex computations without slowing down the dashboard.
+  \item \textbf{Modularity:} Modules communicate through stable abstractions defined in the MIS, reducing interdependencies.
+  \item \textbf{Reliability:} Data retrieval and reporting do not depend on the continuous availability of real-time processes, enabling fault tolerance.
 \end{itemize}
 
 This design ensures consistent, secure, and efficient communication between 
@@ -891,53 +931,60 @@ system’s data pipeline: ingestion, preprocessing, analytics, and visualization
 
 \subsection*{Phase 1 — Foundations and Hardware Integration}
 \begin{itemize}
-  \item \textbf{M1: Hardware-Hiding Module}  
+  \item \textbf{\mref{mHH}: Hardware-Hiding Module}  
   Set up and test Pupil Labs Neon glasses, central camera, and instructor 
   workstation. Confirm data access points and ensure that device drivers and 
   calibration tools function reliably.
 
-  \item \textbf{M2: Data Ingestion Module}  
+  \item \textbf{\mref{mDIM}: Data Ingestion Module}  
   Implement raw gaze and video capture, device synchronization, and 
   time-stamped buffering. Establish initial interfaces for downstream modules.
 \end{itemize}
 
-\subsection*{Phase 2 — Data Processing and Infrastructure}
+\subsection*{Phase 2 — Data Processing and Governance Foundations}
 \begin{itemize}
-  \item \textbf{M6: Data Preprocessing Module}  
+  \item \textbf{\mref{mDPM}: Data Preprocessing Module}  
   Develop filtering, noise reduction, coordinate normalization, and 
   outlier detection routines. Produce preprocessed frames for use by analytics 
   modules.
 
-  \item \textbf{M7: Privacy \& Infrastructure Module}  
-  Implement anonymization, secure data storage, access control, and 
-  infrastructure services (session management, integrity checks).
+  \item \textbf{\mref{mPFM}: Privacy Filtering Module}  
+  Implement redaction and masking rules (faces/screens/ROIs), and ensure privacy-filtered artifacts can be produced for downstream consumption.
+
+  \item \textbf{\mref{mACM}: Access Control Module}  
+  Implement RBAC checks for session access, exports, and administrative actions.
+
+  \item \textbf{\mref{mSRM}: Secure Storage \& Retention Module}  
+  Implement storage interfaces for raw/anonymized/processed artifacts and define retention/deletion mechanisms.
+
+  \item \textbf{\mref{mOM}: Observability Module}  
+  Implement audit logging and basic health/metrics collection for integration testing.
 \end{itemize}
 
 \subsection*{Phase 3 — Real-Time and Analytical Capabilities}
 \begin{itemize}
-  \item \textbf{M3: Real-Time Streaming Module}  
-  Construct the pipeline for sending processed gaze frames and attention signals 
+  \item \textbf{\mref{mRTS}: Real-Time Streaming Module}  
+  Construct the pipeline for sending processed, policy-compliant gaze frames and attention signals 
   to the dashboard at 1–2 second intervals.
 
-  \item \textbf{M8: Engagement Analytics Module}  
+  \item \textbf{\mref{mEAM}: Engagement Analytics Module}  
   Build algorithms for attention scoring, fixation detection, and aggregated 
   engagement metrics.
 
-  \item \textbf{M9: Correlation \& Visual Analysis Module}  
+  \item \textbf{\mref{mCVAM}: Correlation \& Visual Analysis Module}  
   Implement spatial correlation calculations, heatmap generation, and visual 
   analysis tools using preprocessed data and analytics outputs.
 \end{itemize}
 
 \subsection*{Phase 4 — User-Facing Interfaces}
 \begin{itemize}
-  \item \textbf{M4: Dashboard Visualization Module}  
+  \item \textbf{\mref{mDVM}: Dashboard Visualization Module}  
   Integrate real-time streaming, analytics, and correlation outputs into a 
-  unified instructor-facing dashboard. Design displays for class-level and 
-  region-level attention indicators.
+  unified instructor-facing dashboard.
 
-  \item \textbf{M5: Reporting Module}  
+  \item \textbf{\mref{mRM}: Reporting Module}  
   Generate post-session summaries that combine analytics and visualizations. 
-  Produce exports or formatted reports based on session data.
+  Produce exports or formatted reports based on session data (subject to RBAC and retention policies).
 \end{itemize}
 
 \subsection*{Phase 5 — Integration, Testing, and Refinement}
@@ -952,12 +999,10 @@ system’s data pipeline: ingestion, preprocessing, analytics, and visualization
   usability tests.
 
   \item \textbf{Performance and Privacy Review}  
-  Verify that modules meet privacy constraints, maintain real-time performance 
-  targets, and operate reliably under varying classroom conditions.
+  Verify privacy constraints, retention/deletion behaviour, RBAC enforcement, and real-time performance targets.
 
   \item \textbf{Final Documentation and Deliverables}  
-  Prepare final reports, updated design documents, and demonstration artifacts 
-  for Rev 1 and project completion.
+  Prepare final reports, updated design documents, and demonstration artifacts.
 \end{itemize}
 
 This phased timeline ensures that core data-handling components are completed 
@@ -968,7 +1013,6 @@ becomes fully integrated.
 \bibliographystyle {plainnat}
 \bibliography{../../../refs/References}
 \citep{SaxenaEtAl2025}
-
 \citep{SocialEyesGitHub}
 
 \newpage{}
