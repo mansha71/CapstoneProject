@@ -41,6 +41,10 @@ print(scores.slide_scores["S1"].learning_gain)
 - Pre/post scores are within [0, 1], with at least one non-null.
 - The module holds no internal state; each call is a pure computation.
 - Collected data follow `QuestionnaireItem` schema: participant_id, slide_id (or slideMap-backed), question_id, pre_score, post_score, timestamp (float seconds).
+- If both pre_score and post_score are provided, they use the same 0–1 scale.
+- slideMap is only used to backfill missing slide_id; if slide_id exists, slideMap is ignored for that item.
+- Session ID is derived from the minimum timestamp and participant count (`session_<min_ts>_<count>p`).
+- Scores are aggregated by arithmetic mean; no weighting is applied across questions or slides.
 
 ## Validation notes
 - Core formula: Hake normalized learning gain `g = (post - pre) / (1 - pre)` with guardrails for None and pre_score >= 1.0.
