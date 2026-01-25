@@ -1,6 +1,17 @@
 ﻿from dataclasses import dataclass
 from typing import List, Dict, Optional
 
+'''
+export access programs: computeLearningScores
+input: anonymizedQuestionnaireData, slideMap
+Accepts preprocessed gaze/attention data as input.
+
+output: learningScores
+exceptions: DataError
+
+Aggregated (group-level) engagement metrics
+Engagement peaks/troughs or phase segmentation, as described in the MIS.
+'''
 
 class DataError(Exception):
     """Exception per MIS 14."""
