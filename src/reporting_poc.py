@@ -1,6 +1,6 @@
 """
-Minimal proof-of-concept Reporting module (very small, rudimentary).
-- Single file implementation to keep things simple for an outsider.
+Minimal proof-of-concept of M5 Reporting module.
+- Single file implementation to keep things simple.
 - No external dependencies.
 - Run with: python3 src/reporting_poc.py
 """
