@@ -1340,15 +1340,15 @@ exportFile: ReportDocument $\times$ Format $\rightarrow$ File
   could have changed to make the process go more smoothly for when an
   ``outsider'' completes some of the implementation?
 
-  \textbf{Stanley:} 
 
-  \textbf{Manan:} 
+Implementing the Scheduling Module from another team’s design documentation gave us a clearer understanding of how effective an interface specification is when used as the primary guide for implementation. The MG did a good job of placing the Scheduling Module within the overall system and clearly showed its relationship to the Trip and Notification modules. This helped us understand the intended scope of the module and avoid implementing functionality that belonged elsewhere. The MIS also defined the access program signatures, input and output types, and listed exceptions, which made it pretty straightforward to map the specification to code.
 
-  \textbf{Angela:} 
+However, some parts of the module behavior were not fully specified and required us to make assumptions during implementation. For example, the MIS stated that \texttt{generateFutureTrips} should compute future trip dates based on recurrence rules, but it didn't describe how those recurrence rules should be expanded. So, our implementation stores recurrence information without fully generating future trips. Also, while the semantics section mentioned detecting conflicts between overlapping schedules, there were no explicit validation steps or exception definitions related to conflicts in the access programs themselves. So, conflict handling behavior had to be assumed and documented in comments to remain consistent with the interface.
 
-  \textbf{Ann:} 
+This experience showed the difference between clearly defining function interfaces and fully specifying their intended behavior. While the MIS was effective at describing the syntactic aspects of the module—such as function names, parameters, and return values—it left some of the underlying behavior open to interpretation. For example, state variables like \texttt{userSchedules} and \texttt{activeRules} were listed, but there were no clear invariants describing how they should change over time or how actions like schedule cancellation should affect already-generated trips. In addition, while the use of set-based semantics helped clarify simpler operations like \texttt{cancelSchedule}, more complex logic like recurrence rule parsing was described at a high level without enough detail to guide implementation. Improvements that would make the design easier to implement include adding clearer preconditions and postconditions for each access program, defining state invariants, and explicitly describing how edge cases such as time zones, expired schedules, and conflicting entries should be handled.
 
-  \textbf{Ibrahim:} 
+At the time of writing, feedback from the team implementing our module has not yet been received, as the peer implementation process is still ongoing. Once that feedback is available, it will be incorporated into this reflection. Overall, this exercise emphasized how important it is for design documentation to clearly describe both interfaces and behavior when the goal is to support independent implementation by another team.
+
 
   \end{enumerate}
 
