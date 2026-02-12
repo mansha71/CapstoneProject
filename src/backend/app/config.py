@@ -9,9 +9,11 @@ class Settings(BaseSettings):
   data_root: Path = Path("data") / "sessions"
   process_fps: float = 10.0
   detector_min_conf: float = 0.4
+  detector_type: str = "yolov8n"
   detector_model: str = "yolov8n.pt"
   detector_device: str = "cpu"
   detector_imgsz: int = 640
+  tracker_type: str = "single-target-iou"
   max_gap_frames: int = 5
   processing_timeout_seconds: int = 1800
 

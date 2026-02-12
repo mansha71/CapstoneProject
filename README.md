@@ -58,6 +58,17 @@ source venv/bin/activate
 python -m app.worker
 ```
 
+Optional detector/tracker config (before starting API/worker):
+
+```bash
+export BACKEND_DETECTOR_TYPE="yolov8n"
+export BACKEND_DETECTOR_MODEL="yolov8n.pt"
+export BACKEND_DETECTOR_DEVICE="cpu"
+export BACKEND_TRACKER_TYPE="single-target-iou"
+```
+
+See `src/backend/README.md` ("Swap detector / tracker") for how to register new implementations.
+
 ### Frontend Setup (`src/frontend`)
 
 ```bash
