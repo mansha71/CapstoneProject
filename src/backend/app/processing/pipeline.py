@@ -9,10 +9,10 @@ from typing import Any, Optional
 import cv2
 
 from .cleaning import select_instructor_detection
-from .detectors.yolov8n import YoloV8NDetector
+from .detectors import canonical_detector_name, create_detector
 from .metrics import compute_derived_metrics
 from .schemas import ProcessingConfig, ProcessingMeta, VideoMeta
-from .tracking import SingleTargetIouTracker, interpolate_short_gaps
+from .tracking import canonical_tracker_name, create_tracker, interpolate_short_gaps
 
 
 def _frame_stride(source_fps: float, process_fps: float) -> int:
@@ -68,13 +68,8 @@ def run_pipeline(
   diagnostics = _default_diagnostics()
   diagnostics["config"] = asdict(cfg)
 
-  detector = YoloV8NDetector(
-    model_name=cfg.detector_model,
-    device=cfg.detector_device,
-    imgsz=cfg.detector_imgsz,
-    conf=cfg.min_conf,
-  )
-  tracker = SingleTargetIouTracker(track_id=1)
+  detector = create_detector(cfg)
+  tracker = create_tracker(cfg)
 
   cap = cv2.VideoCapture(str(video_path))
   if not cap.isOpened():
@@ -136,14 +131,16 @@ def run_pipeline(
       interpolated_points = track_points
 
     metrics = compute_derived_metrics(interpolated_points)
+    detector_name = canonical_detector_name(cfg.detector_type)
+    tracker_name = canonical_tracker_name(cfg.tracker_type)
     processing_meta = ProcessingMeta(
-      detector="yolov8n",
+      detector=detector_name,
       detector_runtime=cfg.detector_device,
-      detector_version=detector.detector_version,
-      model_source="ultralytics",
-      tracker="single-target-iou",
+      detector_version=getattr(detector, "detector_version", None),
+      model_source=getattr(detector, "model_source", "ultralytics"),
+      tracker=tracker_name,
       tracker_params={
-        "trackId": 1,
+        "trackId": getattr(tracker, "track_id", 1),
         "maxGapFrames": cfg.max_gap_frames,
         "interpolateGaps": cfg.interpolate_gaps,
         "processFps": cfg.process_fps,

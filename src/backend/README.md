@@ -226,3 +226,55 @@ With all three terminals running (Redis, API, Worker):
 
    You should see a `version: "v1"` tracking payload with `frameDetections`, `trackPoints`, and `derivedMetrics` that the frontend can use for overlays and movement metrics.
 
+---
+
+## 6. Swap detector / tracker
+
+The processing pipeline now supports strategy-style swapping via config.
+
+### 6.1 Change detector/tracker without code changes
+
+Set environment variables before starting the API/worker:
+
+```bash
+export BACKEND_DETECTOR_TYPE="yolov8n"
+export BACKEND_DETECTOR_MODEL="yolov8n.pt"
+export BACKEND_DETECTOR_DEVICE="cpu"   # e.g., "cuda" when GPU is available
+export BACKEND_DETECTOR_IMGSZ="640"
+export BACKEND_TRACKER_TYPE="single-target-iou"
+```
+
+Current supported values:
+
+- `BACKEND_DETECTOR_TYPE`: `yolov8n` (alias: `yolov8`)
+- `BACKEND_TRACKER_TYPE`: `single-target-iou` (aliases: `single_target_iou`, `iou-single`)
+
+### 6.2 Add a new detector implementation
+
+1. Create a detector class under `app/processing/detectors/` that implements `Detector`.
+2. Register it in `app/processing/detectors/__init__.py` by adding:
+   - a factory function that builds it from `ProcessingConfig`
+   - a key in `_DETECTOR_FACTORIES`
+   - optional aliases in `_DETECTOR_ALIASES`
+3. Set `BACKEND_DETECTOR_TYPE` to your new key.
+
+### 6.3 Add a new tracker implementation
+
+1. Add a tracker class under `app/processing/tracking/` with:
+   - `prev_bbox` and `lost_count` attributes
+   - `update(t_ms, bbox, conf) -> (FrameDetection, TrackPoint)`
+2. Register it in `app/processing/tracking/__init__.py`:
+   - add a branch in `create_tracker(...)`
+   - add optional aliases in `canonical_tracker_name(...)`
+3. Set `BACKEND_TRACKER_TYPE` to your new tracker key.
+
+### 6.4 Verify what was used
+
+After processing, check:
+
+- `GET /sessions/{sessionId}/results/instructor-tracking`
+- `payload.processingMeta.detector`
+- `payload.processingMeta.tracker`
+
+These fields reflect the canonical strategy names selected at runtime.
+

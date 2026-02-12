@@ -182,9 +182,11 @@ def process_job(job_id: str) -> None:
       coordinate_system="normalized",
       process_fps=settings.process_fps,
       min_conf=settings.detector_min_conf,
+      detector_type=settings.detector_type,
       detector_model=settings.detector_model,
       detector_device=settings.detector_device,
       detector_imgsz=settings.detector_imgsz,
+      tracker_type=settings.tracker_type,
       max_gap_frames=settings.max_gap_frames,
       processing_timeout_seconds=settings.processing_timeout_seconds,
     )

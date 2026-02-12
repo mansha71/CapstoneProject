@@ -111,9 +111,11 @@ class ProcessingConfig:
   low_iou_reject_patience: int = 6
   max_gap_frames: int = 5
   interpolate_gaps: bool = True
+  detector_type: str = "yolov8n"
   detector_model: str = "yolov8n.pt"
   detector_device: str = "cpu"
   detector_imgsz: int = 640
+  tracker_type: str = "single-target-iou"
   processing_timeout_seconds: int = 1800
 
 
