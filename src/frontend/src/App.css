@@ -126,6 +126,17 @@ body.dark .dashboard-sidebar {
   color: #1e293b;
 }
 
+.dashboard-sidebar-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dashboard-sidebar-title-row .dashboard-sidebar-title {
+  margin-bottom: 0;
+}
+
 body.dark .dashboard-sidebar-title {
   color: #f1f5f9;
 }
@@ -2614,4 +2625,3 @@ body.dark .live-toast {
     grid-template-columns: 1fr;
   }
 }
-

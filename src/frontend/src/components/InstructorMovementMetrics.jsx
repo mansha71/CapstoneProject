@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { Activity, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import InfoModal from './InfoModal';
 
 const nearestTrackPoint = (trackPoints, currentTimeMs) => {
@@ -49,7 +49,10 @@ const InstructorMovementMetrics = ({ metrics, tracking, currentTimeSec = 0 }) =>
   return (
     <section className="metrics-container">
       <div className="metrics-header">
-        <h2 className="metrics-title">Instructor Movement Metrics</h2>
+        <h2 className="metrics-title">
+          <Activity size={24} style={{ marginRight: '0.5rem' }} />
+          Instructor Movement Metrics
+        </h2>
         <div className="metrics-header-actions">
           {isExpanded ? (
             <button
