@@ -182,11 +182,11 @@ def process_job(job_id: str) -> None:
       coordinate_system="normalized",
       process_fps=settings.process_fps,
       min_conf=settings.detector_min_conf,
-      detector_type=settings.detector_type,
+      detector_type=getattr(settings, "detector_type", "yolov8n"),
       detector_model=settings.detector_model,
       detector_device=settings.detector_device,
       detector_imgsz=settings.detector_imgsz,
-      tracker_type=settings.tracker_type,
+      tracker_type=getattr(settings, "tracker_type", "single-target-iou"),
       max_gap_frames=settings.max_gap_frames,
       processing_timeout_seconds=settings.processing_timeout_seconds,
     )
