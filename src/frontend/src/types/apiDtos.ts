@@ -8,6 +8,8 @@ export interface JobDto {
   status: 'queued' | 'running' | 'completed' | 'failed';
   progress?: number;
   createdAt: string;
+  startedAt?: string;
+  finishedAt?: string;
   updatedAt: string;
   sessionId?: string;
   error?: string;

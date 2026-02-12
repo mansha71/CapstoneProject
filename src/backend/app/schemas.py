@@ -42,6 +42,8 @@ class JobResponse(BaseModel):
   progress: float = Field(ge=0.0, le=1.0)
   sessionId: str
   createdAt: datetime
+  startedAt: Optional[datetime] = None
+  finishedAt: Optional[datetime] = None
   updatedAt: datetime
   error: Optional[str] = None
 

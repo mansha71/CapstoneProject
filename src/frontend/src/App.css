@@ -2353,6 +2353,67 @@ body.dark .metadata-form input {
   gap: 0.75rem;
 }
 
+.job-log-panel {
+  margin-top: 1rem;
+}
+
+.job-log-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.job-log-entry {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.6rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+}
+
+.job-log-entry.error {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.job-log-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.job-log-entry-header span {
+  font-size: 0.8rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.job-log-details {
+  margin-top: 0.5rem;
+  color: #991b1b;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+body.dark .job-log-entry {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+body.dark .job-log-entry.error {
+  background: #7f1d1d;
+  border-color: #ef4444;
+}
+
+body.dark .job-log-entry-header span {
+  color: #94a3b8;
+}
+
+body.dark .job-log-details {
+  color: #fecaca;
+}
+
 /* Home workflow chooser */
 .home-page {
   display: flex;

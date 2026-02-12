@@ -160,6 +160,8 @@ def get_job(job_id: str, db: Session = Depends(get_db)) -> schemas.JobResponse:
     progress=job.progress,
     sessionId=job.session.session_id,
     createdAt=job.created_at,
+    startedAt=job.started_at,
+    finishedAt=job.finished_at,
     updatedAt=job.updated_at or job.created_at,
     error=job.error,
   )
@@ -178,6 +180,8 @@ def list_jobs(active: bool = False, db: Session = Depends(get_db)) -> List[schem
       progress=job.progress,
       sessionId=job.session.session_id,
       createdAt=job.created_at,
+      startedAt=job.started_at,
+      finishedAt=job.finished_at,
       updatedAt=job.updated_at or job.created_at,
       error=job.error,
     )
