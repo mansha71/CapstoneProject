@@ -41,22 +41,6 @@ const getFocusLabel = (percentage) => {
   return 'Low';
 };
 
-const getObjectColor = (index) => {
-  const colors = [
-    '#3b82f6', // blue
-    '#8b5cf6', // purple
-    '#ec4899', // pink
-    '#f97316', // orange
-    '#06b6d4', // cyan
-    '#6366f1', // indigo
-    '#14b8a6', // teal
-    '#f59e0b', // amber
-    '#a855f7', // violet
-    '#ef4444', // red (kept for non-status uses, but avoid for status indicators)
-  ];
-  return colors[index % colors.length];
-};
-
 // Helper function to format duration in milliseconds to "Xm Ys" format
 const formatDuration = (ms) => {
   if (!ms || ms === 0) return '—';
@@ -283,6 +267,27 @@ const MetricRow = ({ label, value, icon: Icon, color }) => (
   </div>
 );
 
+const FocusBarShape = (props) => {
+  const { payload, x, y, width, height } = props;
+  const color = getFocusColor(payload.focus);
+  return <rect x={x} y={y} width={width} height={height} fill={color} rx={2} ry={2} />;
+};
+
+const FocusTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const point = payload[0].payload;
+    return (
+      <div className="chart-tooltip">
+        <p className="tooltip-label">Slide {point.slide}</p>
+        <p className="tooltip-value" style={{ color: getFocusColor(point.focus) }}>
+          Focus: {point.focus}%
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const FocusSummaryCard = ({ data }) => (
   <MetricCard title="Current Focus">
     <div className="focus-display">
@@ -358,39 +363,6 @@ const FocusOverTimeCard = ({ data }) => {
     focus: value
   }));
   
-  // Custom bar shape to use colorblind-friendly colors
-  const CustomBar = (props) => {
-    const { payload, x, y, width, height } = props;
-    const color = getFocusColor(payload.focus);
-    return (
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill={color}
-        rx={2}
-        ry={2}
-      />
-    );
-  };
-  
-  // Custom tooltip
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="chart-tooltip">
-          <p className="tooltip-label">Slide {data.slide}</p>
-          <p className="tooltip-value" style={{ color: getFocusColor(data.focus) }}>
-            Focus: {data.focus}%
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-  
   return (
     <MetricCard title="Focus Over Time" className="full-width">
       <div className="metrics-subgrid">
@@ -428,8 +400,8 @@ const FocusOverTimeCard = ({ data }) => {
                 tick={{ fill: '#64748b', fontSize: '0.7rem' }}
                 stroke="#e2e8f0"
               />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="focus" shape={<CustomBar />} />
+              <Tooltip content={<FocusTooltip />} />
+              <Bar dataKey="focus" shape={<FocusBarShape />} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -535,7 +507,6 @@ const Metrics = ({
           title={isExpanded ? 'Collapse metrics' : 'Expand metrics'}
         >
           {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          <span>{isExpanded ? 'Less' : 'More'} Metrics</span>
         </button>
       </div>
       <div className="metrics-content">
