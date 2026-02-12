@@ -16,3 +16,60 @@ docs - Documentation for the project
 refs - Reference material used for the project, including papers
 src - Source code
 test - Test cases
+
+## Run The Project Locally
+
+This project has a React frontend and a FastAPI backend.
+
+### Prerequisites
+
+- Node.js 20+ and npm
+- Python 3.11+
+- Redis server
+- ffmpeg (used by backend worker for video transcoding)
+
+### Backend Setup (`src/backend`)
+
+```bash
+cd src/backend
+python -m venv venv
+source venv/bin/activate
+pip install -e .
+```
+
+Run backend services in separate terminals:
+
+```bash
+# Terminal 1
+redis-server
+```
+
+```bash
+# Terminal 2
+cd src/backend
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8000
+```
+
+```bash
+# Terminal 3
+cd src/backend
+source venv/bin/activate
+python -m app.worker
+```
+
+### Frontend Setup (`src/frontend`)
+
+```bash
+cd src/frontend
+npm install
+export VITE_API_BASE_URL="http://127.0.0.1:8000"
+npm run dev
+```
+
+Open the frontend URL printed by Vite (typically `http://127.0.0.1:5173`).
+
+## Additional Documentation
+
+- Backend details and API usage: `src/backend/README.md`
+- Source code overview: `src/README.md`

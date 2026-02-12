@@ -3,8 +3,7 @@ import { Flame, MonitorPlay, Layers, AlertCircle } from 'lucide-react';
 
 import Heatmap from './Heatmap';
 import { exampleSessionDetail } from '../types/analytics';
-import centralCamVideo from '../assets/output2.mp4';
-import slideDeckVideo from '../assets/screen.mov';
+import InstructorOverlayCanvas from './overlay/InstructorOverlayCanvas';
 
 const VIEW_TABS = [
   {
@@ -79,16 +78,51 @@ const MediaPanelSection = ({ title, children }) => (
   </div>
 );
 
-const CentralCamPanel = () => (
+const CentralCamPanel = ({
+  centralCamUrl,
+  tracking,
+  showBBox,
+  showTrail,
+  onToggleBBox,
+  onToggleTrail,
+  currentTimeSec,
+  onTimeUpdate,
+}) => (
   <MediaPanelSection title="Central Cam">
-    <div className="heatmap-player-wrapper">
+    <div className="heatmap-player-wrapper overlay-host">
       <div className="video-player">
-        <video
-          src={centralCamVideo}
-          className="heatmap-video"
-          controls
-          preload="metadata"
-        />
+        {centralCamUrl ? (
+          <>
+            <video
+              src={centralCamUrl}
+              className="heatmap-video"
+              controls
+              preload="metadata"
+              onTimeUpdate={(event) => onTimeUpdate(event.target.currentTime)}
+            />
+            <InstructorOverlayCanvas
+              tracking={tracking}
+              currentTimeSec={currentTimeSec}
+              showBBox={showBBox}
+              showTrail={showTrail}
+            />
+          </>
+        ) : (
+          <div className="video-placeholder">
+            <div className="placeholder-content">
+              <p>Central camera video unavailable</p>
+              <span className="placeholder-note">Session is still processing or media is missing.</span>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="overlay-toggle-row">
+        <button type="button" className="secondary-link" onClick={onToggleBBox}>
+          {showBBox ? 'Hide BBox' : 'Show BBox'}
+        </button>
+        <button type="button" className="secondary-link" onClick={onToggleTrail}>
+          {showTrail ? 'Hide Track Trail' : 'Show Track Trail'}
+        </button>
       </div>
     </div>
   </MediaPanelSection>
@@ -96,18 +130,27 @@ const CentralCamPanel = () => (
 
 const SlidesPanel = ({
   slides,
+  slideDeckUrl,
   selectedSlideId,
   onSelectSlide,
 }) => (
   <MediaPanelSection title="Slides">
     <div className="slides-panel">
       <div className="slide-video-wrapper">
-        <video
-          className="media-panel-video"
-          controls
-          src={slideDeckVideo}
-          preload="metadata"
-        />
+        {slideDeckUrl ? (
+          <video
+            className="media-panel-video"
+            controls
+            src={slideDeckUrl}
+            preload="metadata"
+          />
+        ) : (
+          <div className="media-panel-empty">
+            <Layers size={48} />
+            <p>Slide video unavailable</p>
+            <span>Continue with detected slides and metrics while processing completes.</span>
+          </div>
+        )}
         <div className="slide-video-meta">
           {selectedSlideId ? (
             <p>
@@ -169,9 +212,13 @@ const MediaPanel = ({
   centralCamUrl = null,
   slideDeckUrl = null,
   slides = DEFAULT_SLIDES,
+  tracking = null,
 }) => {
   const [activeView, setActiveView] = useState('heatmap');
   const [selectedSlide, setSelectedSlide] = useState(null);
+  const [showBBox, setShowBBox] = useState(true);
+  const [showTrail, setShowTrail] = useState(true);
+  const [currentTimeSec, setCurrentTimeSec] = useState(0);
 
   const handleSlideSelect = (slide) => {
     setSelectedSlide(slide);
@@ -182,11 +229,23 @@ const MediaPanel = ({
       case 'heatmap':
         return <Heatmap videoUrl={heatmapVideoUrl} />;
       case 'central':
-        return <CentralCamPanel />;
+        return (
+          <CentralCamPanel
+            centralCamUrl={centralCamUrl}
+            tracking={tracking}
+            showBBox={showBBox}
+            showTrail={showTrail}
+            onToggleBBox={() => setShowBBox((previous) => !previous)}
+            onToggleTrail={() => setShowTrail((previous) => !previous)}
+            currentTimeSec={currentTimeSec}
+            onTimeUpdate={setCurrentTimeSec}
+          />
+        );
       case 'slides':
         return slides.length ? (
           <SlidesPanel
             slides={slides}
+            slideDeckUrl={slideDeckUrl}
             selectedSlideId={selectedSlide?.id ?? null}
             onSelectSlide={handleSlideSelect}
           />
@@ -206,7 +265,18 @@ const MediaPanel = ({
           </div>
         );
     }
-  }, [activeView, centralCamUrl, heatmapVideoUrl, slides, selectedSlide]);
+  }, [
+    activeView,
+    centralCamUrl,
+    currentTimeSec,
+    heatmapVideoUrl,
+    selectedSlide,
+    showBBox,
+    showTrail,
+    slideDeckUrl,
+    slides,
+    tracking,
+  ]);
 
   return (
     <section className="media-switcher">
@@ -215,22 +285,23 @@ const MediaPanel = ({
       </div>
 
       <div className="media-toggle-row">
-        {VIEW_TABS.map(({ id, label, description, icon: Icon }) => {
-          const isActive = activeView === id;
+        {VIEW_TABS.map((tab) => {
+          const isActive = activeView === tab.id;
+          const TabIcon = tab.icon;
 
           return (
             <button
-              key={id}
+              key={tab.id}
               type="button"
               className={`media-toggle ${isActive ? 'active' : ''}`}
-              onClick={() => setActiveView(id)}
+              onClick={() => setActiveView(tab.id)}
             >
               <span className="media-toggle-icon">
-                <Icon size={20} />
+                <TabIcon size={20} />
               </span>
               <span className="media-toggle-meta">
-                <span className="media-toggle-label">{label}</span>
-                <span className="media-toggle-description">{description}</span>
+                <span className="media-toggle-label">{tab.label}</span>
+                <span className="media-toggle-description">{tab.description}</span>
               </span>
             </button>
           );

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Option A backend for session uploads, processing jobs, and instructor tracking."
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic",
+  "pydantic-settings",
+  "sqlalchemy",
+  "alembic",
+  "redis",
+  "rq",
+  "python-multipart",
+  "opencv-python-headless",
+  "numpy",
+  "ultralytics",  # YOLOv8
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx"]
+
+[tool.setuptools.packages.find]
+include = ["app"]
+
+[tool.ruff]
+line-length = 100
+

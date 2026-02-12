@@ -1,6 +1,5 @@
-import heatmapVideo from "../assets/output.mp4";
-
-const Heatmap = () => {
+const Heatmap = ({ videoUrl = null }) => {
+  const hasVideo = Boolean(videoUrl);
   return (
     <div className="heatmap-container">
       <div className="metrics-header">
@@ -8,19 +7,21 @@ const Heatmap = () => {
       </div>
 
       <div className="heatmap-player-wrapper">
-        <video
-          src={heatmapVideo}
-          className="heatmap-video"
-          controls
-          autoPlay
-          loop
-          muted
-          onError={(e) => {
-            const video = e.target;
-            console.error("Video loading error:", video.error);
-            console.error("Attempted URL:", video.currentSrc);
-          }}
-        />
+        {hasVideo ? (
+          <video
+            src={videoUrl}
+            className="heatmap-video"
+            controls
+            preload="metadata"
+          />
+        ) : (
+          <div className="video-placeholder">
+            <div className="placeholder-content">
+              <p>Heatmap video unavailable</p>
+              <span className="placeholder-note">Processing may still be running.</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
