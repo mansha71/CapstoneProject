@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, Cpu, Info } from 'lucide-react';
 import InfoModal from './InfoModal';
 
 const ProcessingInfoCard = ({ processing, tracking }) => {
@@ -15,7 +15,10 @@ const ProcessingInfoCard = ({ processing, tracking }) => {
   return (
     <section className="metrics-container">
       <div className="metrics-header">
-        <h2 className="metrics-title">Processing Info</h2>
+        <h2 className="metrics-title">
+          <Cpu size={24} style={{ marginRight: '0.5rem' }} />
+          Processing Info
+        </h2>
         <div className="metrics-header-actions">
           {isExpanded ? (
             <button

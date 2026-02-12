@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Trash2 } from 'lucide-react';
+import { Info, Trash2 } from 'lucide-react';
 
 import Metrics from './Metrics';
 import SessionInfo from './SessionInfo';
 import InstructorMovementMetrics from './InstructorMovementMetrics';
 import ProcessingInfoCard from './ProcessingInfoCard';
 import InstructorOverlayCanvas from './overlay/InstructorOverlayCanvas';
+import InfoModal from './InfoModal';
 import { deleteSession, getSession } from '../services/sessions';
 import { getJob } from '../services/jobs';
 
@@ -22,6 +23,7 @@ const InstructorDashboard = () => {
   const [showBBox, setShowBBox] = useState(true);
   const [showTrail, setShowTrail] = useState(true);
   const [showCoordinateLabels, setShowCoordinateLabels] = useState(true);
+  const [showOverlayHelp, setShowOverlayHelp] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -188,7 +190,17 @@ const InstructorDashboard = () => {
               </div>
 
               <aside className="dashboard-sidebar">
-                <h3 className="dashboard-sidebar-title">Overlays</h3>
+                <div className="dashboard-sidebar-title-row">
+                  <h3 className="dashboard-sidebar-title">Overlays</h3>
+                  <button
+                    type="button"
+                    className="metrics-info-btn"
+                    aria-label="Explain overlay options"
+                    onClick={() => setShowOverlayHelp(true)}
+                  >
+                    <Info size={18} aria-hidden="true" />
+                  </button>
+                </div>
                 <h4 className="dashboard-sidebar-section-title">Instructor coordinates</h4>
                 <div className="dashboard-sidebar-toggles">
                   <label className="dashboard-toggle">
@@ -221,6 +233,17 @@ const InstructorDashboard = () => {
                     <span className="dashboard-toggle-badge">Coming soon</span>
                   </label>
                 </div>
+                <InfoModal
+                  isOpen={showOverlayHelp}
+                  title="Overlay Definitions"
+                  ariaLabel="Overlay definitions"
+                  onClose={() => setShowOverlayHelp(false)}
+                >
+                  <p><strong>Bounding box:</strong> Draws the instructor detection box on each frame.</p>
+                  <p><strong>Track trail:</strong> Shows the recent path of the instructor centroid over time.</p>
+                  <p><strong>Coordinate labels:</strong> Displays bounding box corner coordinates beside the overlay.</p>
+                  <p><strong>Homography:</strong> Future overlay for mapping positions to a transformed plane.</p>
+                </InfoModal>
               </aside>
             </div>
 
