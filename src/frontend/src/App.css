@@ -2438,6 +2438,43 @@ body.dark .job-log-details {
   flex-wrap: wrap;
 }
 
+.home-workflow-card .row-actions .primary-link,
+.home-workflow-card .row-actions .secondary-link {
+  flex: 1 1 180px;
+}
+
+@media (max-width: 700px) {
+  .home-page .page-header-row {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .home-page .page-header-row h1 {
+    font-size: 1.65rem;
+    line-height: 1.2;
+  }
+
+  .home-workflow-grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .home-workflow-card {
+    padding: 1rem;
+  }
+
+  .home-workflow-card .row-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-workflow-card .row-actions .primary-link,
+  .home-workflow-card .row-actions .secondary-link {
+    width: 100%;
+  }
+}
+
 /* Live workflow */
 .live-landing-page,
 .live-run-page {
